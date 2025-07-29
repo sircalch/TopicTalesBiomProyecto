@@ -1,0 +1,7 @@
+Django==4.2.16
+python-decouple==3.8
+pillow==10.0.1
+django-crispy-forms==2.1
+crispy-bootstrap5==0.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1

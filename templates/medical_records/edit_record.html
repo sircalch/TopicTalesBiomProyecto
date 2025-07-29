@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Editar Expediente - {{ patient.get_full_name }} - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:patient_records' patient.id %}">{{ patient.get_full_name }}</a></li>
+<li class="breadcrumb-item active">Editar</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Expediente Médico: {{ patient.get_full_name }}
+                    </h5>
+                    <a href="{% url 'medical_records:patient_records' patient.id %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Medical Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-file-medical me-2"></i>Información Médica Básica
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.blood_type.id_for_label }}" class="form-label">Tipo de Sangre</label>
+                            {{ form.blood_type }}
+                            {% if form.blood_type.errors %}
+                                <div class="invalid-feedback d-block">{{ form.blood_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.allergies.id_for_label }}" class="form-label">Alergias Conocidas</label>
+                            {{ form.allergies }}
+                            {% if form.allergies.errors %}
+                                <div class="invalid-feedback d-block">{{ form.allergies.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Lista todas las alergias conocidas del paciente (medicamentos, alimentos, ambientales, etc.)</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.chronic_conditions.id_for_label }}" class="form-label">Condiciones Médicas Crónicas</label>
+                            {{ form.chronic_conditions }}
+                            {% if form.chronic_conditions.errors %}
+                                <div class="invalid-feedback d-block">{{ form.chronic_conditions.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Enfermedades crónicas diagnosticadas (diabetes, hipertensión, etc.)</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.current_medications.id_for_label }}" class="form-label">Medicamentos Actuales</label>
+                            {{ form.current_medications }}
+                            {% if form.current_medications.errors %}
+                                <div class="invalid-feedback d-block">{{ form.current_medications.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Medicamentos que el paciente toma actualmente con dosis y frecuencia</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Family History -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-users me-2"></i>Antecedentes Familiares
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.family_history.id_for_label }}" class="form-label">Antecedentes Médicos Familiares</label>
+                            {{ form.family_history }}
+                            {% if form.family_history.errors %}
+                                <div class="invalid-feedback d-block">{{ form.family_history.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Enfermedades hereditarias o condiciones médicas relevantes en familiares</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Social History -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-heart me-2"></i>Hábitos y Estilo de Vida
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.smoking_status.id_for_label }}" class="form-label">Estado de Fumador</label>
+                            {{ form.smoking_status }}
+                            {% if form.smoking_status.errors %}
+                                <div class="invalid-feedback d-block">{{ form.smoking_status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.alcohol_consumption.id_for_label }}" class="form-label">Consumo de Alcohol</label>
+                            {{ form.alcohol_consumption }}
+                            {% if form.alcohol_consumption.errors %}
+                                <div class="invalid-feedback d-block">{{ form.alcohol_consumption.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.exercise_frequency.id_for_label }}" class="form-label">Frecuencia de Ejercicio</label>
+                            {{ form.exercise_frequency }}
+                            {% if form.exercise_frequency.errors %}
+                                <div class="invalid-feedback d-block">{{ form.exercise_frequency.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Emergency Contact -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-phone me-2"></i>Contacto de Emergencia
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.emergency_contact_name.id_for_label }}" class="form-label">Nombre Completo</label>
+                            {{ form.emergency_contact_name }}
+                            {% if form.emergency_contact_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.emergency_contact_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.emergency_contact_relationship.id_for_label }}" class="form-label">Parentesco</label>
+                            {{ form.emergency_contact_relationship }}
+                            {% if form.emergency_contact_relationship.errors %}
+                                <div class="invalid-feedback d-block">{{ form.emergency_contact_relationship.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.emergency_contact_phone.id_for_label }}" class="form-label">Teléfono</label>
+                            {{ form.emergency_contact_phone }}
+                            {% if form.emergency_contact_phone.errors %}
+                                <div class="invalid-feedback d-block">{{ form.emergency_contact_phone.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'medical_records:patient_records' patient.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Auto-expand textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    });
+});
+</script>
+{% endblock %}

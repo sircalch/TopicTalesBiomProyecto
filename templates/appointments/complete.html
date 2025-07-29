@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Completar Cita - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'appointments:calendar' %}">Calendario</a></li>
+<li class="breadcrumb-item"><a href="{% url 'appointments:detail' appointment.id %}">Cita</a></li>
+<li class="breadcrumb-item active">Completar</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-check-circle me-2"></i>Completar Cita y Agregar Notas de Consulta
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Success Alert -->
+                <div class="alert alert-success" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Complete la información de la consulta realizada. Una vez guardada, la cita se marcará como completada.
+                </div>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Chief Complaint -->
+                    <div class="mb-4">
+                        <h6 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="fas fa-comments me-2"></i>Motivo de Consulta
+                        </h6>
+                        <label for="{{ form.chief_complaint.id_for_label }}" class="form-label">Motivo Principal de la Consulta *</label>
+                        {{ form.chief_complaint }}
+                        {% if form.chief_complaint.errors %}
+                            <div class="invalid-feedback d-block">{{ form.chief_complaint.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Describe el motivo principal por el cual el paciente acudió a consulta</small>
+                    </div>
+                    
+                    <!-- Present Illness History -->
+                    <div class="mb-4">
+                        <label for="{{ form.present_illness_history.id_for_label }}" class="form-label">Historia de la Enfermedad Actual</label>
+                        {{ form.present_illness_history }}
+                        {% if form.present_illness_history.errors %}
+                            <div class="invalid-feedback d-block">{{ form.present_illness_history.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Detalles sobre la evolución de los síntomas actuales</small>
+                    </div>
+                    
+                    <!-- Physical Examination -->
+                    <div class="mb-4">
+                        <h6 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="fas fa-stethoscope me-2"></i>Exploración Física
+                        </h6>
+                        <label for="{{ form.physical_examination.id_for_label }}" class="form-label">Hallazgos de la Exploración Física</label>
+                        {{ form.physical_examination }}
+                        {% if form.physical_examination.errors %}
+                            <div class="invalid-feedback d-block">{{ form.physical_examination.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Resultados de la exploración física realizada</small>
+                    </div>
+                    
+                    <!-- Assessment and Diagnosis -->
+                    <div class="mb-4">
+                        <h6 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="fas fa-diagnosis me-2"></i>Evaluación y Diagnóstico
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="{{ form.assessment.id_for_label }}" class="form-label">Evaluación Clínica</label>
+                                {{ form.assessment }}
+                                {% if form.assessment.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.assessment.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.diagnosis.id_for_label }}" class="form-label">Diagnóstico Principal</label>
+                                {{ form.diagnosis }}
+                                {% if form.diagnosis.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.diagnosis.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label for="{{ form.differential_diagnosis.id_for_label }}" class="form-label">Diagnósticos Diferenciales</label>
+                            {{ form.differential_diagnosis }}
+                            {% if form.differential_diagnosis.errors %}
+                                <div class="invalid-feedback d-block">{{ form.differential_diagnosis.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Otros diagnósticos considerados</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Treatment Plan -->
+                    <div class="mb-4">
+                        <h6 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="fas fa-pills me-2"></i>Plan de Tratamiento
+                        </h6>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.treatment_plan.id_for_label }}" class="form-label">Plan de Tratamiento</label>
+                            {{ form.treatment_plan }}
+                            {% if form.treatment_plan.errors %}
+                                <div class="invalid-feedback d-block">{{ form.treatment_plan.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Plan general de tratamiento y cuidados</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.medications.id_for_label }}" class="form-label">Medicamentos Prescritos</label>
+                            {{ form.medications }}
+                            {% if form.medications.errors %}
+                                <div class="invalid-feedback d-block">{{ form.medications.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Lista de medicamentos con dosis y frecuencia</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.recommendations.id_for_label }}" class="form-label">Recomendaciones Generales</label>
+                            {{ form.recommendations }}
+                            {% if form.recommendations.errors %}
+                                <div class="invalid-feedback d-block">{{ form.recommendations.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Recomendaciones de estilo de vida y cuidados</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Follow-up and Referral -->
+                    <div class="mb-4">
+                        <h6 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="fas fa-calendar-plus me-2"></i>Seguimiento y Referencias
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.follow_up_needed }}
+                                    <label class="form-check-label" for="{{ form.follow_up_needed.id_for_label }}">
+                                        Requiere Seguimiento
+                                    </label>
+                                </div>
+                                
+                                <div id="follow-up-date-container" style="display: none;">
+                                    <label for="{{ form.follow_up_date.id_for_label }}" class="form-label">Fecha de Seguimiento</label>
+                                    {{ form.follow_up_date }}
+                                    {% if form.follow_up_date.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.follow_up_date.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.referral_needed }}
+                                    <label class="form-check-label" for="{{ form.referral_needed.id_for_label }}">
+                                        Requiere Referencia
+                                    </label>
+                                </div>
+                                
+                                <div id="referral-to-container" style="display: none;">
+                                    <label for="{{ form.referral_to.id_for_label }}" class="form-label">Referir a</label>
+                                    {{ form.referral_to }}
+                                    {% if form.referral_to.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.referral_to.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="fas fa-sticky-note me-2"></i>Notas Adicionales
+                        </h6>
+                        <label for="{{ form.additional_notes.id_for_label }}" class="form-label">Observaciones Adicionales</label>
+                        {{ form.additional_notes }}
+                        {% if form.additional_notes.errors %}
+                            <div class="invalid-feedback d-block">{{ form.additional_notes.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Cualquier información adicional relevante</small>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'appointments:detail' appointment.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle me-1"></i>Completar Cita
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Appointment Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Resumen de la Cita
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Paciente:</strong><br>
+                    {{ appointment.patient.get_full_name }}<br>
+                    <small class="text-muted">{{ appointment.patient.patient_id }}</small>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Fecha y Hora:</strong><br>
+                    {{ appointment.start_datetime|date:"d/m/Y" }}<br>
+                    <small class="text-muted">{{ appointment.start_datetime|time:"H:i" }} - {{ appointment.end_datetime|time:"H:i" }}</small>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Tipo de Cita:</strong><br>
+                    <span class="badge" style="background-color: {{ appointment.appointment_type.color }};">
+                        {{ appointment.appointment_type.name }}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Motivo Original:</strong><br>
+                    {{ appointment.reason }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'patients:detail' appointment.patient.id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-user me-2"></i>Ver Perfil del Paciente
+                    </a>
+                    <a href="{% url 'patients:medical_history' appointment.patient.id %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-file-medical-alt me-2"></i>Historia Médica
+                    </a>
+                    <a href="{% url 'appointments:create' %}?patient_id={{ appointment.patient.id }}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-plus me-2"></i>Nueva Cita
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tips -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Consejos
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Completa al menos el motivo de consulta para registrar la cita
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        La información médica será confidencial y segura
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Puedes editar estas notas posteriormente si es necesario
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const followUpCheckbox = document.getElementById('{{ form.follow_up_needed.id_for_label }}');
+    const followUpDateContainer = document.getElementById('follow-up-date-container');
+    const referralCheckbox = document.getElementById('{{ form.referral_needed.id_for_label }}');
+    const referralToContainer = document.getElementById('referral-to-container');
+    
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Show/hide follow-up date field
+    followUpCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            followUpDateContainer.style.display = 'block';
+        } else {
+            followUpDateContainer.style.display = 'none';
+            document.getElementById('{{ form.follow_up_date.id_for_label }}').value = '';
+        }
+    });
+    
+    // Show/hide referral field
+    referralCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            referralToContainer.style.display = 'block';
+        } else {
+            referralToContainer.style.display = 'none';
+            document.getElementById('{{ form.referral_to.id_for_label }}').value = '';
+        }
+    });
+    
+    // Initialize visibility based on current values
+    if (followUpCheckbox.checked) {
+        followUpDateContainer.style.display = 'block';
+    }
+    if (referralCheckbox.checked) {
+        referralToContainer.style.display = 'block';
+    }
+    
+    // Auto-save draft (optional feature)
+    const formElements = document.querySelectorAll('textarea, input[type="text"], input[type="date"]');
+    formElements.forEach(element => {
+        element.addEventListener('input', function() {
+            // Save draft to localStorage
+            const formData = new FormData(document.querySelector('form'));
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+            localStorage.setItem('appointment_note_draft_{{ appointment.id }}', JSON.stringify(formObject));
+        });
+    });
+    
+    // Load draft on page load
+    const savedDraft = localStorage.getItem('appointment_note_draft_{{ appointment.id }}');
+    if (savedDraft) {
+        try {
+            const draftData = JSON.parse(savedDraft);
+            Object.keys(draftData).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field && field.value === '') {
+                    field.value = draftData[key];
+                }
+            });
+        } catch (e) {
+            console.log('Error loading draft:', e);
+        }
+    }
+    
+    // Clear draft on successful submission
+    document.querySelector('form').addEventListener('submit', function() {
+        localStorage.removeItem('appointment_note_draft_{{ appointment.id }}');
+    });
+});
+</script>
+{% endblock %}

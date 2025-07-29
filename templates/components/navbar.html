@@ -1,0 +1,79 @@
+<!-- Top Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container-fluid">
+        <!-- Logo and Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard:index' %}">
+            <i class="fas fa-heartbeat me-2"></i>
+            <span class="fw-bold">TopicTales Biomédica</span>
+        </a>
+        
+        <!-- Mobile menu toggle -->
+        <button id="sidebar-toggle" class="btn btn-outline-light d-lg-none" type="button">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Right side items -->
+        <div class="navbar-nav ms-auto d-flex flex-row">
+            <!-- Notifications -->
+            <div class="nav-item dropdown me-3">
+                <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65em;">
+                        3
+                    </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" style="width: 320px;">
+                    <li class="dropdown-header">
+                        <strong>Notificaciones</strong>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-item-text small">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-calendar text-info"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="fw-semibold">Cita programada</div>
+                                <div class="text-muted">Juan Pérez - 14:30</div>
+                                <div class="text-muted small">Hace 5 minutos</div>
+                            </div>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-center small" href="#">Ver todas las notificaciones</a></li>
+                </ul>
+            </div>
+            
+            <!-- User Profile -->
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                    <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://via.placeholder.com/32x32/007bff/ffffff?text={{ user.first_name|first|upper }}{% endif %}" 
+                         class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                    <span class="d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li class="dropdown-header">
+                        <strong>{{ user.get_full_name|default:user.username }}</strong><br>
+                        <small class="text-muted">{{ user.get_role_display }}</small>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                        <i class="fas fa-user me-2"></i>Mi Perfil
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'accounts:settings' %}">
+                        <i class="fas fa-cog me-2"></i>Configuración
+                    </a></li>
+                    {% if user.is_administrative_staff %}
+                    <li><a class="dropdown-item" href="{% url 'admin:index' %}">
+                        <i class="fas fa-tools me-2"></i>Administración
+                    </a></li>
+                    {% endif %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

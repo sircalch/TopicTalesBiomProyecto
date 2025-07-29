@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Crear Prescripción - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:consultation_detail' consultation.id %}">Consulta</a></li>
+<li class="breadcrumb-item active">Prescripción</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-prescription me-2"></i>Crear Nueva Prescripción
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Patient Info -->
+                <div class="alert alert-info mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <strong>Paciente:</strong> {{ consultation.patient.get_full_name }}<br>
+                            <strong>Consulta:</strong> {{ consultation.consultation_date|date:"d/m/Y H:i" }}<br>
+                            <strong>Médico:</strong> Dr. {{ consultation.doctor.get_full_name }}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <small class="text-muted">{{ consultation.patient.patient_id }}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Medication Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-pills me-2"></i>Información del Medicamento
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.medication_name.id_for_label }}" class="form-label">Nombre del Medicamento *</label>
+                            {{ form.medication_name }}
+                            {% if form.medication_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.medication_name.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Nombre comercial del medicamento</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.generic_name.id_for_label }}" class="form-label">Nombre Genérico</label>
+                            {{ form.generic_name }}
+                            {% if form.generic_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.generic_name.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Nombre genérico o principio activo</small>
+                        </div>
+                        
+                        <div class="col-md-4 mt-3">
+                            <label for="{{ form.dosage.id_for_label }}" class="form-label">Dosis *</label>
+                            {{ form.dosage }}
+                            {% if form.dosage.errors %}
+                                <div class="invalid-feedback d-block">{{ form.dosage.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ej: 500mg, 10ml, 1 tableta</small>
+                        </div>
+                        
+                        <div class="col-md-4 mt-3">
+                            <label for="{{ form.frequency.id_for_label }}" class="form-label">Frecuencia *</label>
+                            {{ form.frequency }}
+                            {% if form.frequency.errors %}
+                                <div class="invalid-feedback d-block">{{ form.frequency.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ej: Cada 8 horas, 2 veces al día</small>
+                        </div>
+                        
+                        <div class="col-md-4 mt-3">
+                            <label for="{{ form.route.id_for_label }}" class="form-label">Vía de Administración *</label>
+                            {{ form.route }}
+                            {% if form.route.errors %}
+                                <div class="invalid-feedback d-block">{{ form.route.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Duration and Quantity -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-calendar-days me-2"></i>Duración y Cantidad
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.duration.id_for_label }}" class="form-label">Duración del Tratamiento *</label>
+                            {{ form.duration }}
+                            {% if form.duration.errors %}
+                                <div class="invalid-feedback d-block">{{ form.duration.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ej: 7 días, 2 semanas, 1 mes</small>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.quantity.id_for_label }}" class="form-label">Cantidad Total</label>
+                            {{ form.quantity }}
+                            {% if form.quantity.errors %}
+                                <div class="invalid-feedback d-block">{{ form.quantity.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Cantidad total a dispensar</small>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.refills.id_for_label }}" class="form-label">Reposiciones</label>
+                            {{ form.refills }}
+                            {% if form.refills.errors %}
+                                <div class="invalid-feedback d-block">{{ form.refills.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Número de reposiciones permitidas</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Dates -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-calendar me-2"></i>Fechas de Tratamiento
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.start_date.id_for_label }}" class="form-label">Fecha de Inicio</label>
+                            {{ form.start_date }}
+                            {% if form.start_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.start_date.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha de inicio del tratamiento</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.end_date.id_for_label }}" class="form-label">Fecha de Fin</label>
+                            {{ form.end_date }}
+                            {% if form.end_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.end_date.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha estimada de fin del tratamiento</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Instructions -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-file-alt me-2"></i>Instrucciones
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.instructions.id_for_label }}" class="form-label">Instrucciones de Uso para el Paciente *</label>
+                            {{ form.instructions }}
+                            {% if form.instructions.errors %}
+                                <div class="invalid-feedback d-block">{{ form.instructions.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Instrucciones claras y específicas para el paciente</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.special_instructions.id_for_label }}" class="form-label">Instrucciones Especiales</label>
+                            {{ form.special_instructions }}
+                            {% if form.special_instructions.errors %}
+                                <div class="invalid-feedback d-block">{{ form.special_instructions.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Precauciones especiales, interacciones, efectos secundarios</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'medical_records:consultation_detail' consultation.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-prescription me-1"></i>Crear Prescripción
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Common Medications -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-capsules me-2"></i>Medicamentos Comunes
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="medicationsAccordion">
+                    <!-- Antibiotics -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="antibioticsHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#antibioticsCollapse">
+                                Antibióticos
+                            </button>
+                        </h2>
+                        <div id="antibioticsCollapse" class="accordion-collapse collapse" data-bs-parent="#medicationsAccordion">
+                            <div class="accordion-body small">
+                                <div class="list-group list-group-flush">
+                                    <button type="button" class="list-group-item list-group-item-action med-preset" 
+                                            data-name="Amoxicilina" data-generic="Amoxicilina" data-dosage="500mg" data-frequency="Cada 8 horas" data-duration="7 días">
+                                        <strong>Amoxicilina</strong><br>
+                                        <small class="text-muted">500mg c/8h x 7 días</small>
+                                    </button>
+                                    <button type="button" class="list-group-item list-group-item-action med-preset" 
+                                            data-name="Azitromicina" data-generic="Azitromicina" data-dosage="500mg" data-frequency="Una vez al día" data-duration="3 días">
+                                        <strong>Azitromicina</strong><br>
+                                        <small class="text-muted">500mg c/24h x 3 días</small>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analgesics -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="analgesicsHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#analgesicsCollapse">
+                                Analgésicos
+                            </button>
+                        </h2>
+                        <div id="analgesicsCollapse" class="accordion-collapse collapse" data-bs-parent="#medicationsAccordion">
+                            <div class="accordion-body small">
+                                <div class="list-group list-group-flush">
+                                    <button type="button" class="list-group-item list-group-item-action med-preset" 
+                                            data-name="Paracetamol" data-generic="Acetaminofén" data-dosage="500mg" data-frequency="Cada 6-8 horas" data-duration="Según necesidad">
+                                        <strong>Paracetamol</strong><br>
+                                        <small class="text-muted">500mg c/6-8h PRN</small>
+                                    </button>
+                                    <button type="button" class="list-group-item list-group-item-action med-preset" 
+                                            data-name="Ibuprofeno" data-generic="Ibuprofeno" data-dosage="400mg" data-frequency="Cada 8 horas" data-duration="5-7 días">
+                                        <strong>Ibuprofeno</strong><br>
+                                        <small class="text-muted">400mg c/8h x 5-7 días</small>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Antihypertensives -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="antihypertensivesHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#antihypertensivesCollapse">
+                                Antihipertensivos
+                            </button>
+                        </h2>
+                        <div id="antihypertensivesCollapse" class="accordion-collapse collapse" data-bs-parent="#medicationsAccordion">
+                            <div class="accordion-body small">
+                                <div class="list-group list-group-flush">
+                                    <button type="button" class="list-group-item list-group-item-action med-preset" 
+                                            data-name="Losartán" data-generic="Losartán potásico" data-dosage="50mg" data-frequency="Una vez al día" data-duration="Uso continuo">
+                                        <strong>Losartán</strong><br>
+                                        <small class="text-muted">50mg c/24h continuo</small>
+                                    </button>
+                                    <button type="button" class="list-group-item list-group-item-action med-preset" 
+                                            data-name="Amlodipino" data-generic="Amlodipino" data-dosage="5mg" data-frequency="Una vez al día" data-duration="Uso continuo">
+                                        <strong>Amlodipino</strong><br>
+                                        <small class="text-muted">5mg c/24h continuo</small>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prescription Guidelines -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Guías de Prescripción
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Verifica alergias del paciente antes de prescribir
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Incluye instrucciones claras de administración
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Especifica duración exacta del tratamiento
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Considera interacciones medicamentosas
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Ajusta dosis según peso y edad del paciente
+                    </li>
+                </ul>
+                
+                <div class="alert alert-warning small mt-3">
+                    <strong>Recordatorio:</strong> Siempre revisa el historial médico del paciente y las contraindicaciones antes de prescribir.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Medication presets
+    document.querySelectorAll('.med-preset').forEach(button => {
+        button.addEventListener('click', function() {
+            const name = this.dataset.name;
+            const generic = this.dataset.generic;
+            const dosage = this.dataset.dosage;
+            const frequency = this.dataset.frequency;
+            const duration = this.dataset.duration;
+            
+            // Fill form fields
+            document.getElementById('{{ form.medication_name.id_for_label }}').value = name;
+            if (generic) {
+                document.getElementById('{{ form.generic_name.id_for_label }}').value = generic;
+            }
+            document.getElementById('{{ form.dosage.id_for_label }}').value = dosage;
+            document.getElementById('{{ form.frequency.id_for_label }}').value = frequency;
+            document.getElementById('{{ form.duration.id_for_label }}').value = duration;
+            
+            // Set default route to oral
+            document.getElementById('{{ form.route.id_for_label }}').value = 'oral';
+            
+            // Generate basic instructions
+            const instructions = `Tomar ${dosage} ${frequency.toLowerCase()}. ${duration.includes('continuo') ? 'No suspenda sin consultar al médico.' : 'Completar todo el tratamiento.'}`;
+            document.getElementById('{{ form.instructions.id_for_label }}').value = instructions;
+            
+            // Set start date to today
+            const startDateField = document.getElementById('{{ form.start_date.id_for_label }}');
+            if (!startDateField.value) {
+                const today = new Date().toISOString().split('T')[0];
+                startDateField.value = today;
+            }
+            
+            // Calculate end date if duration is specified
+            const endDateField = document.getElementById('{{ form.end_date.id_for_label }}');
+            if (duration.includes('días') && !endDateField.value) {
+                const days = parseInt(duration.match(/(\d+)\s*días/)[1]);
+                const endDate = new Date();
+                endDate.setDate(endDate.getDate() + days);
+                endDateField.value = endDate.toISOString().split('T')[0];
+            }
+            
+            // Collapse accordion
+            const collapse = this.closest('.accordion-collapse');
+            if (collapse) {
+                bootstrap.Collapse.getInstance(collapse).hide();
+            }
+        });
+    });
+    
+    // Auto-calculate end date when start date and duration change
+    const startDateField = document.getElementById('{{ form.start_date.id_for_label }}');
+    const durationField = document.getElementById('{{ form.duration.id_for_label }}');
+    const endDateField = document.getElementById('{{ form.end_date.id_for_label }}');
+    
+    function calculateEndDate() {
+        const startDate = startDateField.value;
+        const duration = durationField.value;
+        
+        if (startDate && duration) {
+            const daysMatch = duration.match(/(\d+)\s*días?/i);
+            const weeksMatch = duration.match(/(\d+)\s*semanas?/i);
+            const monthsMatch = duration.match(/(\d+)\s*mes(?:es)?/i);
+            
+            let days = 0;
+            if (daysMatch) {
+                days = parseInt(daysMatch[1]);
+            } else if (weeksMatch) {
+                days = parseInt(weeksMatch[1]) * 7;
+            } else if (monthsMatch) {
+                days = parseInt(monthsMatch[1]) * 30;
+            }
+            
+            if (days > 0) {
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + days);
+                endDateField.value = endDate.toISOString().split('T')[0];
+            }
+        }
+    }
+    
+    startDateField.addEventListener('change', calculateEndDate);
+    durationField.addEventListener('blur', calculateEndDate);
+    
+    // Generate instructions template
+    function generateInstructions() {
+        const medication = document.getElementById('{{ form.medication_name.id_for_label }}').value;
+        const dosage = document.getElementById('{{ form.dosage.id_for_label }}').value;
+        const frequency = document.getElementById('{{ form.frequency.id_for_label }}').value;
+        const duration = document.getElementById('{{ form.duration.id_for_label }}').value;
+        const route = document.getElementById('{{ form.route.id_for_label }}').value;
+        
+        if (medication && dosage && frequency) {
+            let instructions = '';
+            
+            if (route === 'oral') {
+                instructions = `Tomar ${dosage} ${frequency.toLowerCase()}`;
+            } else if (route === 'topical') {
+                instructions = `Aplicar ${dosage} ${frequency.toLowerCase()}`;
+            } else if (route === 'injection') {
+                instructions = `Administrar ${dosage} ${frequency.toLowerCase()}`;
+            } else {
+                instructions = `Usar ${dosage} ${frequency.toLowerCase()}`;
+            }
+            
+            if (duration) {
+                instructions += ` durante ${duration.toLowerCase()}`;
+            }
+            
+            instructions += '. Completar todo el tratamiento según indicaciones médicas.';
+            
+            const instructionsField = document.getElementById('{{ form.instructions.id_for_label }}');
+            if (!instructionsField.value) {
+                instructionsField.value = instructions;
+            }
+        }
+    }
+    
+    // Auto-generate instructions when key fields change
+    ['{{ form.medication_name.id_for_label }}', '{{ form.dosage.id_for_label }}', '{{ form.frequency.id_for_label }}', '{{ form.route.id_for_label }}'].forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', generateInstructions);
+        }
+    });
+});
+</script>
+{% endblock %}

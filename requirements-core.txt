@@ -1,0 +1,37 @@
+# TopicTales Biomédica - Core Requirements
+# Essential dependencies for the Django medical management system
+
+# Core Django Framework
+Django==4.2.16
+djangorestframework==3.14.0
+
+# Database Support
+psycopg2-binary==2.9.7
+
+# Forms and UI Components
+django-crispy-forms==2.0
+crispy-bootstrap5==0.7
+
+# Configuration Management
+python-decouple==3.8
+
+# CORS Support for API
+django-cors-headers==4.3.1
+
+# Django Extensions
+django-extensions==3.2.3
+
+# Static Files (Production)
+whitenoise==6.6.0
+
+# Image Processing
+Pillow==10.0.1
+
+# Development Tools
+ipython==8.17.2
+
+# Time Zone Support
+pytz==2023.3
+
+# Date Utilities
+python-dateutil==2.8.2

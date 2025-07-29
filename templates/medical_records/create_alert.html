@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Crear Alerta Médica - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:patient_records' patient.id %}">{{ patient.get_full_name }}</a></li>
+<li class="breadcrumb-item active">Nueva Alerta</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Crear Alerta Médica
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Patient Info -->
+                <div class="alert alert-info mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <strong>Paciente:</strong> {{ patient.get_full_name }}<br>
+                            <strong>ID:</strong> {{ patient.patient_id }}<br>
+                            <strong>Edad:</strong> {{ patient.age }} años
+                        </div>
+                        <div class="col-md-4 text-end">
+                            {% if patient.profile_picture %}
+                                <img src="{{ patient.profile_picture.url }}" alt="{{ patient.get_full_name }}" class="rounded-circle" width="60" height="60">
+                            {% else %}
+                                <i class="fas fa-user-circle fa-3x text-muted"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Alert Type and Priority -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-flag me-2"></i>Clasificación de la Alerta
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.alert_type.id_for_label }}" class="form-label">Tipo de Alerta *</label>
+                            {{ form.alert_type }}
+                            {% if form.alert_type.errors %}
+                                <div class="invalid-feedback d-block">{{ form.alert_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.priority.id_for_label }}" class="form-label">Prioridad *</label>
+                            {{ form.priority }}
+                            {% if form.priority.errors %}
+                                <div class="invalid-feedback d-block">{{ form.priority.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Alert Details -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Detalles de la Alerta
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Título de la Alerta *</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Título conciso que describa la alerta</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Descripción Detallada *</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Descripción completa de la condición o situación médica</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.recommendations.id_for_label }}" class="form-label">Recomendaciones y Precauciones</label>
+                            {{ form.recommendations }}
+                            {% if form.recommendations.errors %}
+                                <div class="invalid-feedback d-block">{{ form.recommendations.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Instrucciones específicas para el personal médico</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Status and Dates -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-calendar me-2"></i>Estado y Fechas
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Estado de la Alerta *</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <div class="invalid-feedback d-block">{{ form.status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.start_date.id_for_label }}" class="form-label">Fecha de Inicio</label>
+                            {{ form.start_date }}
+                            {% if form.start_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.start_date.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha desde cuando aplica la alerta</small>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.end_date.id_for_label }}" class="form-label">Fecha de Vencimiento</label>
+                            {{ form.end_date }}
+                            {% if form.end_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.end_date.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha límite de la alerta (opcional)</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Settings -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-cog me-2"></i>Configuración Adicional
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.requires_acknowledgment }}
+                                <label class="form-check-label" for="{{ form.requires_acknowledgment.id_for_label }}">
+                                    Requiere Confirmación de Lectura
+                                </label>
+                                <div class="form-text">
+                                    <small class="text-muted">El personal debe confirmar que leyó la alerta</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.show_on_dashboard }}
+                                <label class="form-check-label" for="{{ form.show_on_dashboard.id_for_label }}">
+                                    Mostrar en Panel Principal
+                                </label>
+                                <div class="form-text">
+                                    <small class="text-muted">La alerta aparecerá destacada en el dashboard</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.notify_roles.id_for_label }}" class="form-label">Notificar a Roles Específicos</label>
+                            {{ form.notify_roles }}
+                            {% if form.notify_roles.errors %}
+                                <div class="invalid-feedback d-block">{{ form.notify_roles.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Selecciona qué roles deben ser notificados de esta alerta</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'medical_records:patient_records' patient.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Crear Alerta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Alert Examples -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Ejemplos de Alertas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="alertExamplesAccordion">
+                    <!-- Critical Alerts -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="criticalHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#criticalCollapse">
+                                <span class="badge bg-danger me-2">Crítica</span> Alertas Críticas
+                            </button>
+                        </h2>
+                        <div id="criticalCollapse" class="accordion-collapse collapse" data-bs-parent="#alertExamplesAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-start alert-preset" 
+                                                data-type="allergy" data-priority="critical" 
+                                                data-title="Alergia Severa a Penicilina" 
+                                                data-description="Paciente presenta antecedentes de reacción anafiláctica a penicilina y derivados.">
+                                            • Alergia severa a medicamentos
+                                        </button>
+                                    </li>
+                                    <li class="mb-2">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-start alert-preset" 
+                                                data-type="medical_condition" data-priority="critical" 
+                                                data-title="Riesgo de Hemorragia" 
+                                                data-description="Paciente en tratamiento anticoagulante con alto riesgo de sangrado.">
+                                            • Riesgo de hemorragia
+                                        </button>
+                                    </li>
+                                    <li class="mb-2">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-start alert-preset" 
+                                                data-type="medical_condition" data-priority="critical" 
+                                                data-title="Diabetes Descompensada" 
+                                                data-description="Control glucémico inestable, requiere monitoreo constante.">
+                                            • Diabetes descompensada
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- High Priority Alerts -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="highHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#highCollapse">
+                                <span class="badge bg-warning me-2">Alta</span> Alertas de Alta Prioridad
+                            </button>
+                        </h2>
+                        <div id="highCollapse" class="accordion-collapse collapse" data-bs-parent="#alertExamplesAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-start alert-preset" 
+                                                data-type="drug_interaction" data-priority="high" 
+                                                data-title="Interacción Medicamentosa" 
+                                                data-description="Posible interacción entre warfarina y antibióticos. Ajustar dosis según INR.">
+                                            • Interacciones medicamentosas
+                                        </button>
+                                    </li>
+                                    <li class="mb-2">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-start alert-preset" 
+                                                data-type="medical_condition" data-priority="high" 
+                                                data-title="Insuficiencia Renal" 
+                                                data-description="Función renal disminuida. Ajustar dosis de medicamentos nefrotóxicos.">
+                                            • Insuficiencia renal
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medium Priority Alerts -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="mediumHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mediumCollapse">
+                                <span class="badge bg-primary me-2">Media</span> Alertas de Prioridad Media
+                            </button>
+                        </h2>
+                        <div id="mediumCollapse" class="accordion-collapse collapse" data-bs-parent="#alertExamplesAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-start alert-preset" 
+                                                data-type="preventive_care" data-priority="medium" 
+                                                data-title="Vacunación Pendiente" 
+                                                data-description="Paciente requiere actualización de esquema de vacunación.">
+                                            • Vacunación pendiente
+                                        </button>
+                                    </li>
+                                    <li class="mb-2">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-start alert-preset" 
+                                                data-type="follow_up" data-priority="medium" 
+                                                data-title="Seguimiento de Hipertensión" 
+                                                data-description="Control de presión arterial cada 3 meses.">
+                                            • Seguimiento de hipertensión
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Guidelines -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Guías para Crear Alertas
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Usa títulos claros y descriptivos
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Clasifica correctamente la prioridad
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Incluye recomendaciones específicas
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Establece fechas de vigencia cuando aplique
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Notifica a los roles apropiados
+                    </li>
+                </ul>
+                
+                <div class="alert alert-info small mt-3">
+                    <strong>Importante:</strong> Las alertas críticas se mostrarán inmediatamente en todas las pantallas del paciente.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Alert presets
+    document.querySelectorAll('.alert-preset').forEach(button => {
+        button.addEventListener('click', function() {
+            const type = this.dataset.type;
+            const priority = this.dataset.priority;
+            const title = this.dataset.title;
+            const description = this.dataset.description;
+            
+            // Fill form fields
+            document.getElementById('{{ form.alert_type.id_for_label }}').value = type;
+            document.getElementById('{{ form.priority.id_for_label }}').value = priority;
+            document.getElementById('{{ form.title.id_for_label }}').value = title;
+            document.getElementById('{{ form.description.id_for_label }}').value = description;
+            
+            // Set status to active by default
+            document.getElementById('{{ form.status.id_for_label }}').value = 'active';
+            
+            // Set start date to today
+            const startDateField = document.getElementById('{{ form.start_date.id_for_label }}');
+            if (!startDateField.value) {
+                const today = new Date().toISOString().split('T')[0];
+                startDateField.value = today;
+            }
+            
+            // Configure based on priority
+            if (priority === 'critical') {
+                document.getElementById('{{ form.requires_acknowledgment.id_for_label }}').checked = true;
+                document.getElementById('{{ form.show_on_dashboard.id_for_label }}').checked = true;
+            }
+            
+            // Collapse accordion
+            const collapse = this.closest('.accordion-collapse');
+            if (collapse) {
+                bootstrap.Collapse.getInstance(collapse).hide();
+            }
+        });
+    });
+    
+    // Auto-suggestions based on alert type
+    const alertTypeField = document.getElementById('{{ form.alert_type.id_for_label }}');
+    const priorityField = document.getElementById('{{ form.priority.id_for_label }}');
+    const requiresAckField = document.getElementById('{{ form.requires_acknowledgment.id_for_label }}');
+    const showDashboardField = document.getElementById('{{ form.show_on_dashboard.id_for_label }}');
+    
+    alertTypeField.addEventListener('change', function() {
+        const alertType = this.value;
+        
+        // Auto-suggest priority based on alert type
+        if (['allergy', 'drug_interaction'].includes(alertType)) {
+            if (!priorityField.value) {
+                priorityField.value = 'critical';
+                requiresAckField.checked = true;
+                showDashboardField.checked = true;
+            }
+        } else if (['medical_condition', 'safety_concern'].includes(alertType)) {
+            if (!priorityField.value) {
+                priorityField.value = 'high';
+                requiresAckField.checked = true;
+            }
+        } else if (['follow_up', 'preventive_care'].includes(alertType)) {
+            if (!priorityField.value) {
+                priorityField.value = 'medium';
+            }
+        }
+    });
+    
+    // Priority change effects
+    priorityField.addEventListener('change', function() {
+        const priority = this.value;
+        
+        if (priority === 'critical') {
+            requiresAckField.checked = true;
+            showDashboardField.checked = true;
+        } else if (priority === 'high') {
+            requiresAckField.checked = true;
+        }
+    });
+    
+    // End date validation
+    const startDateField = document.getElementById('{{ form.start_date.id_for_label }}');
+    const endDateField = document.getElementById('{{ form.end_date.id_for_label }}');
+    
+    function validateDates() {
+        const startDate = new Date(startDateField.value);
+        const endDate = new Date(endDateField.value);
+        
+        if (startDate && endDate && endDate <= startDate) {
+            endDateField.classList.add('is-invalid');
+            let feedback = endDateField.parentNode.querySelector('.invalid-feedback');
+            if (!feedback) {
+                feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                endDateField.parentNode.appendChild(feedback);
+            }
+            feedback.textContent = 'La fecha de vencimiento debe ser posterior a la fecha de inicio';
+        } else {
+            endDateField.classList.remove('is-invalid');
+            const feedback = endDateField.parentNode.querySelector('.invalid-feedback');
+            if (feedback && !feedback.textContent.includes('campo es obligatorio')) {
+                feedback.remove();
+            }
+        }
+    }
+    
+    startDateField.addEventListener('change', validateDates);
+    endDateField.addEventListener('change', validateDates);
+});
+</script>
+{% endblock %}

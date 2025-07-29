@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Editar Cita - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'appointments:calendar' %}">Calendario</a></li>
+<li class="breadcrumb-item"><a href="{% url 'appointments:detail' appointment.id %}">Cita</a></li>
+<li class="breadcrumb-item active">Editar</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Cita: {{ appointment.patient.get_full_name }}
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'appointments:detail' appointment.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                        <a href="{% url 'appointments:calendar' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar me-1"></i>Calendario
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Current Appointment Info -->
+                <div class="alert alert-info mb-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Fecha Actual:</strong><br>
+                            {{ appointment.start_datetime|date:"d/m/Y" }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Hora Actual:</strong><br>
+                            {{ appointment.start_datetime|time:"H:i" }} - {{ appointment.end_datetime|time:"H:i" }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Estado:</strong><br>
+                            {{ appointment.get_status_display }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Tipo:</strong><br>
+                            {{ appointment.appointment_type.name }}
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Patient and Doctor Selection -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-users me-2"></i>Información de la Cita
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.patient.id_for_label }}" class="form-label">Paciente *</label>
+                            {{ form.patient }}
+                            {% if form.patient.errors %}
+                                <div class="invalid-feedback d-block">{{ form.patient.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.doctor.id_for_label }}" class="form-label">Médico *</label>
+                            {{ form.doctor }}
+                            {% if form.doctor.errors %}
+                                <div class="invalid-feedback d-block">{{ form.doctor.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.appointment_type.id_for_label }}" class="form-label">Tipo de Cita *</label>
+                            {{ form.appointment_type }}
+                            {% if form.appointment_type.errors %}
+                                <div class="invalid-feedback d-block">{{ form.appointment_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.priority.id_for_label }}" class="form-label">Prioridad</label>
+                            {{ form.priority }}
+                            {% if form.priority.errors %}
+                                <div class="invalid-feedback d-block">{{ form.priority.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Date and Time -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-clock me-2"></i>Nueva Programación
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="{{ form.start_datetime.id_for_label }}" class="form-label">Nueva Fecha y Hora *</label>
+                            {{ form.start_datetime }}
+                            {% if form.start_datetime.errors %}
+                                <div class="invalid-feedback d-block">{{ form.start_datetime.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                Al cambiar la fecha/hora, se verificará la disponibilidad del médico
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Available Slots Display -->
+                    <div class="row mb-4" id="available-slots-section" style="display: none;">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-calendar-check me-2"></i>Horarios Disponibles
+                            </h6>
+                            <div id="available-slots-container">
+                                <!-- Slots loaded via AJAX -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reason and Notes -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-file-medical me-2"></i>Detalles de la Consulta
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.reason.id_for_label }}" class="form-label">Motivo de la Consulta *</label>
+                            {{ form.reason }}
+                            {% if form.reason.errors %}
+                                <div class="invalid-feedback d-block">{{ form.reason.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">Notas Adicionales</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">{{ form.notes.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-phone me-2"></i>Información de Contacto
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.patient_phone.id_for_label }}" class="form-label">Teléfono del Paciente</label>
+                            {{ form.patient_phone }}
+                            {% if form.patient_phone.errors %}
+                                <div class="invalid-feedback d-block">{{ form.patient_phone.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.patient_email.id_for_label }}" class="form-label">Email del Paciente</label>
+                            {{ form.patient_email }}
+                            {% if form.patient_email.errors %}
+                                <div class="invalid-feedback d-block">{{ form.patient_email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'appointments:detail' appointment.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const doctorSelect = document.getElementById('id_doctor');
+    const appointmentTypeSelect = document.getElementById('id_appointment_type');
+    const startDatetimeInput = document.getElementById('id_start_datetime');
+    const availableSlotsSection = document.getElementById('available-slots-section');
+    const availableSlotsContainer = document.getElementById('available-slots-container');
+    
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Load available slots when doctor, date, and type are selected
+    function loadAvailableSlots() {
+        const doctorId = doctorSelect.value;
+        const datetime = startDatetimeInput.value;
+        const appointmentTypeId = appointmentTypeSelect.value;
+        
+        if (doctorId && datetime && appointmentTypeId) {
+            const date = datetime.split('T')[0];
+            
+            fetch(`{% url "appointments:available_slots" %}?doctor_id=${doctorId}&date=${date}&appointment_type_id=${appointmentTypeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.slots && data.slots.length > 0) {
+                        displayAvailableSlots(data.slots, date);
+                        availableSlotsSection.style.display = 'block';
+                    } else {
+                        availableSlotsSection.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading available slots:', error);
+                    availableSlotsSection.style.display = 'none';
+                });
+        } else {
+            availableSlotsSection.style.display = 'none';
+        }
+    }
+    
+    // Display available time slots
+    function displayAvailableSlots(slots, selectedDate) {
+        availableSlotsContainer.innerHTML = '';
+        
+        if (slots.length === 0) {
+            availableSlotsContainer.innerHTML = '<p class="text-muted">No hay horarios disponibles para esta fecha.</p>';
+            return;
+        }
+        
+        const slotsHtml = slots.map(slot => `
+            <button type="button" class="btn btn-outline-primary btn-sm me-2 mb-2 slot-btn" 
+                    data-datetime="${selectedDate}T${slot.time}">
+                ${slot.time}
+            </button>
+        `).join('');
+        
+        availableSlotsContainer.innerHTML = `
+            <p class="mb-2"><strong>Horarios disponibles:</strong></p>
+            <div class="slots-grid">${slotsHtml}</div>
+        `;
+        
+        // Add click handlers to slot buttons
+        availableSlotsContainer.querySelectorAll('.slot-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                startDatetimeInput.value = this.dataset.datetime;
+                
+                // Highlight selected slot
+                availableSlotsContainer.querySelectorAll('.slot-btn').forEach(b => {
+                    b.classList.replace('btn-primary', 'btn-outline-primary');
+                });
+                this.classList.replace('btn-outline-primary', 'btn-primary');
+            });
+        });
+    }
+    
+    // Load slots when relevant fields change
+    [doctorSelect, startDatetimeInput, appointmentTypeSelect].forEach(element => {
+        element.addEventListener('change', loadAvailableSlots);
+    });
+    
+    // Confirmation before making changes
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const currentDatetime = '{{ appointment.start_datetime|date:"d/m/Y H:i" }}';
+        const newDatetime = new Date(startDatetimeInput.value).toLocaleString('es-MX');
+        
+        if (currentDatetime !== newDatetime) {
+            if (!confirm(`¿Confirmas el cambio de horario?\n\nAnterior: ${currentDatetime}\nNuevo: ${newDatetime}`)) {
+                e.preventDefault();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

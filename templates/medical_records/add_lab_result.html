@@ -1,0 +1,442 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Agregar Resultado de Laboratorio - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:consultation_detail' consultation.id %}">Consulta</a></li>
+<li class="breadcrumb-item active">Resultado de Laboratorio</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-flask me-2"></i>Registrar Resultado de Laboratorio
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Patient Info -->
+                <div class="alert alert-info mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <strong>Paciente:</strong> {{ consultation.patient.get_full_name }}<br>
+                            <strong>Consulta:</strong> {{ consultation.consultation_date|date:"d/m/Y H:i" }}<br>
+                            <strong>Médico:</strong> Dr. {{ consultation.doctor.get_full_name }}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <small class="text-muted">{{ consultation.patient.patient_id }}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Test Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-vial me-2"></i>Información del Examen
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.test_name.id_for_label }}" class="form-label">Nombre del Examen *</label>
+                            {{ form.test_name }}
+                            {% if form.test_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.test_name.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ej: Hemograma completo, Glucosa en ayunas</small>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.test_code.id_for_label }}" class="form-label">Código del Examen</label>
+                            {{ form.test_code }}
+                            {% if form.test_code.errors %}
+                                <div class="invalid-feedback d-block">{{ form.test_code.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Código interno del laboratorio</small>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.test_category.id_for_label }}" class="form-label">Categoría *</label>
+                            {{ form.test_category }}
+                            {% if form.test_category.errors %}
+                                <div class="invalid-feedback d-block">{{ form.test_category.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Result Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-chart-line me-2"></i>Resultado
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.result_value.id_for_label }}" class="form-label">Valor del Resultado *</label>
+                            {{ form.result_value }}
+                            {% if form.result_value.errors %}
+                                <div class="invalid-feedback d-block">{{ form.result_value.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Valor numérico o cualitativo</small>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.units.id_for_label }}" class="form-label">Unidades</label>
+                            {{ form.units }}
+                            {% if form.units.errors %}
+                                <div class="invalid-feedback d-block">{{ form.units.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ej: mg/dL, mmol/L, %</small>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Estado del Resultado *</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <div class="invalid-feedback d-block">{{ form.status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.reference_range.id_for_label }}" class="form-label">Rango de Referencia</label>
+                            {{ form.reference_range }}
+                            {% if form.reference_range.errors %}
+                                <div class="invalid-feedback d-block">{{ form.reference_range.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Ej: 70-100 mg/dL, < 5.7%, Negativo</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Dates -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-calendar me-2"></i>Fechas
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.ordered_date.id_for_label }}" class="form-label">Fecha de Orden *</label>
+                            {{ form.ordered_date }}
+                            {% if form.ordered_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.ordered_date.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha en que se ordenó el examen</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.result_date.id_for_label }}" class="form-label">Fecha del Resultado</label>
+                            {{ form.result_date }}
+                            {% if form.result_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.result_date.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha en que se obtuvo el resultado</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Laboratory Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-building me-2"></i>Información del Laboratorio
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.laboratory_name.id_for_label }}" class="form-label">Nombre del Laboratorio</label>
+                            {{ form.laboratory_name }}
+                            {% if form.laboratory_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.laboratory_name.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Laboratorio donde se realizó el examen</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.technician_notes.id_for_label }}" class="form-label">Notas del Técnico</label>
+                            {{ form.technician_notes }}
+                            {% if form.technician_notes.errors %}
+                                <div class="invalid-feedback d-block">{{ form.technician_notes.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Observaciones técnicas del laboratorio</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.doctor_interpretation.id_for_label }}" class="form-label">Interpretación Médica</label>
+                            {{ form.doctor_interpretation }}
+                            {% if form.doctor_interpretation.errors %}
+                                <div class="invalid-feedback d-block">{{ form.doctor_interpretation.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Interpretación clínica del resultado</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'medical_records:consultation_detail' consultation.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-save me-1"></i>Registrar Resultado
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar with Common Tests -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Exámenes Comunes
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="commonTestsAccordion">
+                    <!-- Hematology -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="hematologyHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hematologyCollapse">
+                                Hematología
+                            </button>
+                        </h2>
+                        <div id="hematologyCollapse" class="accordion-collapse collapse" data-bs-parent="#commonTestsAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="Hemograma completo" data-category="hematology" data-units="células/μL">
+                                            Hemograma completo
+                                        </button>
+                                    </li>
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="Hemoglobina" data-category="hematology" data-units="g/dL">
+                                            Hemoglobina
+                                        </button>
+                                    </li>
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="Hematocrito" data-category="hematology" data-units="%">
+                                            Hematocrito
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chemistry -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="chemistryHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chemistryCollapse">
+                                Química Sanguínea
+                            </button>
+                        </h2>
+                        <div id="chemistryCollapse" class="accordion-collapse collapse" data-bs-parent="#commonTestsAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="Glucosa en ayunas" data-category="chemistry" data-units="mg/dL" data-range="70-100">
+                                            Glucosa en ayunas
+                                        </button>
+                                    </li>
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="Creatinina" data-category="chemistry" data-units="mg/dL" data-range="0.6-1.2">
+                                            Creatinina
+                                        </button>
+                                    </li>
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="Colesterol total" data-category="chemistry" data-units="mg/dL" data-range="< 200">
+                                            Colesterol total
+                                        </button>
+                                    </li>
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="Triglicéridos" data-category="chemistry" data-units="mg/dL" data-range="< 150">
+                                            Triglicéridos
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Immunology -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="immunologyHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#immunologyCollapse">
+                                Inmunología
+                            </button>
+                        </h2>
+                        <div id="immunologyCollapse" class="accordion-collapse collapse" data-bs-parent="#commonTestsAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="TSH" data-category="immunology" data-units="mIU/L" data-range="0.4-4.0">
+                                            TSH
+                                        </button>
+                                    </li>
+                                    <li class="mb-1">
+                                        <button type="button" class="btn btn-link btn-sm p-0 test-preset" 
+                                                data-name="HbA1c" data-category="immunology" data-units="%" data-range="< 5.7">
+                                            HbA1c
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Consejos
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Verifica que las unidades sean correctas
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Incluye el rango de referencia del laboratorio
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Marca como anormal si está fuera del rango
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Agrega interpretación clínica cuando sea relevante
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Test presets
+    document.querySelectorAll('.test-preset').forEach(button => {
+        button.addEventListener('click', function() {
+            const name = this.dataset.name;
+            const category = this.dataset.category;
+            const units = this.dataset.units;
+            const range = this.dataset.range;
+            
+            // Fill form fields
+            document.getElementById('{{ form.test_name.id_for_label }}').value = name;
+            document.getElementById('{{ form.test_category.id_for_label }}').value = category;
+            if (units) {
+                document.getElementById('{{ form.units.id_for_label }}').value = units;
+            }
+            if (range) {
+                document.getElementById('{{ form.reference_range.id_for_label }}').value = range;
+            }
+            
+            // Set today's date as ordered date if empty
+            const orderedDateField = document.getElementById('{{ form.ordered_date.id_for_label }}');
+            if (!orderedDateField.value) {
+                const today = new Date().toISOString().split('T')[0];
+                orderedDateField.value = today;
+            }
+            
+            // Collapse the accordion
+            const collapse = this.closest('.accordion-collapse');
+            if (collapse) {
+                bootstrap.Collapse.getInstance(collapse).hide();
+            }
+        });
+    });
+    
+    // Auto-set result date to today when result value is entered
+    const resultValueField = document.getElementById('{{ form.result_value.id_for_label }}');
+    const resultDateField = document.getElementById('{{ form.result_date.id_for_label }}');
+    
+    resultValueField.addEventListener('input', function() {
+        if (this.value && !resultDateField.value) {
+            const today = new Date().toISOString().split('T')[0];
+            resultDateField.value = today;
+        }
+    });
+    
+    // Status auto-suggestion based on result and reference range
+    const statusField = document.getElementById('{{ form.status.id_for_label }}');
+    const referenceRangeField = document.getElementById('{{ form.reference_range.id_for_label }}');
+    
+    function suggestStatus() {
+        const resultValue = resultValueField.value;
+        const referenceRange = referenceRangeField.value;
+        
+        if (resultValue && referenceRange && !statusField.value) {
+            // Simple logic for numeric ranges
+            const numericResult = parseFloat(resultValue);
+            if (!isNaN(numericResult)) {
+                const rangeMatch = referenceRange.match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
+                if (rangeMatch) {
+                    const min = parseFloat(rangeMatch[1]);
+                    const max = parseFloat(rangeMatch[2]);
+                    
+                    if (numericResult >= min && numericResult <= max) {
+                        statusField.value = 'normal';
+                    } else {
+                        statusField.value = 'abnormal';
+                    }
+                }
+            }
+        }
+    }
+    
+    resultValueField.addEventListener('blur', suggestStatus);
+    referenceRangeField.addEventListener('blur', suggestStatus);
+});
+</script>
+{% endblock %}

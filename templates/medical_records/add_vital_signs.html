@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Registrar Signos Vitales - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:consultation_detail' consultation.id %}">Consulta</a></li>
+<li class="breadcrumb-item active">Signos Vitales</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-heartbeat me-2"></i>Registrar Signos Vitales
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Patient Info -->
+                <div class="alert alert-info mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <strong>Paciente:</strong> {{ consultation.patient.get_full_name }}<br>
+                            <strong>Consulta:</strong> {{ consultation.consultation_date|date:"d/m/Y H:i" }}<br>
+                            <strong>Médico:</strong> Dr. {{ consultation.doctor.get_full_name }}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <small class="text-muted">{{ consultation.patient.patient_id }}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Vital Signs -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-heartbeat me-2"></i>Signos Vitales Básicos
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.temperature.id_for_label }}" class="form-label">Temperatura (°C)</label>
+                            <div class="input-group">
+                                {{ form.temperature }}
+                                <span class="input-group-text">°C</span>
+                            </div>
+                            {% if form.temperature.errors %}
+                                <div class="invalid-feedback d-block">{{ form.temperature.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.heart_rate.id_for_label }}" class="form-label">Frecuencia Cardíaca</label>
+                            <div class="input-group">
+                                {{ form.heart_rate }}
+                                <span class="input-group-text">bpm</span>
+                            </div>
+                            {% if form.heart_rate.errors %}
+                                <div class="invalid-feedback d-block">{{ form.heart_rate.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.respiratory_rate.id_for_label }}" class="form-label">Frecuencia Respiratoria</label>
+                            <div class="input-group">
+                                {{ form.respiratory_rate }}
+                                <span class="input-group-text">rpm</span>
+                            </div>
+                            {% if form.respiratory_rate.errors %}
+                                <div class="invalid-feedback d-block">{{ form.respiratory_rate.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="{{ form.oxygen_saturation.id_for_label }}" class="form-label">Saturación O₂</label>
+                            <div class="input-group">
+                                {{ form.oxygen_saturation }}
+                                <span class="input-group-text">%</span>
+                            </div>
+                            {% if form.oxygen_saturation.errors %}
+                                <div class="invalid-feedback d-block">{{ form.oxygen_saturation.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Blood Pressure -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-tint me-2"></i>Presión Arterial
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.blood_pressure_systolic.id_for_label }}" class="form-label">Presión Sistólica</label>
+                            <div class="input-group">
+                                {{ form.blood_pressure_systolic }}
+                                <span class="input-group-text">mmHg</span>
+                            </div>
+                            {% if form.blood_pressure_systolic.errors %}
+                                <div class="invalid-feedback d-block">{{ form.blood_pressure_systolic.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.blood_pressure_diastolic.id_for_label }}" class="form-label">Presión Diastólica</label>
+                            <div class="input-group">
+                                {{ form.blood_pressure_diastolic }}
+                                <span class="input-group-text">mmHg</span>
+                            </div>
+                            {% if form.blood_pressure_diastolic.errors %}
+                                <div class="invalid-feedback d-block">{{ form.blood_pressure_diastolic.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Physical Measurements -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-weight me-2"></i>Medidas Físicas
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.weight.id_for_label }}" class="form-label">Peso</label>
+                            <div class="input-group">
+                                {{ form.weight }}
+                                <span class="input-group-text">kg</span>
+                            </div>
+                            {% if form.weight.errors %}
+                                <div class="invalid-feedback d-block">{{ form.weight.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="{{ form.height.id_for_label }}" class="form-label">Altura</label>
+                            <div class="input-group">
+                                {{ form.height }}
+                                <span class="input-group-text">cm</span>
+                            </div>
+                            {% if form.height.errors %}
+                                <div class="invalid-feedback d-block">{{ form.height.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label">IMC (Calculado)</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="bmi-display" readonly placeholder="Se calcula automáticamente">
+                                <span class="input-group-text">kg/m²</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Measurements -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-flask me-2"></i>Mediciones Adicionales
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.glucose_level.id_for_label }}" class="form-label">Glucosa</label>
+                            <div class="input-group">
+                                {{ form.glucose_level }}
+                                <span class="input-group-text">mg/dL</span>
+                            </div>
+                            {% if form.glucose_level.errors %}
+                                <div class="invalid-feedback d-block">{{ form.glucose_level.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.pain_scale.id_for_label }}" class="form-label">Escala de Dolor (0-10)</label>
+                            <div class="input-group">
+                                {{ form.pain_scale }}
+                                <span class="input-group-text">/10</span>
+                            </div>
+                            {% if form.pain_scale.errors %}
+                                <div class="invalid-feedback d-block">{{ form.pain_scale.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">0 = Sin dolor, 10 = Dolor máximo</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-notes-medical me-2"></i>Observaciones
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">Notas sobre los Signos Vitales</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">{{ form.notes.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Observaciones especiales o contexto relevante</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'medical_records:consultation_detail' consultation.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>Registrar Signos Vitales
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar with Reference Values -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Valores de Referencia
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td><strong>Temperatura</strong></td>
+                                <td>36.0 - 37.5°C</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Frecuencia Cardíaca</strong></td>
+                                <td>60 - 100 bpm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Frecuencia Respiratoria</strong></td>
+                                <td>12 - 20 rpm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Saturación O₂</strong></td>
+                                <td>95 - 100%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Presión Arterial</strong></td>
+                                <td>120/80 mmHg</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Glucosa</strong></td>
+                                <td>70 - 100 mg/dL</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IMC Normal</strong></td>
+                                <td>18.5 - 24.9 kg/m²</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Consejos
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Toma los signos vitales en ambiente tranquilo
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Espera 5 minutos después de actividad física
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Registra valores anormales en las notas
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        El IMC se calcula automáticamente
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const weightInput = document.getElementById('{{ form.weight.id_for_label }}');
+    const heightInput = document.getElementById('{{ form.height.id_for_label }}');
+    const bmiDisplay = document.getElementById('bmi-display');
+    
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Calculate BMI
+    function calculateBMI() {
+        const weight = parseFloat(weightInput.value);
+        const height = parseFloat(heightInput.value);
+        
+        if (weight && height && height > 0) {
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            bmiDisplay.value = bmi.toFixed(2);
+            
+            // Add color coding
+            bmiDisplay.classList.remove('text-success', 'text-warning', 'text-danger');
+            if (bmi < 18.5 || bmi > 24.9) {
+                bmiDisplay.classList.add('text-warning');
+            } else {
+                bmiDisplay.classList.add('text-success');
+            }
+            if (bmi > 30) {
+                bmiDisplay.classList.add('text-danger');
+            }
+        } else {
+            bmiDisplay.value = '';
+        }
+    }
+    
+    // Event listeners for BMI calculation
+    weightInput.addEventListener('input', calculateBMI);
+    heightInput.addEventListener('input', calculateBMI);
+    
+    // Initial calculation if values exist
+    calculateBMI();
+    
+    // Validate blood pressure
+    const systolicInput = document.getElementById('{{ form.blood_pressure_systolic.id_for_label }}');
+    const diastolicInput = document.getElementById('{{ form.blood_pressure_diastolic.id_for_label }}');
+    
+    function validateBloodPressure() {
+        const systolic = parseInt(systolicInput.value);
+        const diastolic = parseInt(diastolicInput.value);
+        
+        if (systolic && diastolic && systolic <= diastolic) {
+            diastolicInput.classList.add('is-invalid');
+            if (!diastolicInput.nextElementSibling || !diastolicInput.nextElementSibling.classList.contains('invalid-feedback')) {
+                const feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                feedback.textContent = 'La presión sistólica debe ser mayor que la diastólica';
+                diastolicInput.parentNode.insertBefore(feedback, diastolicInput.nextSibling);
+            }
+        } else {
+            diastolicInput.classList.remove('is-invalid');
+            const feedback = diastolicInput.parentNode.querySelector('.invalid-feedback');
+            if (feedback && !feedback.textContent.includes('campo es obligatorio')) {
+                feedback.remove();
+            }
+        }
+    }
+    
+    systolicInput.addEventListener('input', validateBloodPressure);
+    diastolicInput.addEventListener('input', validateBloodPressure);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Nueva Consulta - {{ patient.get_full_name }} - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:patient_records' patient.id %}">{{ patient.get_full_name }}</a></li>
+<li class="breadcrumb-item active">Nueva Consulta</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-stethoscope me-2"></i>Registrar Nueva Consulta Médica
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Información Básica
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.consultation_date.id_for_label }}" class="form-label">Fecha y Hora de la Consulta *</label>
+                            {{ form.consultation_date }}
+                            {% if form.consultation_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.consultation_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.consultation_type.id_for_label }}" class="form-label">Tipo de Consulta *</label>
+                            {{ form.consultation_type }}
+                            {% if form.consultation_type.errors %}
+                                <div class="invalid-feedback d-block">{{ form.consultation_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Chief Complaint -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-comments me-2"></i>Motivo de la Consulta
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.chief_complaint.id_for_label }}" class="form-label">Motivo Principal de la Consulta *</label>
+                            {{ form.chief_complaint }}
+                            {% if form.chief_complaint.errors %}
+                                <div class="invalid-feedback d-block">{{ form.chief_complaint.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">¿Por qué el paciente acude a consulta hoy?</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.history_present_illness.id_for_label }}" class="form-label">Historia de la Enfermedad Actual</label>
+                            {{ form.history_present_illness }}
+                            {% if form.history_present_illness.errors %}
+                                <div class="invalid-feedback d-block">{{ form.history_present_illness.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Evolución detallada de los síntomas actuales</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Physical Examination -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-user-md me-2"></i>Exploración Física
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.vital_signs_notes.id_for_label }}" class="form-label">Signos Vitales y Observaciones</label>
+                            {{ form.vital_signs_notes }}
+                            {% if form.vital_signs_notes.errors %}
+                                <div class="invalid-feedback d-block">{{ form.vital_signs_notes.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Registro de signos vitales y observaciones generales</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.physical_examination.id_for_label }}" class="form-label">Hallazgos de la Exploración Física</label>
+                            {{ form.physical_examination }}
+                            {% if form.physical_examination.errors %}
+                                <div class="invalid-feedback d-block">{{ form.physical_examination.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Resultados detallados de la exploración física</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Assessment and Diagnosis -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-diagnoses me-2"></i>Evaluación y Diagnóstico
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.assessment.id_for_label }}" class="form-label">Evaluación Clínica</label>
+                            {{ form.assessment }}
+                            {% if form.assessment.errors %}
+                                <div class="invalid-feedback d-block">{{ form.assessment.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Evaluación e impresión clínica del caso</small>
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.diagnosis_primary.id_for_label }}" class="form-label">Diagnóstico Principal</label>
+                            {{ form.diagnosis_primary }}
+                            {% if form.diagnosis_primary.errors %}
+                                <div class="invalid-feedback d-block">{{ form.diagnosis_primary.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.diagnosis_secondary.id_for_label }}" class="form-label">Diagnósticos Secundarios</label>
+                            {{ form.diagnosis_secondary }}
+                            {% if form.diagnosis_secondary.errors %}
+                                <div class="invalid-feedback d-block">{{ form.diagnosis_secondary.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Treatment Plan -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-pills me-2"></i>Plan de Tratamiento
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.treatment_plan.id_for_label }}" class="form-label">Plan de Tratamiento</label>
+                            {{ form.treatment_plan }}
+                            {% if form.treatment_plan.errors %}
+                                <div class="invalid-feedback d-block">{{ form.treatment_plan.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Plan terapéutico y cuidados recomendados</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.medications_prescribed.id_for_label }}" class="form-label">Medicamentos Prescritos</label>
+                            {{ form.medications_prescribed }}
+                            {% if form.medications_prescribed.errors %}
+                                <div class="invalid-feedback d-block">{{ form.medications_prescribed.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Lista de medicamentos con dosis, frecuencia y duración</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.procedures_performed.id_for_label }}" class="form-label">Procedimientos Realizados</label>
+                            {{ form.procedures_performed }}
+                            {% if form.procedures_performed.errors %}
+                                <div class="invalid-feedback d-block">{{ form.procedures_performed.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Procedimientos médicos realizados durante la consulta</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Follow-up -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-calendar-plus me-2"></i>Seguimiento
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.follow_up_instructions.id_for_label }}" class="form-label">Instrucciones de Seguimiento</label>
+                            {{ form.follow_up_instructions }}
+                            {% if form.follow_up_instructions.errors %}
+                                <div class="invalid-feedback d-block">{{ form.follow_up_instructions.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Indicaciones para el seguimiento del paciente</small>
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.follow_up_date.id_for_label }}" class="form-label">Fecha de Seguimiento</label>
+                            {{ form.follow_up_date }}
+                            {% if form.follow_up_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.follow_up_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.referral_to.id_for_label }}" class="form-label">Referir a Especialista</label>
+                            {{ form.referral_to }}
+                            {% if form.referral_to.errors %}
+                                <div class="invalid-feedback d-block">{{ form.referral_to.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Notes -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-sticky-note me-2"></i>Notas Adicionales
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.doctor_notes.id_for_label }}" class="form-label">Notas del Médico (Privadas)</label>
+                            {{ form.doctor_notes }}
+                            {% if form.doctor_notes.errors %}
+                                <div class="invalid-feedback d-block">{{ form.doctor_notes.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Notas privadas para uso médico</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.patient_education.id_for_label }}" class="form-label">Educación del Paciente</label>
+                            {{ form.patient_education }}
+                            {% if form.patient_education.errors %}
+                                <div class="invalid-feedback d-block">{{ form.patient_education.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Información educativa proporcionada al paciente</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'medical_records:patient_records' patient.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Registrar Consulta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Patient Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-user me-2"></i>Información del Paciente
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    {% if patient.profile_picture %}
+                        <img src="{{ patient.profile_picture.url }}" 
+                             alt="{{ patient.get_full_name }}" 
+                             class="rounded-circle" width="80" height="80">
+                    {% else %}
+                        <i class="fas fa-user-circle fa-4x text-muted"></i>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center mb-3">
+                    <h6>{{ patient.get_full_name }}</h6>
+                    <p class="text-muted small">{{ patient.patient_id }}</p>
+                </div>
+                
+                <div class="small">
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Edad:</strong></div>
+                        <div class="col-7">{{ patient.age }} años</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Género:</strong></div>
+                        <div class="col-7">{{ patient.get_gender_display }}</div>
+                    </div>
+                    {% if patient.blood_type %}
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Tipo de Sangre:</strong></div>
+                        <div class="col-7">{{ patient.blood_type }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Teléfono:</strong></div>
+                        <div class="col-7">{{ patient.phone_number }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'medical_records:patient_records' patient.id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-folder-open me-2"></i>Ver Expediente Completo
+                    </a>
+                    <a href="{% url 'patients:detail' patient.id %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-user me-2"></i>Perfil del Paciente
+                    </a>
+                    <a href="{% url 'appointments:create' %}?patient_id={{ patient.id }}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-calendar-plus me-2"></i>Programar Cita
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tips -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Consejos
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Complete el motivo de consulta para registrar la cita
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Use el formato SOAP para documentación completa
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Registre signos vitales por separado después
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Agregue prescripciones específicas posteriormente
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Auto-expand textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    });
+    
+    // Auto-save draft functionality
+    const formElements = document.querySelectorAll('textarea, input[type="text"], select');
+    formElements.forEach(element => {
+        element.addEventListener('input', function() {
+            const formData = new FormData(document.querySelector('form'));
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+            localStorage.setItem('consultation_draft_{{ patient.id }}', JSON.stringify(formObject));
+        });
+    });
+    
+    // Load draft on page load
+    const savedDraft = localStorage.getItem('consultation_draft_{{ patient.id }}');
+    if (savedDraft) {
+        try {
+            const draftData = JSON.parse(savedDraft);
+            Object.keys(draftData).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field && field.value === '') {
+                    field.value = draftData[key];
+                }
+            });
+        } catch (e) {
+            console.log('Error loading draft:', e);
+        }
+    }
+    
+    // Clear draft on successful submission
+    document.querySelector('form').addEventListener('submit', function() {
+        localStorage.removeItem('consultation_draft_{{ patient.id }}');
+    });
+});
+</script>
+{% endblock %}

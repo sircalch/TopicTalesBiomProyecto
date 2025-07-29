@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Iniciar Sesión - TopicTales Biomédica{% endblock %}
+
+{% block auth_content %}
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center min-vh-100 align-items-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="auth-card">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5">
+                            <!-- Logo and Title -->
+                            <div class="text-center mb-4">
+                                <div class="auth-logo mb-3">
+                                    <i class="fas fa-heartbeat fa-3x text-primary mb-3"></i>
+                                </div>
+                                <h3 class="text-gradient mb-2">TopicTales Biomédica</h3>
+                                <p class="text-muted">Sistema de Gestión Médica Profesional</p>
+                            </div>
+                            
+                            <!-- Login Form -->
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                
+                                <!-- Username Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">
+                                        <i class="fas fa-user me-2"></i>Usuario
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.username.id_for_label }}" 
+                                           name="{{ form.username.name }}" 
+                                           value="{{ form.username.value|default:'' }}"
+                                           placeholder="Ingresa tu usuario"
+                                           required>
+                                    {% if form.username.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.username.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Password Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label">
+                                        <i class="fas fa-lock me-2"></i>Contraseña
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" 
+                                               class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.password.id_for_label }}" 
+                                               name="{{ form.password.name }}"
+                                               placeholder="Ingresa tu contraseña"
+                                               required>
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if form.password.errors %}
+                                            <div class="invalid-feedback">
+                                                {{ form.password.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Remember Me -->
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="rememberMe" name="remember_me">
+                                    <label class="form-check-label" for="rememberMe">
+                                        Recordar mi sesión
+                                    </label>
+                                </div>
+                                
+                                <!-- Form Errors -->
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        {{ form.non_field_errors.0 }}
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Submit Button -->
+                                <div class="d-grid mb-3">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                                    </button>
+                                </div>
+                                
+                                <!-- Links -->
+                                <div class="text-center">
+                                    <a href="{% url 'accounts:password_reset' %}" class="text-decoration-none">
+                                        ¿Olvidaste tu contraseña?
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Features Preview -->
+                    <div class="auth-features mt-4">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="feature-item">
+                                    <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                                    <div class="small text-muted">Gestión de Pacientes</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="feature-item">
+                                    <i class="fas fa-calendar-alt fa-2x text-success mb-2"></i>
+                                    <div class="small text-muted">Calendario Avanzado</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="feature-item">
+                                    <i class="fas fa-chart-bar fa-2x text-info mb-2"></i>
+                                    <div class="small text-muted">Reportes Inteligentes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            © 2024 TopicTales Biomédica. Todos los derechos reservados.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.auth-card {
+    animation: slideUp 0.5s ease-out;
+}
+
+.auth-logo {
+    position: relative;
+}
+
+.auth-logo::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(0, 123, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s infinite;
+}
+
+.form-control-lg {
+    padding: 1rem;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+.form-control-lg:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.feature-item {
+    transition: transform 0.2s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toggle password visibility
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const password = document.getElementById('{{ form.password.id_for_label }}');
+    const icon = this.querySelector('i');
+    
+    if (password.type === 'password') {
+        password.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        password.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+});
+
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

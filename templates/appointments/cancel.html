@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cancelar Cita - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'appointments:calendar' %}">Calendario</a></li>
+<li class="breadcrumb-item"><a href="{% url 'appointments:detail' appointment.id %}">Cita</a></li>
+<li class="breadcrumb-item active">Cancelar</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-times-circle me-2"></i>Cancelar Cita
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Warning Alert -->
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>¡Atención!</strong> Esta acción cancelará permanentemente la cita. El paciente debería ser notificado sobre la cancelación.
+                </div>
+                
+                <!-- Appointment Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Información de la Cita a Cancelar</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Paciente:</strong><br>
+                                {{ appointment.patient.get_full_name }}<br>
+                                <small class="text-muted">{{ appointment.patient.patient_id }}</small>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Médico:</strong><br>
+                                {{ appointment.doctor.get_full_name }}<br>
+                                <small class="text-muted">{{ appointment.doctor.profile.specialty|default:"Medicina General" }}</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Fecha:</strong><br>
+                                {{ appointment.start_datetime|date:"l, d F Y" }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Horario:</strong><br>
+                                {{ appointment.start_datetime|time:"H:i" }} - {{ appointment.end_datetime|time:"H:i" }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Tipo de Cita:</strong><br>
+                                <span class="badge" style="background-color: {{ appointment.appointment_type.color }};">
+                                    {{ appointment.appointment_type.name }}
+                                </span>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <strong>Motivo de la Consulta:</strong><br>
+                                {{ appointment.reason }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cancellation Form -->
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="cancellation_reason" class="form-label">
+                            <strong>Motivo de la Cancelación *</strong>
+                        </label>
+                        <textarea name="cancellation_reason" id="cancellation_reason" 
+                                  class="form-control" rows="4" required
+                                  placeholder="Por favor, especifica el motivo de la cancelación. Esta información será registrada en el historial de la cita."></textarea>
+                        <small class="form-text text-muted">
+                            Este motivo será visible en el historial de la cita y ayudará a mantener un registro completo.
+                        </small>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    {% if appointment.patient_phone or appointment.patient_email %}
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="fas fa-phone me-2"></i>Información de Contacto del Paciente</h6>
+                        <p class="mb-2">Recuerda contactar al paciente para informar sobre la cancelación:</p>
+                        {% if appointment.patient_phone %}
+                        <div><strong>Teléfono:</strong> 
+                            <a href="tel:{{ appointment.patient_phone }}" class="text-decoration-none">
+                                {{ appointment.patient_phone }}
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% if appointment.patient_email %}
+                        <div><strong>Email:</strong> 
+                            <a href="mailto:{{ appointment.patient_email }}" class="text-decoration-none">
+                                {{ appointment.patient_email }}
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Confirmation Checkbox -->
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" value="" id="confirm_cancellation" required>
+                        <label class="form-check-label" for="confirm_cancellation">
+                            <strong>Confirmo que deseo cancelar esta cita y que he notificado al paciente sobre la cancelación.</strong>
+                        </label>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'appointments:detail' appointment.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                        <button type="submit" class="btn btn-danger" id="cancel-btn" disabled>
+                            <i class="fas fa-times-circle me-1"></i>Cancelar Cita
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmCheckbox = document.getElementById('confirm_cancellation');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const reasonTextarea = document.getElementById('cancellation_reason');
+    
+    // Enable/disable cancel button based on checkbox and reason
+    function updateCancelButton() {
+        const isChecked = confirmCheckbox.checked;
+        const hasReason = reasonTextarea.value.trim().length > 0;
+        
+        cancelBtn.disabled = !(isChecked && hasReason);
+    }
+    
+    confirmCheckbox.addEventListener('change', updateCancelButton);
+    reasonTextarea.addEventListener('input', updateCancelButton);
+    
+    // Final confirmation before submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const patientName = '{{ appointment.patient.get_full_name }}';
+        const appointmentDate = '{{ appointment.start_datetime|date:"d/m/Y H:i" }}';
+        
+        if (!confirm(`¿Estás seguro de que deseas cancelar la cita?\n\nPaciente: ${patientName}\nFecha: ${appointmentDate}\n\nEsta acción no se puede deshacer.`)) {
+            e.preventDefault();
+        }
+    });
+    
+    // Auto-focus on reason textarea
+    reasonTextarea.focus();
+});
+</script>
+{% endblock %}

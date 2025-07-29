@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ patient.get_full_name }} - Expediente Médico - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item active">{{ patient.get_full_name }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Patient Header Card -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center">
+                        {% if patient.profile_picture %}
+                            <img src="{{ patient.profile_picture.url }}" 
+                                 alt="{{ patient.get_full_name }}" 
+                                 class="rounded-circle" width="100" height="100">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-5x text-muted"></i>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h3 class="mb-1">{{ patient.get_full_name }}</h3>
+                        <p class="text-muted mb-2">ID: {{ patient.patient_id }}</p>
+                        <div class="row text-sm">
+                            <div class="col-6">
+                                <strong>Edad:</strong> {{ patient.age }} años<br>
+                                <strong>Género:</strong> {{ patient.get_gender_display }}<br>
+                                <strong>Teléfono:</strong> {{ patient.phone_number }}
+                            </div>
+                            <div class="col-6">
+                                {% if patient.blood_type %}
+                                <strong>Tipo de Sangre:</strong> {{ patient.blood_type }}<br>
+                                {% endif %}
+                                <strong>Email:</strong> {{ patient.email|default:"No registrado" }}<br>
+                                <strong>Registro:</strong> {{ patient.registration_date|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'medical_records:create_consultation' patient.id %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Nueva Consulta
+                            </a>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'medical_records:edit_record' patient.id %}" class="btn btn-outline-warning">
+                                    <i class="fas fa-edit me-1"></i>Editar Expediente
+                                </a>
+                                <a href="{% url 'patients:detail' patient.id %}" class="btn btn-outline-info">
+                                    <i class="fas fa-user me-1"></i>Ver Perfil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Medical Alerts -->
+    {% if alerts %}
+    <div class="col-12 mb-4">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Alertas Médicas Activas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for alert in alerts %}
+                    <div class="col-md-6 mb-2">
+                        <div class="alert alert-{% if alert.severity == 'critical' %}danger{% elif alert.severity == 'high' %}warning{% else %}info{% endif %} mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>{{ alert.title }}</strong><br>
+                                    <small>{{ alert.description|truncatewords:15 }}</small>
+                                </div>
+                                <span class="badge bg-{% if alert.severity == 'critical' %}danger{% elif alert.severity == 'high' %}warning{% else %}secondary{% endif %}">
+                                    {{ alert.get_severity_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="text-end">
+                    <a href="{% url 'medical_records:create_alert' patient.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-plus me-1"></i>Nueva Alerta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Recent Consultations -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-stethoscope me-2"></i>Consultas Recientes
+                    </h6>
+                    <div>
+                        <span class="badge bg-info me-2">{{ total_consultations }} total</span>
+                        <a href="{% url 'medical_records:consultations_list' patient.id %}" class="btn btn-sm btn-outline-primary">
+                            Ver Todas
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if consultations %}
+                    <div class="timeline">
+                        {% for consultation in consultations %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-{% if consultation.consultation_type == 'emergency' %}danger{% elif consultation.consultation_type == 'follow_up' %}info{% else %}primary{% endif %}"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1">{{ consultation.consultation_date|date:"d/m/Y H:i" }}</h6>
+                                        <small class="text-muted">Dr. {{ consultation.doctor.get_full_name }}</small>
+                                    </div>
+                                    <span class="badge bg-{% if consultation.consultation_type == 'emergency' %}danger{% elif consultation.consultation_type == 'follow_up' %}info{% else %}primary{% endif %}">
+                                        {{ consultation.get_consultation_type_display }}
+                                    </span>
+                                </div>
+                                <p class="mb-2"><strong>Motivo:</strong> {{ consultation.chief_complaint|truncatewords:20 }}</p>
+                                {% if consultation.diagnosis_primary %}
+                                <p class="mb-2"><strong>Diagnóstico:</strong> {{ consultation.diagnosis_primary|truncatewords:15 }}</p>
+                                {% endif %}
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'medical_records:consultation_detail' consultation.id %}" class="btn btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>Ver Detalles
+                                    </a>
+                                    <a href="{% url 'medical_records:edit_consultation' consultation.id %}" class="btn btn-outline-warning">
+                                        <i class="fas fa-edit me-1"></i>Editar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-stethoscope fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">No hay consultas registradas</h6>
+                        <p class="text-muted">Las consultas médicas aparecerán aquí una vez que se registren.</p>
+                        <a href="{% url 'medical_records:create_consultation' patient.id %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Registrar Primera Consulta
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Lab Results -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-flask me-2"></i>Resultados de Laboratorio Recientes
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if lab_results %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Examen</th>
+                                    <th>Resultado</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in lab_results %}
+                                <tr>
+                                    <td>{{ result.test_name }}</td>
+                                    <td>{{ result.result_value }} {{ result.units }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if result.status == 'normal' %}success{% elif result.status == 'abnormal' %}warning{% elif result.status == 'critical' %}danger{% else %}secondary{% endif %}">
+                                            {{ result.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ result.ordered_date|date:"d/m/Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No hay resultados de laboratorio registrados.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Documents -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-file-medical me-2"></i>Documentos Médicos
+                    </h6>
+                    <a href="{% url 'medical_records:upload_document' patient.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-upload me-1"></i>Subir Documento
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if documents %}
+                    <div class="list-group list-group-flush">
+                        {% for document in documents %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ document.title }}</h6>
+                                <small class="text-muted">
+                                    {{ document.get_document_type_display }} • 
+                                    {{ document.uploaded_at|date:"d/m/Y H:i" }}
+                                    {% if document.is_confidential %}
+                                        <i class="fas fa-lock text-warning ms-1" title="Confidencial"></i>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <a href="{{ document.file.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">No hay documentos médicos cargados.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Medical Record Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-file-medical-alt me-2"></i>Resumen Médico
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if medical_record.allergies %}
+                <div class="mb-3">
+                    <strong class="text-danger">Alergias:</strong>
+                    <p class="small">{{ medical_record.allergies|truncatewords:20 }}</p>
+                </div>
+                {% endif %}
+                
+                {% if medical_record.chronic_conditions %}
+                <div class="mb-3">
+                    <strong class="text-warning">Condiciones Crónicas:</strong>
+                    <p class="small">{{ medical_record.chronic_conditions|truncatewords:20 }}</p>
+                </div>
+                {% endif %}
+                
+                {% if medical_record.current_medications %}
+                <div class="mb-3">
+                    <strong class="text-info">Medicación Actual:</strong>
+                    <p class="small">{{ medical_record.current_medications|truncatewords:20 }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="border rounded p-2">
+                            <i class="fas fa-smoking text-warning"></i>
+                            <div class="small">{{ medical_record.get_smoking_status_display }}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-2">
+                            <i class="fas fa-wine-glass text-info"></i>
+                            <div class="small">{{ medical_record.get_alcohol_consumption_display }}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-2">
+                            <i class="fas fa-running text-success"></i>
+                            <div class="small">{{ medical_record.get_exercise_frequency_display }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Vital Signs -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-heartbeat me-2"></i>Signos Vitales Recientes
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if recent_vitals %}
+                    {% for vital in recent_vitals|slice:":3" %}
+                    <div class="border-bottom pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">{{ vital.recorded_at|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        <div class="row text-center">
+                            {% if vital.blood_pressure_systolic and vital.blood_pressure_diastolic %}
+                            <div class="col-6">
+                                <div class="small">
+                                    <strong>PA:</strong> {{ vital.blood_pressure_systolic }}/{{ vital.blood_pressure_diastolic }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if vital.heart_rate %}
+                            <div class="col-6">
+                                <div class="small">
+                                    <strong>FC:</strong> {{ vital.heart_rate }} bpm
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if vital.temperature %}
+                            <div class="col-6">
+                                <div class="small">
+                                    <strong>Temp:</strong> {{ vital.temperature }}°C
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if vital.weight %}
+                            <div class="col-6">
+                                <div class="small">
+                                    <strong>Peso:</strong> {{ vital.weight }} kg
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted small mb-0">No hay signos vitales registrados.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Active Prescriptions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-pills me-2"></i>Prescripciones Activas
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if active_prescriptions %}
+                    {% for prescription in active_prescriptions|slice:":5" %}
+                    <div class="border-bottom pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong class="small">{{ prescription.medication_name }}</strong><br>
+                                <small class="text-muted">{{ prescription.dosage }} - {{ prescription.frequency }}</small>
+                            </div>
+                            <span class="badge bg-success">Activa</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted small mb-0">No hay prescripciones activas.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Emergency Contact -->
+        {% if medical_record.emergency_contact_name %}
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-phone me-2"></i>Contacto de Emergencia
+                </h6>
+            </div>
+            <div class="card-body">
+                <div>
+                    <strong>{{ medical_record.emergency_contact_name }}</strong><br>
+                    <small class="text-muted">{{ medical_record.emergency_contact_relationship }}</small><br>
+                    <a href="tel:{{ medical_record.emergency_contact_phone }}" class="text-decoration-none">
+                        {{ medical_record.emergency_contact_phone }}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quick Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'appointments:create' %}?patient_id={{ patient.id }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-calendar-plus me-2"></i>Programar Cita
+                    </a>
+                    {% if not alerts %}
+                    <a href="{% url 'medical_records:create_alert' patient.id %}" class="btn btn-outline-warning btn-sm">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Crear Alerta
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'patients:vital_signs' patient.id %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-heartbeat me-2"></i>Registrar Signos Vitales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -37px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    border-left: 3px solid #007bff;
+}
+
+.border-left-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+</style>
+{% endblock %}

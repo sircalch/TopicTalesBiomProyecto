@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consulta Médica - {{ consultation.patient.get_full_name }} - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:patient_records' consultation.patient.id %}">{{ consultation.patient.get_full_name }}</a></li>
+<li class="breadcrumb-item active">Consulta</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Consultation Header -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-stethoscope me-2"></i>Consulta Médica
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'medical_records:edit_consultation' consultation.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </a>
+                        <a href="{% url 'medical_records:patient_records' consultation.patient.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-folder-open me-1"></i>Ver Expediente
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Información General</h6>
+                        <p><strong>Fecha:</strong> {{ consultation.consultation_date|date:"l, d F Y" }}</p>
+                        <p><strong>Hora:</strong> {{ consultation.consultation_date|time:"H:i" }}</p>
+                        <p><strong>Tipo:</strong> 
+                            {% if consultation.consultation_type == 'routine' %}
+                                <span class="badge bg-primary">Consulta de Rutina</span>
+                            {% elif consultation.consultation_type == 'follow_up' %}
+                                <span class="badge bg-info">Seguimiento</span>
+                            {% elif consultation.consultation_type == 'emergency' %}
+                                <span class="badge bg-danger">Emergencia</span>
+                            {% elif consultation.consultation_type == 'specialist' %}
+                                <span class="badge bg-warning">Especialista</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ consultation.get_consultation_type_display }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Personal Médico</h6>
+                        <p><strong>Médico:</strong> Dr. {{ consultation.doctor.get_full_name }}</p>
+                        <p><strong>Especialidad:</strong> {{ consultation.doctor.profile.specialty|default:"Medicina General" }}</p>
+                        <p><strong>Registro:</strong> {{ consultation.created_at|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chief Complaint and History -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-comments me-2"></i>Motivo de Consulta e Historia
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6 class="text-primary">Motivo Principal de la Consulta</h6>
+                    <p class="border-left-primary p-3 bg-light">{{ consultation.chief_complaint }}</p>
+                </div>
+                
+                {% if consultation.history_present_illness %}
+                <div class="mb-4">
+                    <h6 class="text-primary">Historia de la Enfermedad Actual</h6>
+                    <p class="border-left-info p-3 bg-light">{{ consultation.history_present_illness|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Physical Examination -->
+        {% if consultation.physical_examination or consultation.vital_signs_notes %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-user-md me-2"></i>Exploración Física
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if consultation.vital_signs_notes %}
+                <div class="mb-4">
+                    <h6 class="text-success">Signos Vitales</h6>
+                    <p class="border-left-success p-3 bg-light">{{ consultation.vital_signs_notes|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                {% if consultation.physical_examination %}
+                <div class="mb-4">
+                    <h6 class="text-success">Hallazgos de la Exploración</h6>
+                    <p class="border-left-success p-3 bg-light">{{ consultation.physical_examination|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Assessment and Diagnosis -->
+        {% if consultation.assessment or consultation.diagnosis_primary %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-diagnoses me-2"></i>Evaluación y Diagnóstico
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if consultation.assessment %}
+                <div class="mb-4">
+                    <h6 class="text-warning">Evaluación Clínica</h6>
+                    <p class="border-left-warning p-3 bg-light">{{ consultation.assessment|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                {% if consultation.diagnosis_primary %}
+                <div class="mb-4">
+                    <h6 class="text-danger">Diagnóstico Principal</h6>
+                    <p class="border-left-danger p-3 bg-light">{{ consultation.diagnosis_primary|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                {% if consultation.diagnosis_secondary %}
+                <div class="mb-4">
+                    <h6 class="text-secondary">Diagnósticos Secundarios</h6>
+                    <p class="border-left-secondary p-3 bg-light">{{ consultation.diagnosis_secondary|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Treatment Plan -->
+        {% if consultation.treatment_plan or consultation.medications_prescribed %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-pills me-2"></i>Plan de Tratamiento
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if consultation.treatment_plan %}
+                <div class="mb-4">
+                    <h6 class="text-success">Plan de Tratamiento</h6>
+                    <p class="border-left-success p-3 bg-light">{{ consultation.treatment_plan|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                {% if consultation.medications_prescribed %}
+                <div class="mb-4">
+                    <h6 class="text-info">Medicamentos Prescritos</h6>
+                    <p class="border-left-info p-3 bg-light">{{ consultation.medications_prescribed|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                {% if consultation.procedures_performed %}
+                <div class="mb-4">
+                    <h6 class="text-secondary">Procedimientos Realizados</h6>
+                    <p class="border-left-secondary p-3 bg-light">{{ consultation.procedures_performed|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Follow-up and Additional Notes -->
+        {% if consultation.follow_up_instructions or consultation.doctor_notes %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-calendar-plus me-2"></i>Seguimiento y Notas
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if consultation.follow_up_instructions %}
+                <div class="mb-4">
+                    <h6 class="text-primary">Instrucciones de Seguimiento</h6>
+                    <p class="border-left-primary p-3 bg-light">{{ consultation.follow_up_instructions|linebreaks }}</p>
+                    {% if consultation.follow_up_date %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-calendar-check me-2"></i>
+                            <strong>Próxima cita sugerida:</strong> {{ consultation.follow_up_date|date:"d/m/Y" }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% if consultation.referral_to %}
+                <div class="mb-4">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-share me-2"></i>
+                        <strong>Referencia a:</strong> {{ consultation.referral_to }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if consultation.doctor_notes %}
+                <div class="mb-4">
+                    <h6 class="text-muted">Notas del Médico</h6>
+                    <p class="border-left-secondary p-3 bg-light">{{ consultation.doctor_notes|linebreaks }}</p>
+                </div>
+                {% endif %}
+                
+                {% if consultation.patient_education %}
+                <div class="mb-4">
+                    <h6 class="text-success">Educación del Paciente</h6>
+                    <p class="border-left-success p-3 bg-light">{{ consultation.patient_education|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Patient Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-user me-2"></i>Información del Paciente
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    {% if consultation.patient.profile_picture %}
+                        <img src="{{ consultation.patient.profile_picture.url }}" 
+                             alt="{{ consultation.patient.get_full_name }}" 
+                             class="rounded-circle" width="80" height="80">
+                    {% else %}
+                        <i class="fas fa-user-circle fa-4x text-muted"></i>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center mb-3">
+                    <h6>{{ consultation.patient.get_full_name }}</h6>
+                    <p class="text-muted small">{{ consultation.patient.patient_id }}</p>
+                </div>
+                
+                <div class="small">
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Edad:</strong></div>
+                        <div class="col-7">{{ consultation.patient.age }} años</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Género:</strong></div>
+                        <div class="col-7">{{ consultation.patient.get_gender_display }}</div>
+                    </div>
+                    {% if consultation.patient.blood_type %}
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Tipo de Sangre:</strong></div>
+                        <div class="col-7">{{ consultation.patient.blood_type }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="row mb-2">
+                        <div class="col-5"><strong>Teléfono:</strong></div>
+                        <div class="col-7">
+                            <a href="tel:{{ consultation.patient.phone_number }}" class="text-decoration-none">
+                                {{ consultation.patient.phone_number }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vital Signs -->
+        {% if vital_signs %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>Signos Vitales
+                    </h6>
+                    <a href="{% url 'medical_records:add_vital_signs' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% for vital in vital_signs %}
+                <div class="border-bottom pb-2 mb-2">
+                    <small class="text-muted">{{ vital.recorded_at|date:"d/m/Y H:i" }}</small>
+                    <div class="row mt-1">
+                        {% if vital.blood_pressure_systolic and vital.blood_pressure_diastolic %}
+                        <div class="col-6">
+                            <strong>PA:</strong> {{ vital.blood_pressure_systolic }}/{{ vital.blood_pressure_diastolic }}
+                        </div>
+                        {% endif %}
+                        {% if vital.heart_rate %}
+                        <div class="col-6">
+                            <strong>FC:</strong> {{ vital.heart_rate }} bpm
+                        </div>
+                        {% endif %}
+                        {% if vital.temperature %}
+                        <div class="col-6">
+                            <strong>Temp:</strong> {{ vital.temperature }}°C
+                        </div>
+                        {% endif %}
+                        {% if vital.weight %}
+                        <div class="col-6">
+                            <strong>Peso:</strong> {{ vital.weight }} kg
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Lab Results -->
+        {% if lab_results %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-flask me-2"></i>Resultados de Laboratorio
+                    </h6>
+                    <a href="{% url 'medical_records:add_lab_result' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% for result in lab_results %}
+                <div class="border-bottom pb-2 mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong class="small">{{ result.test_name }}</strong><br>
+                            <small>{{ result.result_value }} {{ result.units }}</small>
+                        </div>
+                        <span class="badge bg-{% if result.status == 'normal' %}success{% elif result.status == 'abnormal' %}warning{% elif result.status == 'critical' %}danger{% else %}secondary{% endif %}">
+                            {{ result.get_status_display }}
+                        </span>
+                    </div>
+                    <small class="text-muted">{{ result.ordered_date|date:"d/m/Y" }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Prescriptions -->
+        {% if prescriptions %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-prescription me-2"></i>Prescripciones
+                    </h6>
+                    <a href="{% url 'medical_records:add_prescription' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% for prescription in prescriptions %}
+                <div class="border-bottom pb-2 mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong class="small">{{ prescription.medication_name }}</strong><br>
+                            <small class="text-muted">{{ prescription.dosage }} - {{ prescription.frequency }}</small>
+                        </div>
+                        <span class="badge bg-{% if prescription.status == 'active' %}success{% elif prescription.status == 'completed' %}info{% else %}secondary{% endif %}">
+                            {{ prescription.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Documents -->
+        {% if documents %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-file-medical me-2"></i>Documentos
+                </h6>
+            </div>
+            <div class="card-body">
+                {% for document in documents %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong class="small">{{ document.title }}</strong><br>
+                        <small class="text-muted">{{ document.get_document_type_display }}</small>
+                    </div>
+                    <a href="{{ document.file.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'medical_records:add_vital_signs' consultation.id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-heartbeat me-2"></i>Registrar Signos Vitales
+                    </a>
+                    <a href="{% url 'medical_records:add_lab_result' consultation.id %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-flask me-2"></i>Agregar Resultado Lab
+                    </a>
+                    <a href="{% url 'medical_records:add_prescription' consultation.id %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-prescription me-2"></i>Crear Prescripción
+                    </a>
+                    <a href="{% url 'appointments:create' %}?patient_id={{ consultation.patient.id }}" class="btn btn-outline-warning btn-sm">
+                        <i class="fas fa-calendar-plus me-2"></i>Programar Seguimiento
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.border-left-primary {
+    border-left: 4px solid #007bff !important;
+}
+.border-left-secondary {
+    border-left: 4px solid #6c757d !important;
+}
+.border-left-success {
+    border-left: 4px solid #28a745 !important;
+}
+.border-left-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+.border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+.border-left-info {
+    border-left: 4px solid #17a2b8 !important;
+}
+</style>
+{% endblock %}

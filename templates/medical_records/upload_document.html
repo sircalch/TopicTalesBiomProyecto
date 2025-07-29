@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Subir Documento Médico - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:consultation_detail' consultation.id %}">Consulta</a></li>
+<li class="breadcrumb-item active">Documento</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-upload me-2"></i>Subir Documento Médico
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Patient Info -->
+                <div class="alert alert-info mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <strong>Paciente:</strong> {{ consultation.patient.get_full_name }}<br>
+                            <strong>Consulta:</strong> {{ consultation.consultation_date|date:"d/m/Y H:i" }}<br>
+                            <strong>Médico:</strong> Dr. {{ consultation.doctor.get_full_name }}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <small class="text-muted">{{ consultation.patient.patient_id }}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Document Information --!>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-file-alt me-2"></i>Información del Documento
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.document_name.id_for_label }}" class="form-label">Nombre del Documento *</label>
+                            {{ form.document_name }}
+                            {% if form.document_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.document_name.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Nombre descriptivo del documento</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.document_type.id_for_label }}" class="form-label">Tipo de Documento *</label>
+                            {{ form.document_type }}
+                            {% if form.document_type.errors %}
+                                <div class="invalid-feedback d-block">{{ form.document_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Descripción</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Descripción o contexto del documento</small>
+                        </div>
+                    </div>
+                    
+                    <!-- File Upload -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-cloud-upload-alt me-2"></i>Archivo
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.document_file.id_for_label }}" class="form-label">Seleccionar Archivo *</label>
+                            <div class="upload-area p-4 border border-dashed rounded text-center" id="upload-area">
+                                <div class="upload-icon mb-3">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+                                </div>
+                                <div class="upload-text">
+                                    <p class="mb-2">Arrastra y suelta tu archivo aquí o</p>
+                                    {{ form.document_file }}
+                                    <div class="file-info mt-2 d-none">
+                                        <span class="file-name text-success"></span>
+                                        <span class="file-size text-muted ms-2"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if form.document_file.errors %}
+                                <div class="invalid-feedback d-block">{{ form.document_file.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Formatos permitidos: PDF, DOC, DOCX, JPG, PNG, DICOM. Tamaño máximo: 10MB
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Información Adicional
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.date_created.id_for_label }}" class="form-label">Fecha del Documento</label>
+                            {{ form.date_created }}
+                            {% if form.date_created.errors %}
+                                <div class="invalid-feedback d-block">{{ form.date_created.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha en que se creó o generó el documento</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.created_by_external.id_for_label }}" class="form-label">Creado por (Externo)</label>
+                            {{ form.created_by_external }}
+                            {% if form.created_by_external.errors %}
+                                <div class="invalid-feedback d-block">{{ form.created_by_external.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Médico o institución externa que generó el documento</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <div class="form-check">
+                                {{ form.is_confidential }}
+                                <label class="form-check-label" for="{{ form.is_confidential.id_for_label }}">
+                                    Documento Confidencial
+                                </label>
+                                <div class="form-text">
+                                    <small class="text-muted">Marcar si el documento contiene información altamente sensible</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'medical_records:consultation_detail' consultation.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-1"></i>Subir Documento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar with Guidelines -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-list-check me-2"></i>Tipos de Documentos
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="documentTypesAccordion">
+                    <!-- Laboratory Results -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="labResultsHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#labResultsCollapse">
+                                Resultados de Laboratorio
+                            </button>
+                        </h2>
+                        <div id="labResultsCollapse" class="accordion-collapse collapse" data-bs-parent="#documentTypesAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li>• Hemogramas</li>
+                                    <li>• Química sanguínea</li>
+                                    <li>• Análisis de orina</li>
+                                    <li>• Cultivos microbiológicos</li>
+                                    <li>• Pruebas hormonales</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Imaging Studies -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="imagingHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#imagingCollapse">
+                                Estudios de Imagen
+                            </button>
+                        </h2>
+                        <div id="imagingCollapse" class="accordion-collapse collapse" data-bs-parent="#documentTypesAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li>• Radiografías</li>
+                                    <li>• Tomografías (CT)</li>
+                                    <li>• Resonancias magnéticas (MRI)</li>
+                                    <li>• Ecografías/Ultrasonidos</li>
+                                    <li>• Mamografías</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medical Reports -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="reportsHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reportsCollapse">
+                                Reportes Médicos
+                            </button>
+                        </h2>
+                        <div id="reportsCollapse" class="accordion-collapse collapse" data-bs-parent="#documentTypesAccordion">
+                            <div class="accordion-body small">
+                                <ul class="list-unstyled">
+                                    <li>• Reportes de especialistas</li>
+                                    <li>• Informes quirúrgicos</li>
+                                    <li>• Reportes de patología</li>
+                                    <li>• Evaluaciones psicológicas</li>
+                                    <li>• Informes de terapia</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-shield-alt me-2"></i>Seguridad y Privacidad
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Los documentos se almacenan de forma segura
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Acceso restringido según permisos de usuario
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Documentos confidenciales requieren autorización especial
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Registro de auditoría de todos los accesos
+                    </li>
+                </ul>
+                
+                <div class="alert alert-warning small mt-3">
+                    <strong>Importante:</strong> Asegúrate de que el documento no contenga información de otros pacientes antes de subirlo.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-area {
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.upload-area:hover {
+    border-color: #007bff !important;
+    background-color: #e7f3ff;
+}
+
+.upload-area.dragover {
+    border-color: #007bff !important;
+    background-color: #e7f3ff;
+    transform: scale(1.02);
+}
+
+.upload-area input[type="file"] {
+    position: absolute;
+    left: -9999px;
+}
+
+.upload-area label {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.file-info {
+    padding: 10px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('{{ form.document_file.id_for_label }}');
+    const fileInfo = uploadArea.querySelector('.file-info');
+    const fileName = fileInfo.querySelector('.file-name');
+    const fileSize = fileInfo.querySelector('.file-size');
+    
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Handle drag and drop
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            displayFileInfo(files[0]);
+        }
+    });
+    
+    // Handle file input change
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            displayFileInfo(this.files[0]);
+        }
+    });
+    
+    // Display file information
+    function displayFileInfo(file) {
+        fileName.textContent = file.name;
+        fileSize.textContent = `(${formatFileSize(file.size)})`;
+        fileInfo.classList.remove('d-none');
+        
+        // Update upload area appearance
+        uploadArea.querySelector('.upload-text p').textContent = 'Archivo seleccionado:';
+        uploadArea.querySelector('.upload-icon i').className = 'fas fa-file-check fa-3x text-success';
+        
+        // Auto-fill document name if empty
+        const documentNameField = document.getElementById('{{ form.document_name.id_for_label }}');
+        if (!documentNameField.value) {
+            const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+            documentNameField.value = nameWithoutExt;
+        }
+        
+        // Set today's date if date field is empty
+        const dateField = document.getElementById('{{ form.date_created.id_for_label }}');
+        if (!dateField.value) {
+            const today = new Date().toISOString().split('T')[0];
+            dateField.value = today;
+        }
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Click area to trigger file input
+    uploadArea.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'INPUT') {
+            fileInput.click();
+        }
+    });
+    
+    // Document type presets
+    const documentTypeField = document.getElementById('{{ form.document_type.id_for_label }}');
+    const documentNameField = document.getElementById('{{ form.document_name.id_for_label }}');
+    
+    // Suggest document type based on file extension
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0 && !documentTypeField.value) {
+            const file = this.files[0];
+            const extension = file.name.split('.').pop().toLowerCase();
+            
+            if (['pdf', 'doc', 'docx'].includes(extension)) {
+                if (file.name.toLowerCase().includes('lab') || file.name.toLowerCase().includes('resultado')) {
+                    documentTypeField.value = 'lab_result';
+                } else if (file.name.toLowerCase().includes('radio') || file.name.toLowerCase().includes('imagen')) {
+                    documentTypeField.value = 'imaging';
+                } else {
+                    documentTypeField.value = 'medical_report';
+                }
+            } else if (['jpg', 'jpeg', 'png', 'bmp'].includes(extension)) {
+                documentTypeField.value = 'imaging';
+            } else if (extension === 'dcm') {
+                documentTypeField.value = 'imaging';
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

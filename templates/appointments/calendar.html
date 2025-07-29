@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calendario de Citas - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">Calendario de Citas</li>
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+<style>
+.fc-event {
+    cursor: pointer;
+}
+.fc-daygrid-event {
+    font-size: 0.85em;
+}
+.appointment-filters {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.quick-stats {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+.stat-item {
+    text-align: center;
+}
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+}
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Calendar Controls -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>Calendario de Citas
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'appointments:create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Nueva Cita
+                        </a>
+                        <a href="{% url 'appointments:list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-1"></i>Ver Lista
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="card-body pb-0">
+                <div class="quick-stats">
+                    <div class="row">
+                        <div class="col-md-3 stat-item">
+                            <span class="stat-number">{{ today_appointments }}</span>
+                            <span class="stat-label">Citas Hoy</span>
+                        </div>
+                        <div class="col-md-3 stat-item">
+                            <span class="stat-number" id="week-appointments">-</span>
+                            <span class="stat-label">Esta Semana</span>
+                        </div>
+                        <div class="col-md-3 stat-item">
+                            <span class="stat-number" id="month-appointments">-</span>
+                            <span class="stat-label">Este Mes</span>
+                        </div>
+                        <div class="col-md-3 stat-item">
+                            <span class="stat-number" id="pending-appointments">-</span>
+                            <span class="stat-label">Pendientes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="card-body">
+                <div class="appointment-filters">
+                    <form method="get" id="filter-form">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Médico</label>
+                                <select name="doctor" class="form-select" id="doctor-filter">
+                                    <option value="">Todos los médicos</option>
+                                    {% for doctor in doctors %}
+                                        <option value="{{ doctor.id }}">{{ doctor.get_full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Tipo de Cita</label>
+                                <select name="appointment_type" class="form-select" id="type-filter">
+                                    <option value="">Todos los tipos</option>
+                                    {% for type in appointment_types %}
+                                        <option value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Estado</label>
+                                <select name="status" class="form-select" id="status-filter">
+                                    <option value="">Todos los estados</option>
+                                    <option value="scheduled">Programada</option>
+                                    <option value="confirmed">Confirmada</option>
+                                    <option value="in_progress">En progreso</option>
+                                    <option value="completed">Completada</option>
+                                    <option value="cancelled">Cancelada</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-primary me-2" id="apply-filters">
+                                    <i class="fas fa-filter me-1"></i>Filtrar
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="clear-filters">
+                                    <i class="fas fa-times me-1"></i>Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Calendar -->
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Detail Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle de Cita</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="appointment-details">
+                    <!-- Content loaded via AJAX -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <a href="#" class="btn btn-primary" id="view-appointment">Ver Completo</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Appointment Modal -->
+<div class="modal fade" id="quickAppointmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Cita Rápida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="quick-appointment-form">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Paciente *</label>
+                        <select name="patient" class="form-select" required>
+                            <option value="">Seleccionar paciente...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Cita *</label>
+                        <select name="appointment_type" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            {% for type in appointment_types %}
+                                <option value="{{ type.id }}">{{ type.name }} ({{ type.duration_minutes }} min)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Motivo de la Consulta *</label>
+                        <input type="text" name="reason" class="form-control" placeholder="Motivo de la consulta" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha y Hora</label>
+                        <input type="text" id="selected-datetime" class="form-control" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear Cita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    let calendar;
+    let selectedDate = null;
+    let selectedDoctor = null;
+    
+    // Initialize FullCalendar
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+            today: 'Hoy',
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día'
+        },
+        height: 'auto',
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        weekends: true,
+        
+        // Event sources
+        events: {
+            url: '{% url "appointments:calendar_events" %}',
+            method: 'GET',
+            extraParams: function() {
+                return {
+                    doctor_id: document.getElementById('doctor-filter').value,
+                    appointment_type_id: document.getElementById('type-filter').value,
+                    status: document.getElementById('status-filter').value
+                };
+            },
+            failure: function() {
+                alert('Error al cargar las citas del calendario');
+            }
+        },
+        
+        // Event handlers
+        eventClick: function(info) {
+            showAppointmentDetails(info.event.id);
+        },
+        
+        select: function(info) {
+            selectedDate = info.start;
+            selectedDoctor = document.getElementById('doctor-filter').value;
+            
+            if (selectedDoctor) {
+                openQuickAppointmentModal(info.start, selectedDoctor);
+            } else {
+                alert('Por favor selecciona un médico primero');
+                calendar.unselect();
+            }
+        },
+        
+        eventDrop: function(info) {
+            updateAppointmentTime(info.event.id, info.event.start, info.event.end);
+        },
+        
+        eventResize: function(info) {
+            updateAppointmentTime(info.event.id, info.event.start, info.event.end);
+        }
+    });
+    
+    calendar.render();
+    
+    // Filter handlers
+    document.getElementById('apply-filters').addEventListener('click', function() {
+        calendar.refetchEvents();
+        updateStats();
+    });
+    
+    document.getElementById('clear-filters').addEventListener('click', function() {
+        document.getElementById('filter-form').reset();
+        calendar.refetchEvents();
+        updateStats();
+    });
+    
+    // Auto-apply filters when changed
+    ['doctor-filter', 'type-filter', 'status-filter'].forEach(function(id) {
+        document.getElementById(id).addEventListener('change', function() {
+            calendar.refetchEvents();
+        });
+    });
+    
+    // Show appointment details
+    function showAppointmentDetails(appointmentId) {
+        fetch(`/appointments/${appointmentId}/`)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const content = doc.querySelector('.appointment-details-content');
+                
+                if (content) {
+                    document.getElementById('appointment-details').innerHTML = content.innerHTML;
+                    document.getElementById('view-appointment').href = `/appointments/${appointmentId}/`;
+                    new bootstrap.Modal(document.getElementById('appointmentModal')).show();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar los detalles de la cita');
+            });
+    }
+    
+    // Open quick appointment modal
+    function openQuickAppointmentModal(date, doctorId) {
+        const modal = new bootstrap.Modal(document.getElementById('quickAppointmentModal'));
+        const datetimeInput = document.getElementById('selected-datetime');
+        
+        // Set selected datetime
+        datetimeInput.value = date.toLocaleString('es-MX');
+        
+        // Load patients
+        loadPatients();
+        
+        modal.show();
+    }
+    
+    // Load patients for quick appointment
+    function loadPatients() {
+        // This would typically be an AJAX call to get patients
+        // For now, we'll populate with a placeholder
+        const patientSelect = document.querySelector('#quickAppointmentModal select[name="patient"]');
+        patientSelect.innerHTML = '<option value="">Cargando pacientes...</option>';
+        
+        // Simulate loading patients (replace with actual AJAX call)
+        setTimeout(() => {
+            patientSelect.innerHTML = `
+                <option value="">Seleccionar paciente...</option>
+                <option value="1">Juan Pérez García</option>
+                <option value="2">María López Martínez</option>
+                <option value="3">Carlos Rodríguez Sánchez</option>
+            `;
+        }, 500);
+    }
+    
+    // Handle quick appointment form submission
+    document.getElementById('quick-appointment-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = {
+            patient_id: formData.get('patient'),
+            doctor_id: selectedDoctor,
+            appointment_type_id: formData.get('appointment_type'),
+            start_datetime: selectedDate.toISOString(),
+            reason: formData.get('reason')
+        };
+        
+        fetch('{% url "appointments:quick_appointment" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                bootstrap.Modal.getInstance(document.getElementById('quickAppointmentModal')).hide();
+                calendar.refetchEvents();
+                calendar.unselect();
+                alert('Cita creada exitosamente');
+            } else {
+                alert('Error: ' + result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al crear la cita');
+        });
+    });
+    
+    // Update appointment time (drag & drop)
+    function updateAppointmentTime(appointmentId, newStart, newEnd) {
+        fetch(`/appointments/${appointmentId}/edit/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                start_datetime: newStart.toISOString(),
+                end_datetime: newEnd ? newEnd.toISOString() : null
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (!result.success) {
+                alert('Error al actualizar la cita: ' + result.message);
+                calendar.refetchEvents(); // Revert changes
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            calendar.refetchEvents(); // Revert changes
+        });
+    }
+    
+    // Update statistics
+    function updateStats() {
+        // This would typically make AJAX calls to get updated statistics
+        // For now, we'll use placeholder values
+        document.getElementById('week-appointments').textContent = '15';
+        document.getElementById('month-appointments').textContent = '85';
+        document.getElementById('pending-appointments').textContent = '8';
+    }
+    
+    // Initial stats load
+    updateStats();
+});
+</script>
+{% endblock %}

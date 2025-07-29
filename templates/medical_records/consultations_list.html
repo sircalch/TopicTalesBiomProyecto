@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consultas - {{ patient.get_full_name }} - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item"><a href="{% url 'medical_records:patient_records' patient.id %}">{{ patient.get_full_name }}</a></li>
+<li class="breadcrumb-item active">Consultas</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-stethoscope me-2"></i>Historial de Consultas: {{ patient.get_full_name }}
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'medical_records:create_consultation' patient.id %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Nueva Consulta
+                        </a>
+                        <a href="{% url 'medical_records:patient_records' patient.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-folder-open me-1"></i>Ver Expediente
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="card-body border-bottom">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo de Consulta</label>
+                        <select name="type" class="form-select">
+                            <option value="">Todos los tipos</option>
+                            <option value="routine" {% if request.GET.type == 'routine' %}selected{% endif %}>Consulta de Rutina</option>
+                            <option value="follow_up" {% if request.GET.type == 'follow_up' %}selected{% endif %}>Seguimiento</option>
+                            <option value="emergency" {% if request.GET.type == 'emergency' %}selected{% endif %}>Emergencia</option>
+                            <option value="specialist" {% if request.GET.type == 'specialist' %}selected{% endif %}>Especialista</option>
+                            <option value="second_opinion" {% if request.GET.type == 'second_opinion' %}selected{% endif %}>Segunda Opinión</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Médico</label>
+                        <select name="doctor" class="form-select">
+                            <option value="">Todos los médicos</option>
+                            {% for doctor in doctors %}
+                                <option value="{{ doctor.id }}" {% if request.GET.doctor == doctor.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ doctor.get_full_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Buscar</label>
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Buscar por motivo, diagnóstico..." 
+                               value="{{ request.GET.search }}">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <div class="btn-group w-100">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-filter me-1"></i>Filtrar
+                            </button>
+                            <a href="{% url 'medical_records:consultations_list' patient.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card-body">
+                {% if consultations %}
+                    <!-- Consultations Timeline -->
+                    <div class="timeline">
+                        {% for consultation in consultations %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-{% if consultation.consultation_type == 'emergency' %}danger{% elif consultation.consultation_type == 'follow_up' %}info{% elif consultation.consultation_type == 'specialist' %}warning{% else %}primary{% endif %}"></div>
+                            <div class="timeline-content">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    {{ consultation.consultation_date|date:"l, d F Y" }} - {{ consultation.consultation_date|time:"H:i" }}
+                                                </h6>
+                                                <small class="text-muted">
+                                                    Dr. {{ consultation.doctor.get_full_name }} • 
+                                                    <span class="badge bg-{% if consultation.consultation_type == 'emergency' %}danger{% elif consultation.consultation_type == 'follow_up' %}info{% elif consultation.consultation_type == 'specialist' %}warning{% else %}primary{% endif %}">
+                                                        {{ consultation.get_consultation_type_display }}
+                                                    </span>
+                                                </small>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'medical_records:consultation_detail' consultation.id %}" 
+                                                   class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'medical_records:edit_consultation' consultation.id %}" 
+                                                   class="btn btn-sm btn-outline-warning" title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-2">Motivo de Consulta</h6>
+                                                <p class="mb-3">{{ consultation.chief_complaint|truncatewords:30 }}</p>
+                                                
+                                                {% if consultation.diagnosis_primary %}
+                                                <h6 class="text-success mb-2">Diagnóstico</h6>
+                                                <p class="mb-0">{{ consultation.diagnosis_primary|truncatewords:20 }}</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% if consultation.treatment_plan %}
+                                                <h6 class="text-info mb-2">Tratamiento</h6>
+                                                <p class="mb-3">{{ consultation.treatment_plan|truncatewords:20 }}</p>
+                                                {% endif %}
+                                                
+                                                {% if consultation.follow_up_date %}
+                                                <div class="alert alert-info py-2 mb-0">
+                                                    <small>
+                                                        <i class="fas fa-calendar-plus me-1"></i>
+                                                        Seguimiento: {{ consultation.follow_up_date|date:"d/m/Y" }}
+                                                    </small>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if consultation.referral_to %}
+                                                <div class="alert alert-warning py-2 mb-0">
+                                                    <small>
+                                                        <i class="fas fa-share me-1"></i>
+                                                        Referido a: {{ consultation.referral_to }}
+                                                    </small>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Quick Stats -->
+                                        <div class="row mt-3 pt-3 border-top">
+                                            <div class="col-md-3">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-heartbeat me-1"></i>
+                                                    {{ consultation.vital_signs.count }} signos vitales
+                                                </small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-flask me-1"></i>
+                                                    {{ consultation.lab_results.count }} lab. resultados
+                                                </small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-pills me-1"></i>
+                                                    {{ consultation.prescriptions.count }} prescripciones
+                                                </small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-file me-1"></i>
+                                                    {{ consultation.documents.count }} documentos
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                    <nav aria-label="Paginación de consultas" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">Primera</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">Anterior</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Siguiente</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}">Última</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    
+                    <div class="text-center text-muted">
+                        Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} consultas
+                    </div>
+                    {% endif %}
+                    
+                {% else %}
+                    <!-- No Consultations -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-stethoscope fa-4x text-muted mb-3"></i>
+                        <h5 class="text-muted">No hay consultas registradas</h5>
+                        {% if request.GET %}
+                            <p class="text-muted">No se encontraron consultas que coincidan con los criterios de búsqueda.</p>
+                            <a href="{% url 'medical_records:consultations_list' patient.id %}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-times me-1"></i>Limpiar Filtros
+                            </a>
+                        {% else %}
+                            <p class="text-muted">Las consultas médicas aparecerán aquí una vez que se registren.</p>
+                        {% endif %}
+                        <a href="{% url 'medical_records:create_consultation' patient.id %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Registrar Primera Consulta
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -37px;
+    top: 15px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #dee2e6;
+}
+
+.timeline-content {
+    margin-left: 0;
+}
+
+.timeline-item:last-child .timeline-content {
+    margin-bottom: 0;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form on filter changes
+    const filterInputs = document.querySelectorAll('select[name="type"], select[name="doctor"]');
+    filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+    
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Highlight search terms
+    const searchTerm = '{{ request.GET.search }}';
+    if (searchTerm) {
+        const regex = new RegExp(`(${searchTerm})`, 'gi');
+        document.querySelectorAll('.timeline-content p').forEach(p => {
+            p.innerHTML = p.innerHTML.replace(regex, '<mark>$1</mark>');
+        });
+    }
+});
+</script>
+{% endblock %}

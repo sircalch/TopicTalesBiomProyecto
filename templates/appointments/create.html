@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Nueva Cita - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'appointments:calendar' %}">Calendario</a></li>
+<li class="breadcrumb-item active">Nueva Cita</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-plus me-2"></i>Programar Nueva Cita
+                    </h5>
+                    <a href="{% url 'appointments:calendar' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Volver al Calendario
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Patient and Doctor Selection -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-users me-2"></i>Información de la Cita
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.patient.id_for_label }}" class="form-label">Paciente *</label>
+                            {{ form.patient }}
+                            {% if form.patient.errors %}
+                                <div class="invalid-feedback d-block">{{ form.patient.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Selecciona el paciente para la cita</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.doctor.id_for_label }}" class="form-label">Médico *</label>
+                            {{ form.doctor }}
+                            {% if form.doctor.errors %}
+                                <div class="invalid-feedback d-block">{{ form.doctor.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Médico que atenderá la consulta</small>
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.appointment_type.id_for_label }}" class="form-label">Tipo de Cita *</label>
+                            {{ form.appointment_type }}
+                            {% if form.appointment_type.errors %}
+                                <div class="invalid-feedback d-block">{{ form.appointment_type.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Tipo de consulta médica</small>
+                        </div>
+                        
+                        <div class="col-md-6 mt-3">
+                            <label for="{{ form.priority.id_for_label }}" class="form-label">Prioridad</label>
+                            {{ form.priority }}
+                            {% if form.priority.errors %}
+                                <div class="invalid-feedback d-block">{{ form.priority.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Nivel de prioridad de la cita</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Date and Time -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-clock me-2"></i>Programación
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="{{ form.start_datetime.id_for_label }}" class="form-label">Fecha y Hora de Inicio *</label>
+                            {{ form.start_datetime }}
+                            {% if form.start_datetime.errors %}
+                                <div class="invalid-feedback d-block">{{ form.start_datetime.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Fecha y hora de inicio de la consulta</small>
+                        </div>
+                        
+                        <div class="col-md-12 mt-3">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Duración estimada:</strong> <span id="duration-display">Se calculará automáticamente según el tipo de cita</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Available Slots Display -->
+                    <div class="row mb-4" id="available-slots-section" style="display: none;">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-calendar-check me-2"></i>Horarios Disponibles
+                            </h6>
+                            <div id="available-slots-container">
+                                <!-- Slots loaded via AJAX -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reason and Notes -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-file-medical me-2"></i>Detalles de la Consulta
+                            </h6>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="{{ form.reason.id_for_label }}" class="form-label">Motivo de la Consulta *</label>
+                            {{ form.reason }}
+                            {% if form.reason.errors %}
+                                <div class="invalid-feedback d-block">{{ form.reason.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Describe el motivo principal de la consulta</small>
+                        </div>
+                        
+                        <div class="col-12 mt-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">Notas Adicionales</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">{{ form.notes.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Información adicional relevante (opcional)</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-phone me-2"></i>Información de Contacto
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.patient_phone.id_for_label }}" class="form-label">Teléfono del Paciente</label>
+                            {{ form.patient_phone }}
+                            {% if form.patient_phone.errors %}
+                                <div class="invalid-feedback d-block">{{ form.patient_phone.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Se llenará automáticamente con los datos del paciente</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="{{ form.patient_email.id_for_label }}" class="form-label">Email del Paciente</label>
+                            {{ form.patient_email }}
+                            {% if form.patient_email.errors %}
+                                <div class="invalid-feedback d-block">{{ form.patient_email.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Para envío de recordatorios por email</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'appointments:calendar' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Programar Cita
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const patientSelect = document.getElementById('id_patient');
+    const doctorSelect = document.getElementById('id_doctor');
+    const appointmentTypeSelect = document.getElementById('id_appointment_type');
+    const startDatetimeInput = document.getElementById('id_start_datetime');
+    const phoneInput = document.getElementById('id_patient_phone');
+    const emailInput = document.getElementById('id_patient_email');
+    const durationDisplay = document.getElementById('duration-display');
+    const availableSlotsSection = document.getElementById('available-slots-section');
+    const availableSlotsContainer = document.getElementById('available-slots-container');
+    
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Auto-fill patient contact info when patient is selected
+    patientSelect.addEventListener('change', function() {
+        if (this.value) {
+            // In a real implementation, this would make an AJAX call to get patient data
+            // For now, we'll simulate it
+            setTimeout(() => {
+                phoneInput.value = '+52 55 1234-5678'; // Placeholder
+                emailInput.value = 'paciente@ejemplo.com'; // Placeholder
+            }, 300);
+        } else {
+            phoneInput.value = '';
+            emailInput.value = '';
+        }
+    });
+    
+    // Update duration display when appointment type changes
+    appointmentTypeSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            // Extract duration from option text (assumes format like "Consulta General (30 min)")
+            const text = selectedOption.textContent;
+            const durationMatch = text.match(/\((\d+)\s*min\)/);
+            if (durationMatch) {
+                durationDisplay.textContent = `${durationMatch[1]} minutos`;
+            } else {
+                durationDisplay.textContent = 'Duración no especificada';
+            }
+        } else {
+            durationDisplay.textContent = 'Se calculará automáticamente según el tipo de cita';
+        }
+    });
+    
+    // Load available slots when doctor, date, and type are selected
+    function loadAvailableSlots() {
+        const doctorId = doctorSelect.value;
+        const datetime = startDatetimeInput.value;
+        const appointmentTypeId = appointmentTypeSelect.value;
+        
+        if (doctorId && datetime && appointmentTypeId) {
+            const date = datetime.split('T')[0]; // Extract date part
+            
+            fetch(`{% url "appointments:available_slots" %}?doctor_id=${doctorId}&date=${date}&appointment_type_id=${appointmentTypeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.slots && data.slots.length > 0) {
+                        displayAvailableSlots(data.slots, date);
+                        availableSlotsSection.style.display = 'block';
+                    } else {
+                        availableSlotsSection.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading available slots:', error);
+                    availableSlotsSection.style.display = 'none';
+                });
+        } else {
+            availableSlotsSection.style.display = 'none';
+        }
+    }
+    
+    // Display available time slots
+    function displayAvailableSlots(slots, selectedDate) {
+        availableSlotsContainer.innerHTML = '';
+        
+        if (slots.length === 0) {
+            availableSlotsContainer.innerHTML = '<p class="text-muted">No hay horarios disponibles para esta fecha.</p>';
+            return;
+        }
+        
+        const slotsHtml = slots.map(slot => `
+            <button type="button" class="btn btn-outline-primary btn-sm me-2 mb-2 slot-btn" 
+                    data-datetime="${selectedDate}T${slot.time}">
+                ${slot.time}
+            </button>
+        `).join('');
+        
+        availableSlotsContainer.innerHTML = `
+            <p class="mb-2"><strong>Horarios disponibles:</strong></p>
+            <div class="slots-grid">${slotsHtml}</div>
+        `;
+        
+        // Add click handlers to slot buttons
+        availableSlotsContainer.querySelectorAll('.slot-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                startDatetimeInput.value = this.dataset.datetime;
+                
+                // Highlight selected slot
+                availableSlotsContainer.querySelectorAll('.slot-btn').forEach(b => {
+                    b.classList.replace('btn-primary', 'btn-outline-primary');
+                });
+                this.classList.replace('btn-outline-primary', 'btn-primary');
+            });
+        });
+    }
+    
+    // Load slots when relevant fields change
+    [doctorSelect, startDatetimeInput, appointmentTypeSelect].forEach(element => {
+        element.addEventListener('change', loadAvailableSlots);
+    });
+    
+    // Auto-select appointment type if only one exists
+    if (appointmentTypeSelect.options.length === 2) { // 1 default + 1 option
+        appointmentTypeSelect.selectedIndex = 1;
+        appointmentTypeSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+{% endblock %}
