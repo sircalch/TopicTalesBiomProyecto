@@ -7,16 +7,24 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from django.conf.urls.i18n import i18n_patterns
+from specialties import views as specialty_views
 
 # Admin customization
 admin.site.site_header = "TopicTales Biomédica - Administración"
 admin.site.site_title = "TopicTales Biomédica"
 admin.site.index_title = "Panel de Administración"
 
+# Non-translatable URLs
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
-    
+    # Language selector
+    path('i18n/', include('django.conf.urls.i18n')),
+]
+
+# Translatable URLs
+urlpatterns += i18n_patterns(
     # Authentication and user management
     path('accounts/', include('accounts.urls', namespace='accounts')),
     
@@ -29,6 +37,17 @@ urlpatterns = [
     
     # Medical specialties
     path('specialties/', include('specialties.urls', namespace='specialties')),
+    path('nutrition/', include('nutrition.urls', namespace='nutrition')),
+    path('psychology/', include('psychology.urls', namespace='psychology')),
+    
+    # Direct specialty routes (consistent with nutrition/psychology pattern)
+    path('pediatrics/', specialty_views.pediatrics, name='pediatrics'),
+    path('ophthalmology/', specialty_views.ophthalmology, name='ophthalmology'),
+    path('dentistry/', specialty_views.dentistry, name='dentistry'),
+    path('dermatology/', specialty_views.dermatology, name='dermatology'),
+    path('gynecology/', specialty_views.gynecology, name='gynecology'),
+    path('traumatology/', specialty_views.traumatology, name='traumatology'),
+    path('cardiology/', specialty_views.cardiology, name='cardiology'),
     
     # Equipment management
     path('equipment/', include('equipment.urls', namespace='equipment')),
@@ -41,7 +60,8 @@ urlpatterns = [
     
     # API endpoints
     path('api/v1/', include('api.urls', namespace='api')),
-]
+    prefix_default_language=False,
+)
 
 # Media files during development
 if settings.DEBUG:

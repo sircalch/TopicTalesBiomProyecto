@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security Settings
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-$504%_l-4o6vc*lx4isla8+zmsyfbm53xqel)4hyj-tdj-#2r&')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver', cast=Csv())
 
 # TopicTales Biomédica Apps
 TOPICTALES_APPS = [
@@ -26,6 +26,8 @@ TOPICTALES_APPS = [
     'reports.apps.ReportsConfig',
     'billing.apps.BillingConfig',
     'dashboard.apps.DashboardConfig',
+    'nutrition.apps.NutritionConfig',
+    'psychology.apps.PsychologyConfig',
 ]
 
 # Third Party Apps
@@ -55,11 +57,13 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.DisableCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'topictales_biomedica.urls'
@@ -76,14 +80,34 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
+                'django.template.context_processors.i18n',
                 'accounts.context_processors.sidebar_modules',
                 'accounts.context_processors.subscription_features',
+                'accounts.context_processors.language_context',
             ],
+            # DESACTIVAR CACHE EN DESARROLLO
+            'debug': DEBUG,
+            'string_if_invalid': '' if not DEBUG else 'INVALID_TEMPLATE_VAR: %s',
         },
     },
 ]
 
 WSGI_APPLICATION = 'topictales_biomedica.wsgi.application'
+
+# Cache Configuration - Disable caching in development
+if DEBUG:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+        }
+    }
 
 # Database Configuration
 DATABASES = {
@@ -106,15 +130,20 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'es-es'
+LANGUAGE_CODE = 'es'
 TIME_ZONE = 'America/Mexico_City'
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Disable browser caching in development
+if DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
