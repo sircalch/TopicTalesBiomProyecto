@@ -43,10 +43,10 @@
             <span class="pcoded-badge label label-primary">{{ total_patients|default:0 }}</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'patients:list' %}">Lista de Pacientes</a></li>
-            <li><a href="{% url 'patients:create' %}">Nuevo Paciente</a></li>
-            <li><a href="{% url 'patients:search' %}">Búsqueda Avanzada</a></li>
-            <li><a href="{% url 'reports:patients' %}">Reportes de Pacientes</a></li>
+            <li><a href="{% url 'patients:list' %}"><i class="bi bi-list-ul me-2"></i>Lista de Pacientes</a></li>
+            <li><a href="{% url 'patients:create' %}"><i class="bi bi-person-plus me-2"></i>Nuevo Paciente</a></li>
+            <li><a href="{% url 'patients:search' %}"><i class="bi bi-search me-2"></i>Búsqueda Avanzada</a></li>
+            <li><a href="{% url 'reports:patients' %}"><i class="bi bi-file-bar-graph me-2"></i>Reportes de Pacientes</a></li>
           </ul>
         </li>
 
@@ -60,11 +60,11 @@
             <span class="pcoded-badge label label-warning">{{ todays_appointments|default:0 }}</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'appointments:calendar' %}">Calendario</a></li>
-            <li><a href="{% url 'appointments:list' %}">Lista de Citas</a></li>
-            <li><a href="{% url 'appointments:create' %}">Nueva Cita</a></li>
-            <li><a href="{% url 'appointments:todays_appointments' %}">Citas del Día</a></li>
-            <li><a href="{% url 'appointments:schedule_config' %}">Configurar Horarios</a></li>
+            <li><a href="{% url 'appointments:calendar' %}"><i class="bi bi-calendar3 me-2"></i>Calendario</a></li>
+            <li><a href="{% url 'appointments:list' %}"><i class="bi bi-list-ul me-2"></i>Lista de Citas</a></li>
+            <li><a href="{% url 'appointments:create' %}"><i class="bi bi-plus-circle me-2"></i>Nueva Cita</a></li>
+            <li><a href="{% url 'appointments:todays_appointments' %}"><i class="bi bi-calendar-day me-2"></i>Citas del Día</a></li>
+            <li><a href="{% url 'appointments:schedule_config' %}"><i class="bi bi-gear me-2"></i>Configurar Horarios</a></li>
           </ul>
         </li>
 
@@ -110,11 +110,11 @@
             <span class="pcoded-mtext">Pediatría</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:pediatrics' %}">Dashboard Pediatría</a></li>
-            <li><a href="{% url 'specialties:pediatric_consultations' %}">Consultas Pediátricas</a></li>
-            <li><a href="{% url 'specialties:growth_charts' %}">Tablas de Crecimiento</a></li>
-            <li><a href="{% url 'specialties:vaccines' %}">Control de Vacunas</a></li>
-            <li><a href="{% url 'specialties:development' %}">Desarrollo Infantil</a></li>
+            <li><a href="{% url 'specialties:pediatrics' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Pediatría</a></li>
+            <li><a href="{% url 'specialties:pediatric_consultations' %}"><i class="bi bi-clipboard2-heart me-2"></i>Consultas Pediátricas</a></li>
+            <li><a href="{% url 'specialties:growth_charts' %}"><i class="bi bi-bar-chart-line me-2"></i>Tablas de Crecimiento</a></li>
+            <li><a href="{% url 'specialties:vaccines' %}"><i class="bi bi-shield-check me-2"></i>Control de Vacunas</a></li>
+            <li><a href="{% url 'specialties:development' %}"><i class="bi bi-person-up me-2"></i>Desarrollo Infantil</a></li>
           </ul>
         </li>
 
@@ -127,11 +127,11 @@
             <span class="pcoded-mtext">Cardiología</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:cardiology' %}">Dashboard Cardiología</a></li>
-            <li><a href="{% url 'specialties:ecg' %}">Electrocardiogramas</a></li>
-            <li><a href="{% url 'specialties:echo' %}">Ecocardiogramas</a></li>
-            <li><a href="{% url 'specialties:stress_test' %}">Pruebas de Esfuerzo</a></li>
-            <li><a href="{% url 'specialties:cardiac_rehabilitation' %}">Rehabilitación Cardíaca</a></li>
+            <li><a href="{% url 'specialties:cardiology' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Cardiología</a></li>
+            <li><a href="{% url 'specialties:ecg' %}"><i class="bi bi-activity me-2"></i>Electrocardiogramas</a></li>
+            <li><a href="{% url 'specialties:echo' %}"><i class="bi bi-soundwave me-2"></i>Ecocardiogramas</a></li>
+            <li><a href="{% url 'specialties:stress_test' %}"><i class="bi bi-lightning me-2"></i>Pruebas de Esfuerzo</a></li>
+            <li><a href="{% url 'specialties:cardiac_rehabilitation' %}"><i class="bi bi-arrow-repeat me-2"></i>Rehabilitación Cardíaca</a></li>
           </ul>
         </li>
 
@@ -144,11 +144,11 @@
             <span class="pcoded-mtext">Oftalmología</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:ophthalmology' %}">Dashboard Oftalmología</a></li>
-            <li><a href="{% url 'specialties:eye_exams' %}">Exámenes Oculares</a></li>
-            <li><a href="{% url 'specialties:vision_tests' %}">Pruebas de Visión</a></li>
-            <li><a href="{% url 'specialties:prescriptions' %}">Recetas Ópticas</a></li>
-            <li><a href="{% url 'specialties:surgeries' %}">Cirugías Oculares</a></li>
+            <li><a href="{% url 'specialties:ophthalmology' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Oftalmología</a></li>
+            <li><a href="{% url 'specialties:eye_exams' %}"><i class="bi bi-eye-fill me-2"></i>Exámenes Oculares</a></li>
+            <li><a href="{% url 'specialties:vision_tests' %}"><i class="bi bi-eyeglasses me-2"></i>Pruebas de Visión</a></li>
+            <li><a href="{% url 'specialties:prescriptions' %}"><i class="bi bi-prescription2 me-2"></i>Recetas Ópticas</a></li>
+            <li><a href="{% url 'specialties:surgeries' %}"><i class="bi bi-scissors me-2"></i>Cirugías Oculares</a></li>
           </ul>
         </li>
 
@@ -161,11 +161,11 @@
             <span class="pcoded-mtext">Odontología</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:dentistry' %}">Dashboard Odontología</a></li>
-            <li><a href="{% url 'specialties:dental_exams' %}">Exámenes Dentales</a></li>
-            <li><a href="{% url 'specialties:treatments' %}">Tratamientos Dentales</a></li>
-            <li><a href="{% url 'specialties:orthodontics' %}">Ortodoncia</a></li>
-            <li><a href="{% url 'specialties:oral_surgery' %}">Cirugía Oral</a></li>
+            <li><a href="{% url 'specialties:dentistry' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Odontología</a></li>
+            <li><a href="{% url 'specialties:dental_exams' %}"><i class="bi bi-search me-2"></i>Exámenes Dentales</a></li>
+            <li><a href="{% url 'specialties:treatments' %}"><i class="bi bi-tools me-2"></i>Tratamientos Dentales</a></li>
+            <li><a href="{% url 'specialties:orthodontics' %}"><i class="bi bi-distribute-horizontal me-2"></i>Ortodoncia</a></li>
+            <li><a href="{% url 'specialties:oral_surgery' %}"><i class="bi bi-bandaid me-2"></i>Cirugía Oral</a></li>
           </ul>
         </li>
 
@@ -178,11 +178,11 @@
             <span class="pcoded-mtext">Dermatología</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:dermatology' %}">Dashboard Dermatología</a></li>
-            <li><a href="{% url 'specialties:skin_exams' %}">Exámenes de Piel</a></li>
-            <li><a href="{% url 'specialties:dermatoscopy' %}">Dermatoscopia</a></li>
-            <li><a href="{% url 'specialties:dermatology_treatments' %}">Tratamientos</a></li>
-            <li><a href="{% url 'specialties:cosmetic' %}">Dermatología Cosmética</a></li>
+            <li><a href="{% url 'specialties:dermatology' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Dermatología</a></li>
+            <li><a href="{% url 'specialties:skin_exams' %}"><i class="bi bi-search me-2"></i>Exámenes de Piel</a></li>
+            <li><a href="{% url 'specialties:dermatoscopy' %}"><i class="bi bi-camera me-2"></i>Dermatoscopia</a></li>
+            <li><a href="{% url 'specialties:dermatology_treatments' %}"><i class="bi bi-droplet-fill me-2"></i>Tratamientos</a></li>
+            <li><a href="{% url 'specialties:cosmetic' %}"><i class="bi bi-star me-2"></i>Dermatología Cosmética</a></li>
           </ul>
         </li>
 
@@ -195,11 +195,11 @@
             <span class="pcoded-mtext">Ginecología</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:gynecology' %}">Dashboard Ginecología</a></li>
-            <li><a href="{% url 'specialties:gynecologic_exams' %}">Exámenes Ginecológicos</a></li>
-            <li><a href="{% url 'specialties:pregnancy' %}">Control Prenatal</a></li>
-            <li><a href="{% url 'specialties:pap_smear' %}">Citología</a></li>
-            <li><a href="{% url 'specialties:contraception' %}">Anticonceptivos</a></li>
+            <li><a href="{% url 'specialties:gynecology' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Ginecología</a></li>
+            <li><a href="{% url 'specialties:gynecologic_exams' %}"><i class="bi bi-clipboard2-check me-2"></i>Exámenes Ginecológicos</a></li>
+            <li><a href="{% url 'specialties:pregnancy' %}"><i class="bi bi-heart me-2"></i>Control Prenatal</a></li>
+            <li><a href="{% url 'specialties:pap_smear' %}"><i class="bi bi-file-medical me-2"></i>Citología</a></li>
+            <li><a href="{% url 'specialties:contraception' %}"><i class="bi bi-shield-check me-2"></i>Anticonceptivos</a></li>
           </ul>
         </li>
 
@@ -212,11 +212,11 @@
             <span class="pcoded-mtext">Traumatología</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:traumatology' %}">Dashboard Traumatología</a></li>
-            <li><a href="{% url 'specialties:xrays' %}">Radiografías</a></li>
-            <li><a href="{% url 'specialties:fractures' %}">Fracturas</a></li>
-            <li><a href="{% url 'specialties:therapy' %}">Fisioterapia</a></li>
-            <li><a href="{% url 'specialties:orthopedic_surgeries' %}">Cirugías Ortopédicas</a></li>
+            <li><a href="{% url 'specialties:traumatology' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Traumatología</a></li>
+            <li><a href="{% url 'specialties:xrays' %}"><i class="bi bi-lightning me-2"></i>Radiografías</a></li>
+            <li><a href="{% url 'specialties:fractures' %}"><i class="bi bi-bandaid-fill me-2"></i>Fracturas</a></li>
+            <li><a href="{% url 'specialties:therapy' %}"><i class="bi bi-arrow-repeat me-2"></i>Fisioterapia</a></li>
+            <li><a href="{% url 'specialties:orthopedic_surgeries' %}"><i class="bi bi-tools me-2"></i>Cirugías Ortopédicas</a></li>
           </ul>
         </li>
 
@@ -267,9 +267,9 @@
             <span class="pcoded-mtext">Psicología</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:psychology' %}">Dashboard Psicología</a></li>
-            <li><a href="{% url 'specialties:consultation_list' %}">Consultas Psicológicas</a></li>
-            <li><a href="{% url 'specialties:index' %}">Ver Especialidades</a></li>
+            <li><a href="{% url 'specialties:psychology' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Psicología</a></li>
+            <li><a href="{% url 'specialties:consultation_list' %}"><i class="bi bi-chat-square-text me-2"></i>Consultas Psicológicas</a></li>
+            <li><a href="{% url 'specialties:index' %}"><i class="bi bi-list-ul me-2"></i>Ver Especialidades</a></li>
           </ul>
         </li>
         
@@ -281,9 +281,9 @@
             <span class="pcoded-mtext">Nutrición</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'specialties:nutrition' %}">Dashboard Nutrición</a></li>
-            <li><a href="{% url 'specialties:consultation_list' %}">Consultas Nutricionales</a></li>
-            <li><a href="{% url 'specialties:index' %}">Ver Especialidades</a></li>
+            <li><a href="{% url 'specialties:nutrition' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Nutrición</a></li>
+            <li><a href="{% url 'specialties:consultation_list' %}"><i class="bi bi-clipboard2-heart me-2"></i>Consultas Nutricionales</a></li>
+            <li><a href="{% url 'specialties:index' %}"><i class="bi bi-list-ul me-2"></i>Ver Especialidades</a></li>
           </ul>
         </li>
 
@@ -299,11 +299,11 @@
             <span class="pcoded-mtext">Reportes</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'reports:index' %}">Dashboard Reportes</a></li>
-            <li><a href="{% url 'reports:patients' %}">Reportes de Pacientes</a></li>
-            <li><a href="{% url 'reports:appointments' %}">Reportes de Citas</a></li>
-            <li><a href="{% url 'reports:index' %}">Estadísticas Médicas</a></li>
-            <li><a href="{% url 'reports:index' %}">Exportar Datos</a></li>
+            <li><a href="{% url 'reports:index' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard Reportes</a></li>
+            <li><a href="{% url 'reports:patients' %}"><i class="bi bi-people me-2"></i>Reportes de Pacientes</a></li>
+            <li><a href="{% url 'reports:appointments' %}"><i class="bi bi-calendar-event me-2"></i>Reportes de Citas</a></li>
+            <li><a href="{% url 'reports:index' %}"><i class="bi bi-bar-chart me-2"></i>Estadísticas Médicas</a></li>
+            <li><a href="{% url 'reports:index' %}"><i class="bi bi-download me-2"></i>Exportar Datos</a></li>
           </ul>
         </li>
 
@@ -312,6 +312,54 @@
           <label>Herramientas</label>
         </li>
         
+        <!-- Communication Tools -->
+        <li data-username="comunicación mensajes chat" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-chat-dots-fill"></i>
+            </span>
+            <span class="pcoded-mtext">Comunicación</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="#">Mensajes Pacientes</a></li>
+            <li><a href="#">Chat Interno</a></li>
+            <li><a href="#">Notificaciones</a></li>
+            <li><a href="#">Email Templates</a></li>
+          </ul>
+        </li>
+        
+        <!-- Equipment Management -->
+        <li data-username="equipos instrumentos médicos" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-tools"></i>
+            </span>
+            <span class="pcoded-mtext">Equipos Médicos</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'equipment:list' %}">Lista de Equipos</a></li>
+            <li><a href="{% url 'equipment:maintenance' %}">Mantenimiento</a></li>
+            <li><a href="{% url 'equipment:calibration' %}">Calibración</a></li>
+            <li><a href="{% url 'equipment:inventory' %}">Inventario</a></li>
+          </ul>
+        </li>
+        
+        <!-- Billing & Finance -->
+        <li data-username="facturación finanzas cobros" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-credit-card-fill"></i>
+            </span>
+            <span class="pcoded-mtext">Facturación</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'billing:invoices' %}">Facturas</a></li>
+            <li><a href="{% url 'billing:payments' %}">Pagos</a></li>
+            <li><a href="{% url 'billing:insurance' %}">Seguros</a></li>
+            <li><a href="{% url 'billing:reports' %}">Reportes Financieros</a></li>
+          </ul>
+        </li>
+
         <!-- Dynamic Communication Modules -->
         {% for category, modules in sidebar_modules.items %}
           {% if modules and category == 'communication' %}
@@ -347,15 +395,31 @@
         <li data-username="archivos documentos gestión" class="nav-item pcoded-hasmenu">
           <a href="#" class="nav-link">
             <span class="pcoded-micon">
-              <i class="bi bi-folder2-open"></i>
+              <i class="bi bi-files"></i>
             </span>
             <span class="pcoded-mtext">Gestión de Archivos</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'medical_records:index' %}">Documentos Médicos</a></li>
-            <li><a href="{% url 'medical_records:templates' %}">Plantillas</a></li>
-            <li><a href="{% url 'reports:index' %}">Reportes</a></li>
-            <li><a href="{% url 'dashboard:index' %}">Panel Principal</a></li>
+            <li><a href="{% url 'medical_records:index' %}"><i class="bi bi-file-medical me-2"></i>Documentos Médicos</a></li>
+            <li><a href="{% url 'medical_records:templates' %}"><i class="bi bi-file-text me-2"></i>Plantillas</a></li>
+            <li><a href="{% url 'reports:index' %}"><i class="bi bi-file-earmark-bar-graph me-2"></i>Reportes</a></li>
+            <li><a href="{% url 'dashboard:index' %}"><i class="bi bi-house me-2"></i>Panel Principal</a></li>
+          </ul>
+        </li>
+        
+        <!-- Laboratory & Diagnostics -->
+        <li data-username="laboratorio diagnósticos análisis" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-virus"></i>
+            </span>
+            <span class="pcoded-mtext">Laboratorio</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="#"><i class="bi bi-droplet me-2"></i>Análisis de Sangre</a></li>
+            <li><a href="#"><i class="bi bi-cup me-2"></i>Análisis de Orina</a></li>
+            <li><a href="#"><i class="bi bi-graph-up me-2"></i>Resultados</a></li>
+            <li><a href="#"><i class="bi bi-printer me-2"></i>Imprimir Reportes</a></li>
           </ul>
         </li>
 
@@ -403,10 +467,10 @@
               <span class="pcoded-mtext">Sistema</span>
             </a>
             <ul class="pcoded-submenu">
-              <li><a href="{% url 'admin:index' %}">Panel Admin</a></li>
-              <li><a href="{% url 'accounts:settings' %}">Configuraciones</a></li>
-              <li><a href="{% url 'admin:index' %}">Gestión de Usuarios</a></li>
-              <li><a href="{% url 'reports:index' %}">Reportes del Sistema</a></li>
+              <li><a href="{% url 'admin:index' %}"><i class="bi bi-shield-lock me-2"></i>Panel Admin</a></li>
+              <li><a href="{% url 'accounts:settings' %}"><i class="bi bi-sliders me-2"></i>Configuraciones</a></li>
+              <li><a href="{% url 'admin:index' %}"><i class="bi bi-people-fill me-2"></i>Gestión de Usuarios</a></li>
+              <li><a href="{% url 'reports:index' %}"><i class="bi bi-clipboard-data me-2"></i>Reportes del Sistema</a></li>
             </ul>
           </li>
         {% endif %}
@@ -424,12 +488,12 @@
             <span class="pcoded-badge label label-success">Online</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'accounts:profile' %}">Mi Perfil</a></li>
-            <li><a href="{% url 'accounts:settings' %}">Configuración</a></li>
+            <li><a href="{% url 'accounts:profile' %}"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+            <li><a href="{% url 'accounts:settings' %}"><i class="bi bi-gear me-2"></i>Configuración</a></li>
             {% if user_subscription.plan == 'BASIC' %}
-              <li><a href="{% url 'accounts:subscription' %}">Actualizar Plan</a></li>
+              <li><a href="{% url 'accounts:subscription' %}"><i class="bi bi-star me-2"></i>Actualizar Plan</a></li>
             {% endif %}
-            <li><a href="{% url 'accounts:logout' %}">Cerrar Sesión</a></li>
+            <li><a href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
           </ul>
         </li>
 
