@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ specialty.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-stethoscope me-2 text-primary"></i>{{ specialty.name }}
+                </h1>
+                <div>
+                    <a href="{% url 'specialties:index' %}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-2"></i>Volver
+                    </a>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Nueva Consulta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Specialty Information -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Información de la Especialidad</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Código:</strong> {{ specialty.code }}</p>
+                                    <p><strong>Descripción:</strong> {{ specialty.description }}</p>
+                                    <p><strong>Estado:</strong> 
+                                        {% if specialty.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactivo</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Consulta:</strong> ${{ specialty.consultation_price }}</p>
+                                    <p><strong>Control:</strong> ${{ specialty.follow_up_price }}</p>
+                                    <p><strong>Requiere Referencia:</strong> 
+                                        {% if specialty.requires_referral %}
+                                            <span class="badge bg-warning">Sí</span>
+                                        {% else %}
+                                            <span class="badge bg-info">No</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Estadísticas</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-primary mb-0">{{ stats.total_consultations }}</h4>
+                                    <small class="text-muted">Consultas</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-success mb-0">{{ stats.active_treatments }}</h4>
+                                    <small class="text-muted">Tratamientos</small>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-info mb-0">{{ doctors.count }}</h4>
+                                    <small class="text-muted">Doctores</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-warning mb-0">{{ procedures.count }}</h4>
+                                    <small class="text-muted">Procedimientos</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Consultations -->
+            {% if recent_consultations %}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Consultas Recientes</h5>
+                    <a href="{% url 'specialties:consultation_list' %}?specialty={{ specialty.id }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-list me-1"></i>Ver Todas
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Doctor</th>
+                                    <th>Fecha</th>
+                                    <th>Motivo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consultation in recent_consultations %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-info text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ consultation.patient.full_name }}</strong><br>
+                                                <small class="text-muted">{{ consultation.patient.document_number }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ consultation.doctor.user.get_full_name }}</strong><br>
+                                        <small class="text-muted">{{ consultation.doctor.license_number }}</small>
+                                    </td>
+                                    <td>
+                                        {{ consultation.date|date:"d/m/Y" }}<br>
+                                        <small class="text-muted">{{ consultation.date|time:"H:i" }}</small>
+                                    </td>
+                                    <td>{{ consultation.chief_complaint|truncatechars:50 }}</td>
+                                    <td>
+                                        {% if consultation.is_completed %}
+                                            <span class="badge bg-success">Completada</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pendiente</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Simple placeholder if no data -->
+            {% if not recent_consultations %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-stethoscope fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Especialidad: {{ specialty.name }}</h5>
+                    <p class="text-muted">{{ specialty.description }}</p>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Primera Consulta
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

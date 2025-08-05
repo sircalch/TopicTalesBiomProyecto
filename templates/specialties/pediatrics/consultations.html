@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:pediatrics' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-stethoscope fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ page_title }}</h1>
+                                    <p class="mb-0 opacity-75">{{ description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm" onclick="newPediatricConsultation()">
+                                    <i class="fas fa-plus me-1"></i>Nueva Consulta
+                                </button>
+                                <button class="btn btn-outline-light btn-sm" onclick="schedulePediatricAppointment()">
+                                    <i class="fas fa-calendar me-1"></i>Programar
+                                </button>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i class="fas fa-cog me-1"></i>Más
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="exportPediatricData()"><i class="fas fa-download me-2"></i>Exportar Datos</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="viewPediatricStats()"><i class="fas fa-chart-bar me-2"></i>Estadísticas</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#" onclick="pediatricSettings()"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Consultas Hoy</div>
+                            <div class="stats-number h3 mb-0 text-info">8</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+2 vs ayer</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Esta Semana</div>
+                            <div class="stats-number h3 mb-0 text-success">42</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+15%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-calendar-week fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Controles de Rutina</div>
+                            <div class="stats-number h3 mb-0 text-warning">28</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+8%</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-clipboard-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Urgencias</div>
+                            <div class="stats-number h3 mb-0 text-danger">3</div>
+                            <small class="text-muted"><i class="fas fa-minus me-1"></i>Sin cambios</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-ambulance fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Consultation List -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-primary me-2"></i>Consultas Pediátricas
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas</option>
+                            <option>Hoy</option>
+                            <option>Esta semana</option>
+                            <option>Este mes</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>Tipo de Consulta</th>
+                                    <th>Fecha/Hora</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/17a2b8/ffffff?text=AR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana Rodríguez</div>
+                                                <small class="text-muted">ID: PAC-001</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">2 años</span>
+                                        <br><small class="text-muted">24 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Control de Rutina</span>
+                                        <br><small class="text-muted">Crecimiento y desarrollo</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">09:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completada</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historia clínica">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=LM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Luis Martínez</div>
+                                                <small class="text-muted">ID: PAC-002</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">5 años</span>
+                                        <br><small class="text-muted">60 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Consulta por Enfermedad</span>
+                                        <br><small class="text-muted">Fiebre y malestar</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">11:00 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-primary">En Proceso</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-primary" title="Continuar consulta">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historia clínica">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=SG" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Sofía García</div>
+                                                <small class="text-muted">ID: PAC-003</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">8 meses</span>
+                                        <br><small class="text-muted">8 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Vacunación</span>
+                                        <br><small class="text-muted">Esquema regular</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">14:30 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-secondary">Programada</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Reagendar">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historia clínica">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Mostrando 3 de 15 consultas</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Info -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nueva Consulta Pediátrica
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Control de Rutina
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-syringe me-2"></i>Registrar Vacunación
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-ambulance me-2"></i>Atender Urgencia
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-line me-2"></i>Ver Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-export me-2"></i>Exportar Consultas
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Age Groups -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-child text-info me-2"></i>Grupos Etarios
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="age-group-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Recién Nacidos</div>
+                            <small class="text-muted">0-28 días</small>
+                        </div>
+                        <span class="badge bg-info">2</span>
+                    </div>
+                    
+                    <div class="age-group-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Lactantes</div>
+                            <small class="text-muted">1-24 meses</small>
+                        </div>
+                        <span class="badge bg-success">15</span>
+                    </div>
+                    
+                    <div class="age-group-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Preescolares</div>
+                            <small class="text-muted">2-5 años</small>
+                        </div>
+                        <span class="badge bg-warning">12</span>
+                    </div>
+                    
+                    <div class="age-group-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Escolares</div>
+                            <small class="text-muted">6-12 años</small>
+                        </div>
+                        <span class="badge bg-primary">8</span>
+                    </div>
+                    
+                    <div class="age-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">Adolescentes</div>
+                            <small class="text-muted">13-18 años</small>
+                        </div>
+                        <span class="badge bg-secondary">5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.age-group-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.age-group-item:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Pediatric Consultation Functions
+function newPediatricConsultation() {
+    TopicTalesApp.utils.confirm(
+        '¿Crear una nueva consulta pediátrica?',
+        function() {
+            // Open modal for new consultation
+            const modalHtml = `
+                <div class="modal fade" id="newConsultationModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title"><i class="fas fa-stethoscope me-2"></i>Nueva Consulta Pediátrica</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="pediatricConsultationForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Paciente</label>
+                                            <select class="form-select" required>
+                                                <option value="">Seleccionar paciente...</option>
+                                                <option value="1">Ana García López (5 años)</option>
+                                                <option value="2">Carlos Martínez Silva (8 años)</option>
+                                                <option value="3">María González Torres (3 años)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tipo de Consulta</label>
+                                            <select class="form-select" required>
+                                                <option value="control">Control de Rutina</option>
+                                                <option value="vacuna">Control de Vacunas</option>
+                                                <option value="crecimiento">Evaluación de Crecimiento</option>
+                                                <option value="enfermedad">Consulta por Enfermedad</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Motivo de Consulta</label>
+                                        <textarea class="form-control" rows="3" placeholder="Describir el motivo de la consulta..."></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Peso (kg)</label>
+                                            <input type="number" class="form-control" step="0.1" placeholder="0.0">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Talla (cm)</label>
+                                            <input type="number" class="form-control" step="0.1" placeholder="0.0">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Temperatura (°C)</label>
+                                            <input type="number" class="form-control" step="0.1" placeholder="36.5">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" onclick="savePediatricConsultation()">
+                                    <i class="fas fa-save me-1"></i>Guardar Consulta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to page and show
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('newConsultationModal'));
+            modal.show();
+            
+            // Remove modal from DOM when hidden
+            document.getElementById('newConsultationModal').addEventListener('hidden.bs.modal', function () {
+                this.remove();
+            });
+        }
+    );
+}
+
+function savePediatricConsultation() {
+    TopicTalesApp.utils.showLoading('Guardando consulta...');
+    
+    // Simulate API call
+    setTimeout(() => {
+        TopicTalesApp.utils.hideLoading();
+        TopicTalesApp.utils.showToast('Consulta pediátrica guardada exitosamente', 'success');
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('newConsultationModal'));
+        modal.hide();
+        
+        // Refresh page or update data
+        setTimeout(() => location.reload(), 1500);
+    }, 2000);
+}
+
+function schedulePediatricAppointment() {
+    TopicTalesApp.utils.showToast('Redirigiendo al calendario de citas pediátricas...', 'info');
+    setTimeout(() => {
+        window.location.href = '/appointments/create/?specialty=pediatrics';
+    }, 1000);
+}
+
+function exportPediatricData() {
+    TopicTalesApp.utils.confirm(
+        '¿Exportar datos de consultas pediátricas?',
+        function() {
+            TopicTalesApp.utils.showLoading('Preparando exportación...');
+            
+            setTimeout(() => {
+                TopicTalesApp.utils.hideLoading();
+                TopicTalesApp.utils.showToast('Archivo exportado exitosamente', 'success');
+                
+                // Simulate file download
+                const link = document.createElement('a');
+                link.href = 'data:text/csv;charset=utf-8,ID,Paciente,Fecha,Tipo,Resultado\n1,Ana García,2025-08-01,Control,Normal\n2,Carlos Martínez,2025-08-01,Vacuna,Aplicada';
+                link.download = 'consultas_pediatricas_' + new Date().toISOString().split('T')[0] + '.csv';
+                link.click();
+            }, 2000);
+        }
+    );
+}
+
+function viewPediatricStats() {
+    TopicTalesApp.utils.showToast('Cargando estadísticas pediátricas...', 'info');
+    setTimeout(() => {
+        window.location.href = '/reports/?specialty=pediatrics';
+    }, 1000);
+}
+
+function pediatricSettings() {
+    TopicTalesApp.utils.showToast('Abriendo configuración de pediatría...', 'info');
+    setTimeout(() => {
+        window.location.href = '/specialties/pediatrics/settings/';
+    }, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Add click handlers to patient cards in the table
+    const patientRows = document.querySelectorAll('[data-patient-id]');
+    patientRows.forEach(row => {
+        row.addEventListener('click', function() {
+            const patientId = this.dataset.patientId;
+            viewPatientDetails(patientId);
+        });
+    });
+});
+</script>
+{% endblock %}

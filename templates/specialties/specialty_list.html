@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Especialidades{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-list me-2 text-primary"></i>Lista de Especialidades
+                </h1>
+                <a href="{% url 'specialties:index' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="active" class="form-label">Estado</label>
+                            <select class="form-select" id="active" name="active">
+                                <option value="">Todos</option>
+                                <option value="true" {% if active_filter == 'true' %}selected{% endif %}>Activas</option>
+                                <option value="false" {% if active_filter == 'false' %}selected{% endif %}>Inactivas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-1"></i>Filtrar
+                            </button>
+                            <a href="{% url 'specialties:specialty_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Specialties List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        Especialidades Médicas
+                        <span class="badge bg-secondary ms-2">{{ specialties.paginator.count }} total</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Especialidad</th>
+                                    <th>Código</th>
+                                    <th>Doctores</th>
+                                    <th>Procedimientos</th>
+                                    <th>Consultas</th>
+                                    <th>Precios</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for specialty in specialties %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                {% if specialty.code == 'PEDI' %}
+                                                    <i class="fas fa-baby fa-2x text-info"></i>
+                                                {% elif specialty.code == 'CARD' %}
+                                                    <i class="fas fa-heartbeat fa-2x text-danger"></i>
+                                                {% elif specialty.code == 'GINE' %}
+                                                    <i class="fas fa-female fa-2x text-pink"></i>
+                                                {% elif specialty.code == 'OPHT' %}
+                                                    <i class="fas fa-eye fa-2x text-primary"></i>
+                                                {% elif specialty.code == 'DENT' %}
+                                                    <i class="fas fa-tooth fa-2x text-success"></i>
+                                                {% elif specialty.code == 'DERM' %}
+                                                    <i class="fas fa-user-md fa-2x text-warning"></i>
+                                                {% elif specialty.code == 'TRAU' %}
+                                                    <i class="fas fa-bone fa-2x text-danger"></i>
+                                                {% else %}
+                                                    <i class="fas fa-stethoscope fa-2x text-secondary"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <strong>{{ specialty.name }}</strong><br>
+                                                <small class="text-muted">{{ specialty.description|truncatechars:80 }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">{{ specialty.code }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ specialty.doctors_count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">{{ specialty.procedures_count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ specialty.consultations_count }}</span>
+                                    </td>
+                                    <td>
+                                        <strong>${{ specialty.consultation_price }}</strong><br>
+                                        <small class="text-muted">Control: ${{ specialty.follow_up_price }}</small>
+                                    </td>
+                                    <td>
+                                        {% if specialty.is_active %}
+                                            <span class="badge bg-success">Activa</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactiva</span>
+                                        {% endif %}
+                                        {% if specialty.requires_referral %}
+                                            <br><small class="text-warning">Requiere referencia</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'specialties:specialty_detail' specialty.pk %}" class="btn btn-outline-primary" title="Ver Detalle">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-success" title="Nueva Consulta">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <i class="fas fa-hospital fa-3x text-muted mb-3"></i>
+                                        <h5 class="text-muted">No hay especialidades disponibles</h5>
+                                        <p class="text-muted">Configure las especialidades médicas para comenzar.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if specialties.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Paginación de especialidades">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if specialties.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if active_filter %}&active={{ active_filter }}{% endif %}">Primera</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ specialties.previous_page_number }}{% if active_filter %}&active={{ active_filter }}{% endif %}">Anterior</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Página {{ specialties.number }} de {{ specialties.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if specialties.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ specialties.next_page_number }}{% if active_filter %}&active={{ active_filter }}{% endif %}">Siguiente</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ specialties.paginator.num_pages }}{% if active_filter %}&active={{ active_filter }}{% endif %}">Última</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:ophthalmology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #6610f2 0%, #520dc2 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-user-md fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Cirugías Oculares</h1>
+                                    <p class="mb-0 opacity-75">Procedimientos quirúrgicos oftalmológicos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Programar Cirugía
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Quirófano
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Cirugías Mes</div>
+                            <div class="stats-number h3 mb-0 text-purple">142</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+12 vs mes anterior</small>
+                        </div>
+                        <div class="stats-icon text-purple">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Cataratas</div>
+                            <div class="stats-number h3 mb-0 text-info">86</div>
+                            <small class="text-info"><i class="fas fa-eye me-1"></i>Más frecuente</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Éxito</div>
+                            <div class="stats-number h3 mb-0 text-success">98.5%</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>Sin complicaciones</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Programadas</div>
+                            <div class="stats-number h3 mb-0 text-warning">24</div>
+                            <small class="text-warning"><i class="fas fa-calendar me-1"></i>Próximas</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-calendar-plus fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Surgery Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-procedures text-purple me-2"></i>Cirugías Recientes
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas</option>
+                            <option>Cataratas</option>
+                            <option>Glaucoma</option>
+                            <option>Retina</option>
+                            <option>Refractiva</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-purple">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Procedimiento</th>
+                                    <th>Ojo</th>
+                                    <th>Duración</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Resultado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/6610f2/ffffff?text=ER" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Elena Ruiz</div>
+                                                <small class="text-muted">ID: PAC-075</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Facoemulsificación</span>
+                                        <br><small class="text-muted">Catarata senil</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">OD</span>
+                                        <br><small class="text-muted">Derecho</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">25 min</span>
+                                        <br><small class="text-success">Normal</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">08:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completada</span></td>
+                                    <td>
+                                        <span class="text-success fw-medium">Excelente</span>
+                                        <br><small class="text-muted">AV 20/20</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Seguimiento">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=AM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Antonio Moreno</div>
+                                                <small class="text-muted">ID: PAC-076</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Trabeculectomía</span>
+                                        <br><small class="text-muted">Glaucoma primario</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">OI</span>
+                                        <br><small class="text-muted">Izquierdo</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">45 min</span>
+                                        <br><small class="text-info">Compleja</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">10:15 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completada</span></td>
+                                    <td>
+                                        <span class="text-success fw-medium">Buena</span>
+                                        <br><small class="text-muted">PIO controlada</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-success" title="Control PIO">
+                                                <i class="fas fa-tachometer-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Seguimiento">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/007bff/ffffff?text=PS" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Patricia Sánchez</div>
+                                                <small class="text-muted">ID: PAC-077</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">LASIK</span>
+                                        <br><small class="text-muted">Miopía bilateral</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">AO</span>
+                                        <br><small class="text-muted">Ambos</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">15 min</span>
+                                        <br><small class="text-success">Rápida</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">14:30 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-info">Seguimiento</span></td>
+                                    <td>
+                                        <span class="text-info fw-medium">En proceso</span>
+                                        <br><small class="text-muted">Control 24h</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="Control post-op">
+                                                <i class="fas fa-stethoscope"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Próxima cita">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=RL" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ricardo López</div>
+                                                <small class="text-muted">ID: PAC-078</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Vitrectomía</span>
+                                        <br><small class="text-muted">Desprendimiento retina</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">OD</span>
+                                        <br><small class="text-muted">Derecho</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">90 min</span>
+                                        <br><small class="text-warning">Extensa</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">29 Ene 2025</div>
+                                        <small class="text-muted">09:00 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Recuperación</span></td>
+                                    <td>
+                                        <span class="text-warning fw-medium">Satisfactoria</span>
+                                        <br><small class="text-muted">Retina adherida</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Control retina">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="OCT seguimiento">
+                                                <i class="fas fa-microscope"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Mostrando 4 de 142 cirugías</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Surgery Types -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-purple btn-sm">
+                            <i class="fas fa-plus me-2"></i>Programar Cirugía
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar me-2"></i>Ver Quirófano
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-user-check me-2"></i>Control Post-op
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-stethoscope me-2"></i>Seguimientos
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-medical me-2"></i>Informes Quirúrgicos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Surgery Types -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-procedures text-purple me-2"></i>Tipos de Cirugía
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="surgery-types">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Cataratas</div>
+                                <small class="text-muted">Facoemulsificación</small>
+                            </div>
+                            <span class="badge bg-info">60%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Refractiva</div>
+                                <small class="text-muted">LASIK, PRK</small>
+                            </div>
+                            <span class="badge bg-success">18%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Glaucoma</div>
+                                <small class="text-muted">Trabeculectomía</small>
+                            </div>
+                            <span class="badge bg-warning">12%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Retina</div>
+                                <small class="text-muted">Vitrectomía</small>
+                            </div>
+                            <span class="badge bg-danger">7%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-medium">Otras</div>
+                                <small class="text-muted">Ptosis, estrabismo</small>
+                            </div>
+                            <span class="badge bg-secondary">3%</span>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <h6 class="text-muted mb-2">Tiempo Promedio</h6>
+                            
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="fw-medium text-info">25 min</div>
+                                    <small class="text-muted">Cataratas</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-medium text-success">15 min</div>
+                                    <small class="text-muted">LASIK</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.text-purple { color: #6610f2 !important; }
+.btn-purple { background-color: #6610f2; border-color: #6610f2; color: white; }
+.btn-outline-purple { color: #6610f2; border-color: #6610f2; }
+.specialty-icon { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 15px; 
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stats-card { 
+    border: none; 
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.surgery-types > div {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+.surgery-types > div:last-child {
+    border-bottom: none;
+}
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

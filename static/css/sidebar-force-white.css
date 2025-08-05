@@ -1,0 +1,131 @@
+/* ============================================================
+   SIDEBAR FORCE WHITE TEXT - TopicTales Biomédica
+   Corrección agresiva para forzar texto blanco en sidebar
+   ============================================================ */
+
+/* FORZAR TEXTO BLANCO - MÁXIMA ESPECIFICIDAD */
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item a,
+body .pcoded-navbar .pcoded-inner-navbar li a,
+body .pcoded-navbar .pcoded-inner-navbar .nav-link,
+body .pcoded-navbar .pcoded-inner-navbar a {
+    color: #ffffff !important;
+}
+
+/* FORZAR ICONOS BLANCOS */
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link .pcoded-micon i,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item .pcoded-micon i,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-micon i,
+body .pcoded-navbar .pcoded-inner-navbar i {
+    color: #ffffff !important;
+}
+
+/* FORZAR TEXTO DE MENÚ BLANCO */
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link .pcoded-mtext,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item .pcoded-mtext,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-mtext {
+    color: #ffffff !important;
+}
+
+/* FORZAR TÍTULOS DE SECCIÓN BLANCOS */
+body .pcoded-navbar .pcoded-inner-navbar li.pcoded-menu-caption label,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-menu-caption label {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* HOVER STATES - AZUL */
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item:hover .nav-link,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item:hover a,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item:hover .pcoded-mtext,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item:hover .pcoded-micon i {
+    color: #04a9f5 !important;
+}
+
+/* ACTIVE STATES - AZUL */
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item.active .nav-link,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item.active a,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item.active .pcoded-mtext,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item.active .pcoded-micon i,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link.active,
+body .pcoded-navbar .pcoded-inner-navbar li.nav-item a.active {
+    color: #04a9f5 !important;
+}
+
+/* SUBMENU TEXTO BLANCO */
+body .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li a,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-submenu li a,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-submenu a {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* SUBMENU HOVER - BLANCO COMPLETO */
+body .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li:hover a,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-submenu li:hover a,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-submenu a:hover {
+    color: #ffffff !important;
+}
+
+/* SUBMENU ACTIVE - AZUL */
+body .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li.active a,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-submenu li.active a,
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-submenu a.active {
+    color: #04a9f5 !important;
+}
+
+/* BRAND TITLE BLANCO */
+body .pcoded-navbar .navbar-brand .b-title {
+    color: #ffffff !important;
+}
+
+/* BADGES Y CONTADORES BLANCOS */
+body .pcoded-navbar .pcoded-inner-navbar .pcoded-badge,
+body .pcoded-navbar .pcoded-inner-navbar .label,
+body .pcoded-navbar .pcoded-inner-navbar .badge {
+    color: #ffffff !important;
+    background: #04a9f5 !important;
+}
+
+/* RESET DE CUALQUIER COLOR GRIS */
+body .pcoded-navbar .pcoded-inner-navbar *:not(.pcoded-badge):not(.label):not(.badge) {
+    color: inherit;
+}
+
+/* ESPECIFICIDAD MÁXIMA PARA OVERRIDES PROBLEMÁTICOS */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link[style*="color"] {
+    color: #ffffff !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .pcoded-micon i[style*="color"] {
+    color: #ffffff !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .pcoded-mtext[style*="color"] {
+    color: #ffffff !important;
+}
+
+/* ARROW INDICATORS BLANCOS */
+body .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu > .nav-link:after {
+    color: #ffffff !important;
+}
+
+body .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu:hover > .nav-link:after {
+    color: #04a9f5 !important;
+}
+
+/* FALLBACK GLOBAL PARA CUALQUIER ELEMENTO NO CUBIERTO */
+.pcoded-navbar * {
+    color: inherit !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar {
+    color: #ffffff !important;
+}
+
+/* DEBUG - TEMPORAL PARA IDENTIFICAR ELEMENTOS PROBLEMÁTICOS */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item {
+    border: 1px solid transparent !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item:hover {
+    border-color: rgba(4, 169, 245, 0.3) !important;
+}

@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Odontología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-tooth me-2 text-success"></i>Odontología
+                </h1>
+                <a href="{% url 'specialties:index' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Especialidades
+                </a>
+            </div>
+
+            <!-- Services Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tooth fa-2x text-success mb-3"></i>
+                            <h6 class="card-title">Consultas Odontológicas</h6>
+                            <p class="card-text small">Revisiones y diagnósticos</p>
+                            <button type="button" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus me-2"></i>Nueva Consulta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <i class="fas fa-x-ray fa-2x text-info mb-3"></i>
+                            <h6 class="card-title">Radiografías Dentales</h6>
+                            <p class="card-text small">Diagnóstico por imágenes</p>
+                            <button type="button" class="btn btn-info btn-sm">
+                                <i class="fas fa-camera me-2"></i>Tomar Radiografía
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tools fa-2x text-warning mb-3"></i>
+                            <h6 class="card-title">Tratamientos</h6>
+                            <p class="card-text small">Limpiezas, empastes, extracciones</p>
+                            <button type="button" class="btn btn-warning btn-sm">
+                                <i class="fas fa-plus me-2"></i>Nuevo Tratamiento
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-check fa-2x text-primary mb-3"></i>
+                            <h6 class="card-title">Citas Programadas</h6>
+                            <p class="card-text small">Agenda odontológica</p>
+                            <button type="button" class="btn btn-primary btn-sm">
+                                <i class="fas fa-calendar me-2"></i>Ver Agenda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Appointments -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Citas Recientes de Odontología</h5>
+                    <span class="badge bg-secondary">8 citas</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Motivo de Consulta</th>
+                                    <th>Fecha y Hora</th>
+                                    <th>Tratamiento</th>
+                                    <th>Estado</th>
+                                    <th>Odontólogo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-success text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Carlos Mendoza</strong><br>
+                                                <small class="text-muted">PAC010</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Limpieza Dental</strong><br>
+                                        <small class="text-muted">Profilaxis y revisión</small>
+                                    </td>
+                                    <td>
+                                        <small>Hoy, 10:00 AM<br>30 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Limpieza Profesional</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completada</span>
+                                    </td>
+                                    <td>
+                                        <strong>Dr. Luis García</strong><br>
+                                        <small class="text-muted">Odontólogo General</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Historia Clínica">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Radiografías">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Próxima Cita">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-warning text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>María Torres</strong><br>
+                                                <small class="text-muted">PAC011</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Dolor Molar</strong><br>
+                                        <small class="text-muted">Posible caries</small>
+                                    </td>
+                                    <td>
+                                        <small>29 Ene, 2:30 PM<br>Ayer</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Empaste Dental</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completada</span>
+                                    </td>
+                                    <td>
+                                        <strong>Dra. Ana Ruiz</strong><br>
+                                        <small class="text-muted">Endodoncista</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Tratamiento">
+                                                <i class="fas fa-tools"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" title="Seguimiento">
+                                                <i class="fas fa-stethoscope"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Receta">
+                                                <i class="fas fa-prescription"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-danger text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Roberto Silva</strong><br>
+                                                <small class="text-muted">PAC012</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Extracción Muela</strong><br>
+                                        <small class="text-muted">Muela del juicio</small>
+                                    </td>
+                                    <td>
+                                        <small>31 Ene, 9:00 AM<br>Mañana</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">Cirugía Oral</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Programada</span>
+                                    </td>
+                                    <td>
+                                        <strong>Dr. Miguel Ortega</strong><br>
+                                        <small class="text-muted">Cirujano Oral</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Preparación">
+                                                <i class="fas fa-clipboard-list"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" title="Consentimiento">
+                                                <i class="fas fa-file-signature"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Instrucciones">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-info text-white rounded-circle me-2">
+                                                <i class="fas fa-child"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Sofía Herrera</strong><br>
+                                                <small class="text-muted">PAC013 - 8 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Ortodoncia</strong><br>
+                                        <small class="text-muted">Control mensual</small>
+                                    </td>
+                                    <td>
+                                        <small>28 Ene, 4:00 PM<br>Hace 2 días</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Ajuste Brackets</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completada</span>
+                                    </td>
+                                    <td>
+                                        <strong>Dra. Carmen López</strong><br>
+                                        <small class="text-muted">Ortodoncista</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Progreso">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Fotos">
+                                                <i class="fas fa-camera"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Próximo Control">
+                                                <i class="fas fa-calendar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">24</h3>
+                            <small class="text-muted">Consultas Este Mes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">18</h3>
+                            <small class="text-muted">Tratamientos Realizados</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">6</h3>
+                            <small class="text-muted">Cirugías Programadas</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">12</h3>
+                            <small class="text-muted">Radiografías Tomadas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

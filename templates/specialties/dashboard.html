@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Especialidades{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-hospital me-2 text-primary"></i>Dashboard de Especialidades
+                </h1>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary" onclick="refreshPage()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+                    </button>
+                    <a href="{% url 'specialties:create_consultation' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Nueva Consulta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small mb-1">Consultas Hoy</div>
+                            <div class="h3 mb-0 text-success">{{ stats.consultations_today|default:0 }}</div>
+                            <small class="text-muted">{{ stats.consultations_this_week|default:0 }} esta semana</small>
+                        </div>
+                        <div class="text-success">
+                            <i class="bi bi-calendar-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small mb-1">Referencias Urgentes</div>
+                            <div class="h3 mb-0 text-warning">{{ stats.urgent_referrals|default:0 }}</div>
+                            <small class="text-muted">{{ stats.pending_referrals|default:0 }} total pendientes</small>
+                        </div>
+                        <div class="text-warning">
+                            <i class="bi bi-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small mb-1">Tratamientos Activos</div>
+                            <div class="h3 mb-0 text-info">{{ stats.active_treatments|default:0 }}</div>
+                            <small class="text-success">{{ stats.completed_consultations|default:0 }} completadas</small>
+                        </div>
+                        <div class="text-info">
+                            <i class="bi bi-heart-pulse fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small mb-1">Especialidades</div>
+                            <div class="h3 mb-0 text-primary">{{ stats.total_specialties|default:8 }}</div>
+                            <small class="text-muted">activas en el sistema</small>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-hospital fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Specialties Grid -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-grid-3x3-gap me-2 text-primary"></i>Especialidades Médicas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="specialtiesGrid">
+                        {% for specialty in specialties %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card specialty-card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center p-3">
+                                    <i class="bi bi-hospital text-primary mb-2" style="font-size: 2rem;"></i>
+                                    <h6 class="card-title mb-2">{{ specialty.name }}</h6>
+                                    <p class="card-text small text-muted mb-3">{{ specialty.description|truncatewords:8 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">{{ specialty.total_doctors|default:0 }} doctores</small>
+                                        <small class="text-success">{{ specialty.this_month_consultations|default:0 }} consultas</small>
+                                    </div>
+                                    <a href="{% url 'specialties:specialty_detail' specialty.pk %}" class="btn btn-primary btn-sm w-100">
+                                        <i class="bi bi-arrow-right me-1"></i>Ver Detalles
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <!-- Static specialties when no dynamic data -->
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card specialty-card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center p-3">
+                                    <i class="bi bi-heart text-info mb-2" style="font-size: 2rem;"></i>
+                                    <h6 class="card-title mb-2">Pediatría</h6>
+                                    <p class="card-text small text-muted mb-3">Atención médica especializada para niños</p>
+                                    <a href="{% url 'specialties:pediatrics' %}" class="btn btn-info btn-sm w-100">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card specialty-card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center p-3">
+                                    <i class="bi bi-heart-pulse text-danger mb-2" style="font-size: 2rem;"></i>
+                                    <h6 class="card-title mb-2">Cardiología</h6>
+                                    <p class="card-text small text-muted mb-3">Diagnóstico y tratamiento cardiovascular</p>
+                                    <a href="{% url 'specialties:cardiology' %}" class="btn btn-danger btn-sm w-100">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card specialty-card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center p-3">
+                                    <i class="bi bi-eye text-primary mb-2" style="font-size: 2rem;"></i>
+                                    <h6 class="card-title mb-2">Oftalmología</h6>
+                                    <p class="card-text small text-muted mb-3">Cuidado integral de la salud visual</p>
+                                    <a href="{% url 'specialties:ophthalmology' %}" class="btn btn-primary btn-sm w-100">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card specialty-card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center p-3">
+                                    <i class="bi bi-emoji-smile text-warning mb-2" style="font-size: 2rem;"></i>
+                                    <h6 class="card-title mb-2">Odontología</h6>
+                                    <p class="card-text small text-muted mb-3">Salud bucal y tratamientos dentales</p>
+                                    <a href="{% url 'specialties:dentistry' %}" class="btn btn-warning btn-sm w-100">Acceder</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2 text-success"></i>Consultas Recientes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for consultation in recent_consultations|slice:":5" %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success rounded-circle p-2 me-3">
+                            <i class="bi bi-person-check text-white"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-medium">{{ consultation.patient.get_full_name }}</div>
+                            <small class="text-muted">{{ consultation.specialty.name }} - {{ consultation.date|date:"d/m H:i" }}</small>
+                        </div>
+                        <span class="badge bg-success">{{ consultation.get_consultation_type_display }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-calendar-x" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <p class="mt-2 mb-0">No hay consultas recientes</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle me-2 text-warning"></i>Referencias Pendientes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for referral in pending_referrals|slice:":5" %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning rounded-circle p-2 me-3">
+                            <i class="bi bi-arrow-right text-white"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-medium">{{ referral.patient.get_full_name }}</div>
+                            <small class="text-muted">{{ referral.from_specialty.name }} → {{ referral.to_specialty.name }}</small>
+                        </div>
+                        <span class="badge bg-{{ referral.urgency|yesno:"danger,warning,info" }}">
+                            {{ referral.get_urgency_display }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-check-circle" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <p class="mt-2 mb-0">No hay referencias pendientes</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.specialty-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.specialty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+</style>
+
+<script>
+function refreshPage() {
+    // Simple page refresh instead of AJAX
+    window.location.reload();
+}
+
+// Add some basic interactivity
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to cards
+    document.querySelectorAll('.specialty-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Show a welcome message
+    console.log('Specialties Dashboard loaded successfully!');
+});
+</script>
+{% endblock %}

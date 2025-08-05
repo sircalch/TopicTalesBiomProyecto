@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Oftalmología{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-eye me-2 text-warning"></i>Oftalmología
+                </h1>
+                <a href="{% url 'specialties:index' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Especialidades
+                </a>
+            </div>
+
+            <!-- Services Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <i class="fas fa-eye fa-2x text-warning mb-3"></i>
+                            <h6 class="card-title">Examen Visual</h6>
+                            <p class="card-text small">Agudeza visual y refracción</p>
+                            <button type="button" class="btn btn-warning btn-sm">
+                                <i class="fas fa-search me-2"></i>Nuevo Examen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <i class="fas fa-glasses fa-2x text-success mb-3"></i>
+                            <h6 class="card-title">Prescripción Lentes</h6>
+                            <p class="card-text small">Recetas y graduaciones</p>
+                            <button type="button" class="btn btn-success btn-sm">
+                                <i class="fas fa-prescription me-2"></i>Nueva Receta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tint fa-2x text-info mb-3"></i>
+                            <h6 class="card-title">Presión Ocular</h6>
+                            <p class="card-text small">Tonometría y glaucoma</p>
+                            <button type="button" class="btn btn-info btn-sm">
+                                <i class="fas fa-heartbeat me-2"></i>Medir Presión
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-danger">
+                        <div class="card-body text-center">
+                            <i class="fas fa-camera fa-2x text-danger mb-3"></i>
+                            <h6 class="card-title">Fondo de Ojo</h6>
+                            <p class="card-text small">Retinografía y diagnóstico</p>
+                            <button type="button" class="btn btn-danger btn-sm">
+                                <i class="fas fa-camera me-2"></i>Tomar Imagen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Examinations -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Exámenes Oftalmológicos Recientes</h5>
+                    <span class="badge bg-secondary">10 exámenes</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tipo de Examen</th>
+                                    <th>Fecha</th>
+                                    <th>Resultados</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Oftalmólogo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-warning text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Isabel Martín</strong><br>
+                                                <small class="text-muted">PAC014</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Examen Visual Completo</strong><br>
+                                        <small class="text-muted">Agudeza visual y refracción</small>
+                                    </td>
+                                    <td>
+                                        <small>Hoy, 11:00 AM<br>30 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-info me-1">OD: -2.50</span>
+                                            <span class="badge bg-info">OI: -2.25</span>
+                                        </div>
+                                        <small class="text-muted">Miopía bilateral</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-info">Miopía Moderada</strong><br>
+                                        <small class="text-muted">Corrección óptica</small>
+                                    </td>
+                                    <td>
+                                        <strong>Dr. Roberto Vásquez</strong><br>
+                                        <small class="text-muted">Oftalmólogo</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Resultados">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Receta Lentes">
+                                                <i class="fas fa-glasses"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Control">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-danger text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Fernando López</strong><br>
+                                                <small class="text-muted">PAC015 - 65 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Presión Ocular</strong><br>
+                                        <small class="text-muted">Control glaucoma</small>
+                                    </td>
+                                    <td>
+                                        <small>29 Ene, 3:15 PM<br>Ayer</small>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-danger me-1">OD: 24 mmHg</span>
+                                            <span class="badge bg-danger">OI: 26 mmHg</span>
+                                        </div>
+                                        <small class="text-muted">Presión elevada</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-danger">Glaucoma</strong><br>
+                                        <small class="text-muted">Requiere tratamiento</small>
+                                    </td>
+                                    <td>
+                                        <strong>Dra. Elena Castro</strong><br>
+                                        <small class="text-muted">Especialista en Glaucoma</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-danger" title="Protocolo">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Medicación">
+                                                <i class="fas fa-pills"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" title="Seguimiento">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-success text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Carmen Jiménez</strong><br>
+                                                <small class="text-muted">PAC016</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Fondo de Ojo</strong><br>
+                                        <small class="text-muted">Retinografía digital</small>
+                                    </td>
+                                    <td>
+                                        <small>28 Ene, 10:30 AM<br>Hace 2 días</small>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-success">Retina Normal</span>
+                                        </div>
+                                        <small class="text-muted">Sin alteraciones</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">Normal</strong><br>
+                                        <small class="text-muted">Control anual</small>
+                                    </td>
+                                    <td>
+                                        <strong>Dr. Roberto Vásquez</strong><br>
+                                        <small class="text-muted">Oftalmólogo</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Imágenes">
+                                                <i class="fas fa-images"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Reporte">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Archivar">
+                                                <i class="fas fa-archive"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-info text-white rounded-circle me-2">
+                                                <i class="fas fa-child"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Diego Morales</strong><br>
+                                                <small class="text-muted">PAC017 - 12 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Screening Visual</strong><br>
+                                        <small class="text-muted">Examen escolar</small>
+                                    </td>
+                                    <td>
+                                        <small>27 Ene, 4:45 PM<br>Hace 3 días</small>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-warning me-1">OD: 20/40</span>
+                                            <span class="badge bg-warning">OI: 20/30</span>
+                                        </div>
+                                        <small class="text-muted">Agudeza reducida</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-warning">Miopía Inicial</strong><br>
+                                        <small class="text-muted">Corrección necesaria</small>
+                                    </td>
+                                    <td>
+                                        <strong>Dra. Patricia Ruiz</strong><br>
+                                        <small class="text-muted">Oftalmóloga Pediátrica</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-warning" title="Evaluación Completa">
+                                                <i class="fas fa-search-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Padres">
+                                                <i class="fas fa-users"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Cita Control">
+                                                <i class="fas fa-calendar"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">32</h3>
+                            <small class="text-muted">Exámenes Este Mes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">85</h3>
+                            <small class="text-muted">Recetas de Lentes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">15</h3>
+                            <small class="text-muted">Controles Glaucoma</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-danger">8</h3>
+                            <small class="text-muted">Retinografías</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

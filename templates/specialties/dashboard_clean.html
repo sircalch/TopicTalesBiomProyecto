@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-hospital me-2 text-primary"></i>{{ title }}
+            </h1>
+            <p class="text-muted">Sistema de gestión médica integrado</p>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Consultas Hoy</div>
+                            <div class="h3 mb-0 text-success">{{ stats.consultas_hoy }}</div>
+                        </div>
+                        <div class="text-success">
+                            <i class="bi bi-calendar-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Referencias Urgentes</div>
+                            <div class="h3 mb-0 text-warning">{{ stats.referencias_urgentes }}</div>
+                        </div>
+                        <div class="text-warning">
+                            <i class="bi bi-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Tratamientos Activos</div>
+                            <div class="h3 mb-0 text-info">{{ stats.tratamientos_activos }}</div>
+                        </div>
+                        <div class="text-info">
+                            <i class="bi bi-heart-pulse fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Especialidades</div>
+                            <div class="h3 mb-0 text-primary">{{ stats.especialidades_totales }}</div>
+                        </div>
+                        <div class="text-primary">
+                            <i class="bi bi-hospital fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialties Grid -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-grid me-2"></i>Especialidades Médicas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for specialty in specialties_list %}
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm specialty-card">
+                                <div class="card-body text-center">
+                                    <i class="bi {{ specialty.icon }} text-primary mb-3" style="font-size: 3rem;"></i>
+                                    <h6 class="card-title">{{ specialty.name }}</h6>
+                                    <a href="{% url 'specialties:'|add:specialty.url %}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-arrow-right me-1"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Additional static specialties -->
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm specialty-card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-bandaid text-success mb-3" style="font-size: 3rem;"></i>
+                                    <h6 class="card-title">Dermatología</h6>
+                                    <a href="{% url 'specialties:dermatology' %}" class="btn btn-success btn-sm">
+                                        <i class="bi bi-arrow-right me-1"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm specialty-card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-gender-female text-danger mb-3" style="font-size: 3rem;"></i>
+                                    <h6 class="card-title">Ginecología</h6>
+                                    <a href="{% url 'specialties:gynecology' %}" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-arrow-right me-1"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm specialty-card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-activity text-warning mb-3" style="font-size: 3rem;"></i>
+                                    <h6 class="card-title">Traumatología</h6>
+                                    <a href="{% url 'specialties:traumatology' %}" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-arrow-right me-1"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm specialty-card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-brain text-info mb-3" style="font-size: 3rem;"></i>
+                                    <h6 class="card-title">Psicología</h6>
+                                    <a href="{% url 'specialties:psychology' %}" class="btn btn-info btn-sm">
+                                        <i class="bi bi-arrow-right me-1"></i>Acceder
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-lightning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'specialties:create_consultation' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-plus-circle me-1"></i>Nueva Consulta
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'specialties:create_referral' %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-arrow-right-circle me-1"></i>Nueva Referencia
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'specialties:consultation_list' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-list me-1"></i>Ver Consultas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button onclick="window.location.reload()" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.specialty-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.specialty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.card {
+    border: none !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard de Especialidades cargado correctamente - SIN ERRORES AJAX');
+    
+    // Simple hover effects
+    document.querySelectorAll('.specialty-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

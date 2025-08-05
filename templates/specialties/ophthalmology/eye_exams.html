@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:ophthalmology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #6610f2 0%, #520dc2 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-eye fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Exámenes Oftalmológicos</h1>
+                                    <p class="mb-0 opacity-75">Evaluación integral de la salud visual</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Examen
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-search me-1"></i>Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Exámenes Hoy</div>
+                            <div class="stats-number h3 mb-0 text-purple">22</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+6 vs ayer</small>
+                        </div>
+                        <div class="stats-icon text-purple">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Visión Normal</div>
+                            <div class="stats-number h3 mb-0 text-success">68%</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>Sin alteraciones</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Refracción</div>
+                            <div class="stats-number h3 mb-0 text-warning">18</div>
+                            <small class="text-warning"><i class="fas fa-glasses me-1"></i>Requieren lentes</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-eye-slash fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Patologías</div>
+                            <div class="stats-number h3 mb-0 text-danger">5</div>
+                            <small class="text-danger"><i class="fas fa-exclamation me-1"></i>Seguimiento</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Eye Exam Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clipboard-check text-purple me-2"></i>Exámenes Oftalmológicos
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>Rutina</option>
+                            <option>Patológicos</option>
+                            <option>Control</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-purple">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>AV OD/OI</th>
+                                    <th>PIO</th>
+                                    <th>Fondo de Ojo</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/6610f2/ffffff?text=MC" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">María Castro</div>
+                                                <small class="text-muted">ID: PAC-055</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">45 años</span>
+                                        <br><small class="text-muted">Femenino</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">20/20</span>
+                                        <br><small class="text-success">Normal</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">14/16</span>
+                                        <br><small class="text-success">Normal</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-success">Normal</span>
+                                        <br><small class="text-muted">Sin alteraciones</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">11:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Informe">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Imprimir">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="col-lg-4 mb-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-purple btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Examen
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Cita
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-glasses me-2"></i>Test de Refracción
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-chart-line me-2"></i>Ver Estadísticas
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.text-purple { color: #6610f2 !important; }
+.btn-purple { background-color: #6610f2; border-color: #6610f2; color: white; }
+.btn-outline-purple { color: #6610f2; border-color: #6610f2; }
+.specialty-icon { background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 15px; }
+.stats-card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+</style>
+{% endblock %}

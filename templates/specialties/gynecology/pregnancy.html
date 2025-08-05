@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:gynecology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #ff7043 0%, #e64a19 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-baby-carriage fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ page_title }}</h1>
+                                    <p class="mb-0 opacity-75">{{ description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Control
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-chart-line me-1"></i>Seguimiento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Embarazos Activos</div>
+                            <div class="stats-number h3 mb-0 text-primary">18</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+3 este mes</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-baby fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Primer Trimestre</div>
+                            <div class="stats-number h3 mb-0 text-info">7</div>
+                            <small class="text-info"><i class="fas fa-calendar me-1"></i>0-12 semanas</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-seedling fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Segundo Trimestre</div>
+                            <div class="stats-number h3 mb-0 text-warning">8</div>
+                            <small class="text-warning"><i class="fas fa-calendar me-1"></i>13-27 semanas</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-tree fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Tercer Trimestre</div>
+                            <div class="stats-number h3 mb-0 text-success">3</div>
+                            <small class="text-success"><i class="fas fa-calendar me-1"></i>28+ semanas</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-heart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Pregnancy Controls -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-baby-carriage text-primary me-2"></i>Control Prenatal
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>1er Trimestre</option>
+                            <option>2do Trimestre</option>
+                            <option>3er Trimestre</option>
+                            <option>Alto Riesgo</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad Gestacional</th>
+                                    <th>FPP</th>
+                                    <th>Último Control</th>
+                                    <th>Riesgo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ff7043/ffffff?text=MG" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">María González</div>
+                                                <small class="text-muted">28 años, G1P0</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">24 semanas</span>
+                                        <br><small class="text-muted">2do Trimestre</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">15 Jun 2025</div>
+                                        <small class="text-muted">Fecha probable</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">28 Ene 2025</div>
+                                        <small class="text-muted">Hace 3 días</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Bajo Riesgo</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver historial">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Próximo control">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Ecografía">
+                                                <i class="fas fa-video"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ff7043/ffffff?text=AC" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana Castro</div>
+                                                <small class="text-muted">35 años, G2P1</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">32 semanas</span>
+                                        <br><small class="text-muted">3er Trimestre</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">18 Abr 2025</div>
+                                        <small class="text-muted">Fecha probable</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">Hace 1 día</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Moderado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver historial">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-warning" title="Control especial">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Monitoreo fetal">
+                                                <i class="fas fa-heartbeat"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ff7043/ffffff?text=LR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Lucía Ramírez</div>
+                                                <small class="text-muted">22 años, G1P0</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">10 semanas</span>
+                                        <br><small class="text-muted">1er Trimestre</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">28 Ago 2025</div>
+                                        <small class="text-muted">Fecha probable</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">25 Ene 2025</div>
+                                        <small class="text-muted">Hace 6 días</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Bajo Riesgo</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver historial">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Primera eco">
+                                                <i class="fas fa-video"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Laboratorios">
+                                                <i class="fas fa-vial"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pregnancy Tools & Information -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-heart text-danger me-2"></i>Herramientas Prenatales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Control Prenatal
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calculator me-2"></i>Calculadora Gestacional
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-video me-2"></i>Programar Ecografía
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-vial me-2"></i>Solicitar Laboratorios
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-line me-2"></i>Curvas de Crecimiento
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-alt me-2"></i>Plan de Parto
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pregnancy Stages -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-alt text-info me-2"></i>Controles por Trimestre
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="trimester-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Primer Trimestre</div>
+                            <small class="text-muted">0-12 semanas</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-info">7</span>
+                            <br><small class="text-muted">pacientes</small>
+                        </div>
+                    </div>
+                    
+                    <div class="trimester-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Segundo Trimestre</div>
+                            <small class="text-muted">13-27 semanas</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-warning">8</span>
+                            <br><small class="text-muted">pacientes</small>
+                        </div>
+                    </div>
+                    
+                    <div class="trimester-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Tercer Trimestre</div>
+                            <small class="text-muted">28+ semanas</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-success">3</span>
+                            <br><small class="text-muted">pacientes</small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="risk-item mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-medium">Bajo Riesgo</span>
+                            <span class="badge bg-success">15</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-item mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-medium">Riesgo Moderado</span>
+                            <span class="badge bg-warning">2</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-item">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-medium">Alto Riesgo</span>
+                            <span class="badge bg-danger">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, #ff7043 0%, #e64a19 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trimester-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.trimester-item:last-child {
+    border-bottom: none;
+}
+
+.risk-item {
+    padding: 4px 0;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

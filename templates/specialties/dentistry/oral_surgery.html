@@ -1,0 +1,501 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:dentistry' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-user-md fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Cirugía Oral</h1>
+                                    <p class="mb-0 opacity-75">Procedimientos quirúrgicos bucales y maxilofaciales</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Programar Cirugía
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Quirófano
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Cirugías Mes</div>
+                            <div class="stats-number h3 mb-0 text-danger">89</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+11 vs mes anterior</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Extracciones</div>
+                            <div class="stats-number h3 mb-0 text-warning">72%</div>
+                            <small class="text-warning"><i class="fas fa-tooth me-1"></i>Más frecuente</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-tooth fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Implantes</div>
+                            <div class="stats-number h3 mb-0 text-info">18</div>
+                            <small class="text-info"><i class="fas fa-cog me-1"></i>Colocados</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-cog fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Éxito</div>
+                            <div class="stats-number h3 mb-0 text-success">96.8%</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>Sin complicaciones</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Surgery Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-procedures text-danger me-2"></i>Cirugías Recientes
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas</option>
+                            <option>Extracciones</option>
+                            <option>Implantes</option>
+                            <option>Quistes</option>
+                            <option>Biopsias</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Procedimiento</th>
+                                    <th>Zona</th>
+                                    <th>Duración</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Resultado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/dc3545/ffffff?text=MF" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">María Fernández</div>
+                                                <small class="text-muted">ID: PAC-089</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Extracción</span>
+                                        <br><small class="text-muted">Terceros molares</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">18, 28</span>
+                                        <br><small class="text-muted">Superiores</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">45 min</span>
+                                        <br><small class="text-info">Bilateral</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">09:00 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completada</span></td>
+                                    <td>
+                                        <span class="text-success fw-medium">Excelente</span>
+                                        <br><small class="text-muted">Sin complicaciones</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Control">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=JR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">José Ramírez</div>
+                                                <small class="text-muted">ID: PAC-090</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Implante</span>
+                                        <br><small class="text-muted">Colocación</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">36</span>
+                                        <br><small class="text-muted">Primer molar inf.</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">60 min</span>
+                                        <br><small class="text-warning">Compleja</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">14:30 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-info">Osteointegración</span></td>
+                                    <td>
+                                        <span class="text-info fw-medium">En proceso</span>
+                                        <br><small class="text-muted">3-6 meses</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="Seguimiento">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Rx control">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=AL" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana López</div>
+                                                <small class="text-muted">ID: PAC-091</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Biopsia</span>
+                                        <br><small class="text-muted">Lesión sospechosa</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Encía</span>
+                                        <br><small class="text-muted">Sector anterior</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">20 min</span>
+                                        <br><small class="text-success">Simple</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">29 Ene 2025</div>
+                                        <small class="text-muted">11:15 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Resultado pendiente</span></td>
+                                    <td>
+                                        <span class="text-warning fw-medium">Esperando</span>
+                                        <br><small class="text-muted">Histopatología</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Resultado">
+                                                <i class="fas fa-microscope"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Contactar laboratorio">
+                                                <i class="fas fa-phone"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/6f42c1/ffffff?text=RV" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Roberto Vega</div>
+                                                <small class="text-muted">ID: PAC-092</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Quistectomía</span>
+                                        <br><small class="text-muted">Quiste radicular</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">11, 12</span>
+                                        <br><small class="text-muted">Incisivos sup.</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">75 min</span>
+                                        <br><small class="text-danger">Extensa</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">28 Ene 2025</div>
+                                        <small class="text-muted">08:00 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completada</span></td>
+                                    <td>
+                                        <span class="text-success fw-medium">Satisfactoria</span>
+                                        <br><small class="text-muted">Lesión removida</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-success" title="Histopatología">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Control">
+                                                <i class="fas fa-stethoscope"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Surgery Types -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-plus me-2"></i>Programar Cirugía
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-tooth me-2"></i>Extracción Simple
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-cog me-2"></i>Colocar Implante
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-microscope me-2"></i>Biopsia
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Reportes
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-medical me-2"></i>Historiales
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Surgery Types -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-procedures text-danger me-2"></i>Tipos de Cirugía
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="surgery-types">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Extracciones</div>
+                                <small class="text-muted">Simple y quirúrgica</small>
+                            </div>
+                            <span class="badge bg-warning">72%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Implantes</div>
+                                <small class="text-muted">Colocación y carga</small>
+                            </div>
+                            <span class="badge bg-info">15%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Biopsias</div>
+                                <small class="text-muted">Diagnóstico histológico</small>
+                            </div>
+                            <span class="badge bg-primary">7%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Quistes</div>
+                                <small class="text-muted">Enucleación</small>
+                            </div>
+                            <span class="badge bg-danger">4%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-medium">Otros</div>
+                                <small class="text-muted">Frenectomías, ATM</small>
+                            </div>
+                            <span class="badge bg-secondary">2%</span>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <h6 class="text-muted mb-2">Tiempo Promedio</h6>
+                            
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="fw-medium text-warning">30 min</div>
+                                    <small class="text-muted">Extracción</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-medium text-info">60 min</div>
+                                    <small class="text-muted">Implante</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.text-danger { color: #dc3545 !important; }
+.btn-danger { background-color: #dc3545; border-color: #dc3545; color: white; }
+.btn-outline-danger { color: #dc3545; border-color: #dc3545; }
+.specialty-icon { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 15px; 
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stats-card { 
+    border: none; 
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.surgery-types > div {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+.surgery-types > div:last-child {
+    border-bottom: none;
+}
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:pediatrics' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-chart-line fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Gráficos de Crecimiento</h1>
+                                    <p class="mb-0 opacity-75">Control y seguimiento del desarrollo físico infantil</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Registro
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-chart-bar me-1"></i>Ver Gráficos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Mediciones Hoy</div>
+                            <div class="stats-number h3 mb-0 text-success">12</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+3 vs ayer</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-ruler fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Percentil Normal</div>
+                            <div class="stats-number h3 mb-0 text-info">89%</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+2%</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-chart-pie fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Alertas Activas</div>
+                            <div class="stats-number h3 mb-0 text-warning">4</div>
+                            <small class="text-warning"><i class="fas fa-exclamation me-1"></i>Revisar</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Seguimientos</div>
+                            <div class="stats-number h3 mb-0 text-primary">25</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+8 esta semana</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Growth Chart List -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line text-success me-2"></i>Registros de Crecimiento
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>Peso</option>
+                            <option>Talla</option>
+                            <option>Perímetro cefálico</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>Peso (kg)</th>
+                                    <th>Talla (cm)</th>
+                                    <th>P. Cefálico (cm)</th>
+                                    <th>Percentil</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=ML" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">María López</div>
+                                                <small class="text-muted">ID: PAC-015</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">18 meses</span>
+                                        <br><small class="text-muted">1.5 años</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">11.2</span>
+                                        <br><small class="text-success">+0.3 kg</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">82.5</span>
+                                        <br><small class="text-success">+2.1 cm</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">47.8</span>
+                                        <br><small class="text-info">Normal</small>
+                                    </td>
+                                    <td><span class="badge bg-success">P75</span></td>
+                                    <td><span class="badge bg-success">Normal</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-success" title="Ver gráfico">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=PC" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Pedro Castro</div>
+                                                <small class="text-muted">ID: PAC-016</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">3 años</span>
+                                        <br><small class="text-muted">36 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">13.8</span>
+                                        <br><small class="text-warning">+0.1 kg</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">95.2</span>
+                                        <br><small class="text-success">+1.8 cm</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">49.5</span>
+                                        <br><small class="text-info">Normal</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">P25</span></td>
+                                    <td><span class="badge bg-warning">Observar</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Revisar crecimiento">
+                                                <i class="fas fa-exclamation"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/17a2b8/ffffff?text=LF" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Lucía Fernández</div>
+                                                <small class="text-muted">ID: PAC-017</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">6 meses</span>
+                                        <br><small class="text-muted">6 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">7.8</span>
+                                        <br><small class="text-success">+0.5 kg</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">67.0</span>
+                                        <br><small class="text-success">+2.3 cm</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">43.2</span>
+                                        <br><small class="text-info">Normal</small>
+                                    </td>
+                                    <td><span class="badge bg-success">P50</span></td>
+                                    <td><span class="badge bg-success">Normal</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-success" title="Ver gráfico">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Mostrando 3 de 25 registros</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Info -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Registro de Crecimiento
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-chart-line me-2"></i>Generar Gráfico
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-calculator me-2"></i>Calcular Percentiles
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Revisar Alertas
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Ver Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-export me-2"></i>Exportar Datos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Growth Parameters -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-area text-success me-2"></i>Parámetros de Crecimiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="growth-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Peso para la Edad</div>
+                            <small class="text-muted">Parámetro principal</small>
+                        </div>
+                        <span class="badge bg-success">Normal</span>
+                    </div>
+                    
+                    <div class="growth-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Talla para la Edad</div>
+                            <small class="text-muted">Crecimiento lineal</small>
+                        </div>
+                        <span class="badge bg-success">Normal</span>
+                    </div>
+                    
+                    <div class="growth-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Peso para la Talla</div>
+                            <small class="text-muted">Estado nutricional</small>
+                        </div>
+                        <span class="badge bg-info">Bueno</span>
+                    </div>
+                    
+                    <div class="growth-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Perímetro Cefálico</div>
+                            <small class="text-muted">Desarrollo neurológico</small>
+                        </div>
+                        <span class="badge bg-success">Normal</span>
+                    </div>
+                    
+                    <div class="growth-param-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">IMC para la Edad</div>
+                            <small class="text-muted">Índice de masa corporal</small>
+                        </div>
+                        <span class="badge bg-warning">Observar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.growth-param-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.growth-param-item:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

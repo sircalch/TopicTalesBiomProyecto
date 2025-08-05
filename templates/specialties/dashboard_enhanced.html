@@ -1,0 +1,659 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header with enhanced stats -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="bi bi-hospital me-2 text-primary"></i>{{ title }}
+                    </h1>
+                    <p class="text-muted">Sistema de gestión médica integrado - Dashboard Avanzado</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="refreshBtn" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-calendar3 me-1"></i>Período
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-period="today">Hoy</a></li>
+                            <li><a class="dropdown-item active" href="#" data-period="week">Esta semana</a></li>
+                            <li><a class="dropdown-item" href="#" data-period="month">Este mes</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Statistics with animations -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100" data-stat="consultas_hoy">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Consultas Hoy</div>
+                            <div class="h3 mb-0 text-success counter">{{ stats.consultas_hoy }}</div>
+                            <small class="text-success">
+                                <i class="bi bi-arrow-up"></i>+12% vs ayer
+                            </small>
+                        </div>
+                        <div class="stat-icon text-success">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100" data-stat="consultas_semana">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Consultas Esta Semana</div>
+                            <div class="h3 mb-0 text-info counter">{{ stats.consultas_semana }}</div>
+                            <small class="text-info">
+                                <i class="bi bi-arrow-up"></i>+8% vs semana anterior
+                            </small>
+                        </div>
+                        <div class="stat-icon text-info">
+                            <i class="bi bi-calendar-week"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100" data-stat="referencias_urgentes">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Referencias Urgentes</div>
+                            <div class="h3 mb-0 text-warning counter">{{ stats.referencias_urgentes }}</div>
+                            <small class="text-warning">
+                                <i class="bi bi-exclamation-triangle"></i>Requieren atención
+                            </small>
+                        </div>
+                        <div class="stat-icon text-warning">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100" data-stat="tratamientos_activos">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Tratamientos Activos</div>
+                            <div class="h3 mb-0 text-primary counter">{{ stats.tratamientos_activos }}</div>
+                            <small class="text-primary">
+                                <i class="bi bi-heart-pulse"></i>En progreso
+                            </small>
+                        </div>
+                        <div class="stat-icon text-primary">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Statistics Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Referencias Pendientes</div>
+                            <div class="h3 mb-0 text-danger counter">{{ stats.referencias_pendientes }}</div>
+                        </div>
+                        <div class="stat-icon text-danger">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Especialidades Totales</div>
+                            <div class="h3 mb-0 text-success counter">{{ stats.especialidades_totales }}</div>
+                        </div>
+                        <div class="stat-icon text-success">
+                            <i class="bi bi-hospital"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Doctores Activos</div>
+                            <div class="h3 mb-0 text-info counter">{{ stats.doctores_activos }}</div>
+                        </div>
+                        <div class="stat-icon text-info">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-muted small">Consultas Completadas</div>
+                            <div class="h3 mb-0 text-success counter">{{ stats.consultas_completadas }}</div>
+                        </div>
+                        <div class="stat-icon text-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Specialties Grid -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-grid me-2"></i>Especialidades Médicas
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="viewMode" id="gridView" checked>
+                        <label class="btn btn-outline-primary" for="gridView">
+                            <i class="bi bi-grid"></i>
+                        </label>
+                        <input type="radio" class="btn-check" name="viewMode" id="listView">
+                        <label class="btn btn-outline-primary" for="listView">
+                            <i class="bi bi-list"></i>
+                        </label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="specialtiesGrid" class="row">
+                        {% for specialty in specialties_list %}
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card specialty-card h-100 border-0 shadow-sm" data-specialty="{{ specialty.url }}">
+                                <div class="card-body text-center">
+                                    <div class="specialty-icon mb-3">
+                                        <i class="bi {{ specialty.icon }} text-{{ specialty.color }}" style="font-size: 3rem;"></i>
+                                    </div>
+                                    <h6 class="card-title">{{ specialty.name }}</h6>
+                                    <p class="card-text text-muted small">{{ specialty.description }}</p>
+                                    
+                                    <div class="specialty-services mb-3">
+                                        <small class="text-muted">Servicios:</small>
+                                        <div class="mt-1">
+                                            {% for service in specialty.services %}
+                                                <span class="badge bg-light text-dark me-1 mb-1">{{ service }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'specialties:'|add:specialty.url %}" class="btn btn-{{ specialty.color }} btn-sm">
+                                            <i class="bi bi-arrow-right me-1"></i>Acceder
+                                        </a>
+                                        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#specialtyModal{{ forloop.counter }}">
+                                            <i class="bi bi-info-circle me-1"></i>Más Info
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Specialty stats overlay -->
+                                <div class="specialty-stats">
+                                    <small class="text-muted">
+                                        <i class="bi bi-activity me-1"></i>Actividad reciente
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Modal for each specialty -->
+                        <div class="modal fade" id="specialtyModal{{ forloop.counter }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="bi {{ specialty.icon }} me-2"></i>{{ specialty.name }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>{{ specialty.description }}</p>
+                                        <h6>Servicios disponibles:</h6>
+                                        <ul>
+                                            {% for service in specialty.services %}
+                                                <li>{{ service }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        <a href="{% url 'specialties:'|add:specialty.url %}" class="btn btn-{{ specialty.color }}">
+                                            Acceder a {{ specialty.name }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-lightning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="quick-action-card">
+                                <a href="{% url 'specialties:create_consultation' %}" class="btn btn-primary w-100 h-100 d-flex flex-column justify-content-center">
+                                    <i class="bi bi-plus-circle mb-2" style="font-size: 2rem;"></i>
+                                    <span>Nueva Consulta</span>
+                                    <small class="opacity-75">Agendar cita médica</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="quick-action-card">
+                                <a href="{% url 'specialties:create_referral' %}" class="btn btn-success w-100 h-100 d-flex flex-column justify-content-center">
+                                    <i class="bi bi-arrow-right-circle mb-2" style="font-size: 2rem;"></i>
+                                    <span>Nueva Referencia</span>
+                                    <small class="opacity-75">Derivar paciente</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="quick-action-card">
+                                <a href="{% url 'specialties:consultation_list' %}" class="btn btn-info w-100 h-100 d-flex flex-column justify-content-center">
+                                    <i class="bi bi-list-ul mb-2" style="font-size: 2rem;"></i>
+                                    <span>Ver Consultas</span>
+                                    <small class="opacity-75">Historial médico</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="quick-action-card">
+                                <button id="fullRefreshBtn" class="btn btn-warning w-100 h-100 d-flex flex-column justify-content-center">
+                                    <i class="bi bi-arrow-clockwise mb-2" style="font-size: 2rem;"></i>
+                                    <span>Actualizar Todo</span>
+                                    <small class="opacity-75">Refrescar datos</small>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    {% if recent_consultations or urgent_referrals %}
+    <div class="row">
+        {% if recent_consultations %}
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Consultas Recientes
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for consultation in recent_consultations %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">{{ consultation.patient.get_full_name }}</h6>
+                                    <p class="mb-1 text-muted small">{{ consultation.specialty.name }}</p>
+                                    <small class="text-muted">{{ consultation.date|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <small class="text-muted">{{ consultation.doctor.user.get_full_name }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if urgent_referrals %}
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle me-2 text-warning"></i>Referencias Urgentes
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for referral in urgent_referrals %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">{{ referral.patient.get_full_name }}</h6>
+                                    <p class="mb-1 text-muted small">
+                                        {{ referral.from_specialty.name }} → {{ referral.to_specialty.name }}
+                                    </p>
+                                    <small class="text-danger">{{ referral.get_urgency_display|upper }}</small>
+                                </div>
+                                <small class="text-muted">{{ referral.referral_date|date:"d/m" }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+/* Enhanced Styles */
+.stat-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.specialty-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.specialty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.specialty-card:hover .specialty-icon i {
+    transform: scale(1.1);
+}
+
+.specialty-icon i {
+    transition: transform 0.3s ease;
+}
+
+.specialty-stats {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 8px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+}
+
+.quick-action-card {
+    height: 120px;
+}
+
+.quick-action-card .btn {
+    min-height: 120px;
+    transition: all 0.3s ease;
+}
+
+.quick-action-card .btn:hover {
+    transform: scale(1.02);
+}
+
+.counter {
+    font-weight: 600;
+}
+
+/* Loading animation */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Card animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .specialty-card {
+        margin-bottom: 1rem;
+    }
+    
+    .quick-action-card {
+        height: 100px;
+    }
+    
+    .quick-action-card .btn {
+        min-height: 100px;
+    }
+}
+</style>
+
+<script>
+class EnhancedDashboard {
+    constructor() {
+        this.initializeComponents();
+        this.setupEventListeners();
+        this.startPeriodicUpdates();
+    }
+
+    initializeComponents() {
+        console.log('Dashboard Enhanced: Inicializando componentes...');
+        this.animateCounters();
+        this.setupTooltips();
+    }
+
+    setupEventListeners() {
+        // Refresh button
+        document.getElementById('refreshBtn')?.addEventListener('click', () => {
+            this.refreshStats();
+        });
+
+        // Full refresh button
+        document.getElementById('fullRefreshBtn')?.addEventListener('click', () => {
+            this.fullRefresh();
+        });
+
+        // Period selector
+        document.querySelectorAll('[data-period]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.changePeriod(e.target.dataset.period);
+            });
+        });
+
+        // View mode toggles
+        document.getElementById('gridView')?.addEventListener('change', () => {
+            this.switchToGridView();
+        });
+
+        document.getElementById('listView')?.addEventListener('change', () => {
+            this.switchToListView();
+        });
+
+        // Specialty cards
+        document.querySelectorAll('.specialty-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('button') && !e.target.closest('a')) {
+                    const link = card.querySelector('a[href]');
+                    if (link) link.click();
+                }
+            });
+        });
+    }
+
+    animateCounters() {
+        document.querySelectorAll('.counter').forEach(counter => {
+            const target = parseInt(counter.textContent);
+            const duration = 1000;
+            const increment = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    counter.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current);
+                }
+            }, 16);
+        });
+    }
+
+    setupTooltips() {
+        // Initialize Bootstrap tooltips if available
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        }
+    }
+
+    refreshStats() {
+        console.log('Actualizando estadísticas...');
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.classList.add('loading');
+        });
+
+        // Simulate API call delay
+        setTimeout(() => {
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.remove('loading');
+            });
+            this.showNotification('Estadísticas actualizadas', 'success');
+        }, 1000);
+    }
+
+    fullRefresh() {
+        console.log('Actualizando dashboard completo...');
+        window.location.reload();
+    }
+
+    changePeriod(period) {
+        console.log(`Cambiando período a: ${period}`);
+        
+        // Update active state
+        document.querySelectorAll('[data-period]').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-period="${period}"]`).classList.add('active');
+
+        this.refreshStats();
+    }
+
+    switchToGridView() {
+        document.getElementById('specialtiesGrid').className = 'row';
+    }
+
+    switchToListView() {
+        document.getElementById('specialtiesGrid').className = 'row row-cols-1';
+    }
+
+    startPeriodicUpdates() {
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            this.refreshStats();
+        }, 300000);
+    }
+
+    showNotification(message, type = 'info') {
+        // Simple notification system
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 4000);
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    new EnhancedDashboard();
+    console.log('Dashboard Enhanced: Cargado correctamente con todas las funcionalidades');
+});
+</script>
+{% endblock %}

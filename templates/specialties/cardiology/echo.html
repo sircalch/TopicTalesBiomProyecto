@@ -1,0 +1,491 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:cardiology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-heart fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Ecocardiogramas</h1>
+                                    <p class="mb-0 opacity-75">Estudios ecográficos del corazón y función cardíaca</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Eco
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-search me-1"></i>Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Ecos Hoy</div>
+                            <div class="stats-number h3 mb-0 text-primary">12</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+3 vs ayer</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-heart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Función Normal</div>
+                            <div class="stats-number h3 mb-0 text-success">85%</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+2%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Alteraciones</div>
+                            <div class="stats-number h3 mb-0 text-warning">7</div>
+                            <small class="text-warning"><i class="fas fa-exclamation me-1"></i>Seguimiento</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Pendientes</div>
+                            <div class="stats-number h3 mb-0 text-info">5</div>
+                            <small class="text-info"><i class="fas fa-clock me-1"></i>Programados</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Echo Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-heart text-primary me-2"></i>Estudios Ecocardiográficos
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>Transtorácicos</option>
+                            <option>Transesofágicos</option>
+                            <option>Stress Echo</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>Tipo de Estudio</th>
+                                    <th>FEVI (%)</th>
+                                    <th>Fecha</th>
+                                    <th>Hallazgos</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/0d6efd/ffffff?text=LP" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Laura Pérez</div>
+                                                <small class="text-muted">ID: PAC-035</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">58 años</span>
+                                        <br><small class="text-muted">Femenino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Transtorácico</span>
+                                        <br><small class="text-muted">ETT</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-success">62%</span>
+                                        <br><small class="text-success">Normal</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">09:30 AM</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-success">Función sistólica normal</span>
+                                        <br><small class="text-muted">Sin alteraciones valvulares</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver imágenes">
+                                                <i class="fas fa-images"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Informe">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Imprimir">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=RH" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Roberto Herrera</div>
+                                                <small class="text-muted">ID: PAC-036</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">72 años</span>
+                                        <br><small class="text-muted">Masculino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Doppler</span>
+                                        <br><small class="text-muted">Estudio valvular</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-warning">45%</span>
+                                        <br><small class="text-warning">Reducida</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">14:15 PM</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-warning">Disfunción sistólica leve</span>
+                                        <br><small class="text-muted">Estenosis aórtica moderada</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Seguimiento</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Evaluar seguimiento">
+                                                <i class="fas fa-exclamation"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Informe">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Cardiólogo">
+                                                <i class="fas fa-user-md"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=AG" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana Gutiérrez</div>
+                                                <small class="text-muted">ID: PAC-037</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">45 años</span>
+                                        <br><small class="text-muted">Femenino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Stress Echo</span>
+                                        <br><small class="text-muted">Prueba de esfuerzo</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-success">65%</span>
+                                        <br><small class="text-success">Normal</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">01 Feb 2025</div>
+                                        <small class="text-info">Programado</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">Pendiente de realización</span>
+                                        <br><small class="text-muted">Evaluación isquemia</small>
+                                    </td>
+                                    <td><span class="badge bg-secondary">Programado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-primary" title="Realizar estudio">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Reagendar">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historia">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Mostrando 3 de 12 ecocardiogramas</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Info -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Ecocardiograma
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Estudio
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-file-medical me-2"></i>Generar Informe
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-eye me-2"></i>Revisar Pendientes
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Ver Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-images me-2"></i>Archivo de Imágenes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Echo Parameters -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-heartbeat text-primary me-2"></i>Parámetros Ecocardiográficos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="echo-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">FEVI</div>
+                            <small class="text-muted">Fracción de eyección VI</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">≥ 55%</div>
+                            <small class="text-success">Normal</small>
+                        </div>
+                    </div>
+                    
+                    <div class="echo-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Diámetro VI</div>
+                            <small class="text-muted">Ventrículo izquierdo</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">< 5.6 cm</div>
+                            <small class="text-info">Normal</small>
+                        </div>
+                    </div>
+                    
+                    <div class="echo-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Grosor Septal</div>
+                            <small class="text-muted">Tabique interventricular</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">6-11 mm</div>
+                            <small class="text-success">Normal</small>
+                        </div>
+                    </div>
+                    
+                    <div class="echo-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Válvula Aórtica</div>
+                            <small class="text-muted">Función valvular</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">Normal</div>
+                            <small class="text-success">Sin estenosis</small>
+                        </div>
+                    </div>
+                    
+                    <div class="echo-param-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">Válvula Mitral</div>
+                            <small class="text-muted">Función valvular</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">Leve IM</div>
+                            <small class="text-warning">Seguimiento</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.echo-param-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.echo-param-item:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

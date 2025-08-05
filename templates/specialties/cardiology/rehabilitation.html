@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:cardiology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #20c997 0%, #198754 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-dumbbell fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Rehabilitación Cardíaca</h1>
+                                    <p class="mb-0 opacity-75">Programas de recuperación y prevención cardiovascular</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Programa
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Sesiones
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Pacientes Activos</div>
+                            <div class="stats-number h3 mb-0 text-teal">28</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+5 este mes</small>
+                        </div>
+                        <div class="stats-icon text-teal">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Adherencia</div>
+                            <div class="stats-number h3 mb-0 text-success">92%</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+3%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Sesiones Hoy</div>
+                            <div class="stats-number h3 mb-0 text-info">15</div>
+                            <small class="text-info"><i class="fas fa-calendar me-1"></i>Programadas</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Graduados</div>
+                            <div class="stats-number h3 mb-0 text-primary">12</div>
+                            <small class="text-success"><i class="fas fa-graduation-cap me-1"></i>Este trimestre</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-trophy fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Rehabilitation Programs -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-dumbbell text-teal me-2"></i>Programas de Rehabilitación
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas las fases</option>
+                            <option>Fase I</option>
+                            <option>Fase II</option>
+                            <option>Fase III</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-teal">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Fase</th>
+                                    <th>Sesiones</th>
+                                    <th>FC Objetivo</th>
+                                    <th>Progreso</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/20c997/ffffff?text=AR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Antonio Ruiz</div>
+                                                <small class="text-muted">ID: PAC-045</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">IAM anterior</span>
+                                        <br><small class="text-muted">Post-angioplastia</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Fase II</span>
+                                        <br><small class="text-muted">Supervisada</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">18/36</span>
+                                        <br><small class="text-info">50% completado</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">120-140</span>
+                                        <br><small class="text-muted">lpm</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                                        </div>
+                                        <small class="text-success">Excelente</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-success" title="Ver progreso">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Sesión hoy">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Editar programa">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=ES" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Elena Sánchez</div>
+                                                <small class="text-muted">ID: PAC-046</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Bypass coronario</span>
+                                        <br><small class="text-muted">Post-quirúrgico</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Fase I</span>
+                                        <br><small class="text-muted">Hospitalaria</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">5/12</span>
+                                        <br><small class="text-info">42% completado</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">90-110</span>
+                                        <br><small class="text-muted">lpm</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-warning" style="width: 60%"></div>
+                                        </div>
+                                        <small class="text-warning">Moderado</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Supervisión</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Evaluar progreso">
+                                                <i class="fas fa-exclamation"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Próxima sesión">
+                                                <i class="fas fa-calendar"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Ajustar programa">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/17a2b8/ffffff?text=JL" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Jorge López</div>
+                                                <small class="text-muted">ID: PAC-047</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Insuficiencia cardíaca</span>
+                                        <br><small class="text-muted">FEVI 35%</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Fase III</span>
+                                        <br><small class="text-muted">Mantenimiento</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">24/∞</span>
+                                        <br><small class="text-info">Permanente</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">100-120</span>
+                                        <br><small class="text-muted">lpm</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 85%"></div>
+                                        </div>
+                                        <small class="text-success">Muy bueno</small>
+                                    </td>
+                                    <td><span class="badge bg-primary">Mantenimiento</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver evolución">
+                                                <i class="fas fa-chart-area"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Continuar programa">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Reevaluación">
+                                                <i class="fas fa-clipboard-check"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Mostrando 3 de 28 pacientes</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Info -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-teal btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Programa
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Sesión
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-chart-line me-2"></i>Evaluar Progreso
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-clipboard-check me-2"></i>Reevaluación
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Ver Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-export me-2"></i>Informe de Progreso
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rehabilitation Phases -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-layer-group text-teal me-2"></i>Fases de Rehabilitación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="rehab-phase-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Fase I - Hospitalaria</div>
+                            <small class="text-muted">Movilización temprana</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-info">8 pacientes</span>
+                            <br><small class="text-info">Activos</small>
+                        </div>
+                    </div>
+                    
+                    <div class="rehab-phase-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Fase II - Supervisada</div>
+                            <small class="text-muted">6-12 semanas</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success">15 pacientes</span>
+                            <br><small class="text-success">Activos</small>
+                        </div>
+                    </div>
+                    
+                    <div class="rehab-phase-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Fase III - Mantenimiento</div>
+                            <small class="text-muted">Ejercicio independiente</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-primary">5 pacientes</span>
+                            <br><small class="text-primary">Activos</small>
+                        </div>
+                    </div>
+                    
+                    <div class="rehab-phase-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Componentes</div>
+                            <small class="text-muted">Ejercicio, educación, apoyo</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-warning">Integral</span>
+                            <br><small class="text-muted">Multidisciplinario</small>
+                        </div>
+                    </div>
+                    
+                    <div class="rehab-phase-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">Objetivos</div>
+                            <small class="text-muted">Capacidad funcional y calidad de vida</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success">92%</span>
+                            <br><small class="text-success">Éxito</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rehab-phase-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.rehab-phase-item:last-child {
+    border-bottom: none;
+}
+
+.text-teal {
+    color: #20c997 !important;
+}
+
+.btn-teal {
+    background-color: #20c997;
+    border-color: #20c997;
+    color: white;
+}
+
+.btn-teal:hover {
+    background-color: #198754;
+    border-color: #198754;
+    color: white;
+}
+
+.btn-outline-teal {
+    color: #20c997;
+    border-color: #20c997;
+}
+
+.btn-outline-teal:hover {
+    background-color: #20c997;
+    border-color: #20c997;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

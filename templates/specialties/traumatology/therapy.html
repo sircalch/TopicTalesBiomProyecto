@@ -1,0 +1,616 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:traumatology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-dumbbell fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ page_title }}</h1>
+                                    <p class="mb-0 opacity-75">{{ description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nueva Terapia
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-chart-line me-1"></i>Progreso
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Pacientes en Terapia</div>
+                            <div class="stats-number h3 mb-0 text-primary">45</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+18%</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Sesiones Hoy</div>
+                            <div class="stats-number h3 mb-0 text-info">22</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>Programadas</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Altas Médicas</div>
+                            <div class="stats-number h3 mb-0 text-success">8</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>Este mes</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-medal fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Progreso Promedio</div>
+                            <div class="stats-number h3 mb-0 text-warning">78%</div>
+                            <small class="text-info"><i class="fas fa-chart-line me-1"></i>Mejoría</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Physical Therapy Sessions -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-dumbbell text-primary me-2"></i>Sesiones de Fisioterapia
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas</option>
+                            <option>Fase aguda</option>
+                            <option>Fase subaguda</option>
+                            <option>Fase crónica</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Tratamiento</th>
+                                    <th>Sesiones</th>
+                                    <th>Progreso</th>
+                                    <th>Próxima Sesión</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/4caf50/ffffff?text=MS" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Miguel Silva</div>
+                                                <small class="text-muted">35 años, Deportista</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Lesión LCA</span>
+                                        <br><small class="text-muted">Post-quirúrgico</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Fortalecimiento</span>
+                                        <br><small class="text-muted">Cuádriceps</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">12/20</span>
+                                        <br><small class="text-muted">3x semana</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress mb-1" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: 85%"></div>
+                                        </div>
+                                        <small class="text-success">85% - Excelente</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">1 Feb 2025</div>
+                                        <small class="text-muted">10:00 AM</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Progreso">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Ejercicios">
+                                                <i class="fas fa-dumbbell"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/4caf50/ffffff?text=AR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana Rodríguez</div>
+                                                <small class="text-muted">58 años, Secretaria</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Cervicalgia</span>
+                                        <br><small class="text-muted">Crónica</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Movilización</span>
+                                        <br><small class="text-muted">Terapia manual</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">8/15</span>
+                                        <br><small class="text-muted">2x semana</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress mb-1" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" style="width: 65%"></div>
+                                        </div>
+                                        <small class="text-warning">65% - Bueno</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">2 Feb 2025</div>
+                                        <small class="text-muted">14:30 PM</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Ajustar terapia">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Ergonomía">
+                                                <i class="fas fa-chair"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/4caf50/ffffff?text=CF" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Carlos Fernández</div>
+                                                <small class="text-muted">42 años, Mecánico</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Lumbalgia</span>
+                                        <br><small class="text-muted">Hernia discal L4-L5</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Estabilización</span>
+                                        <br><small class="text-muted">Core training</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">15/24</span>
+                                        <br><small class="text-muted">3x semana</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress mb-1" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: 90%"></div>
+                                        </div>
+                                        <small class="text-success">90% - Excelente</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">1 Feb 2025</div>
+                                        <small class="text-muted">16:00 PM</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-success" title="Próximo alta">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Mantenimiento">
+                                                <i class="fas fa-home"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/4caf50/ffffff?text=LM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Lucía Martínez</div>
+                                                <small class="text-muted">29 años, Enfermera</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Tendinitis aquílea</span>
+                                        <br><small class="text-muted">Bilateral</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Excéntricos</span>
+                                        <br><small class="text-muted">Protocolo Alfredson</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">4/18</span>
+                                        <br><small class="text-muted">Diario</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress mb-1" style="height: 8px;">
+                                            <div class="progress-bar bg-info" style="width: 40%"></div>
+                                        </div>
+                                        <small class="text-info">40% - Inicial</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">1 Feb 2025</div>
+                                        <small class="text-muted">08:00 AM</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Técnica">
+                                                <i class="fas fa-video"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Seguimiento">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Therapy Tools & Protocols -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools text-primary me-2"></i>Herramientas Terapéuticas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Plan Terapéutico
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-dumbbell me-2"></i>Biblioteca Ejercicios
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-chart-line me-2"></i>Evaluación Funcional
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-video me-2"></i>Videos Educativos
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-home me-2"></i>Ejercicios Domiciliarios
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Reportes de Progreso
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Modalities -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-info me-2"></i>Modalidades Terapéuticas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="modality-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Ejercicio Terapéutico</div>
+                            <small class="text-muted">Fortalecimiento, estiramiento</small>
+                        </div>
+                        <span class="badge bg-primary">42%</span>
+                    </div>
+                    
+                    <div class="modality-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Terapia Manual</div>
+                            <small class="text-muted">Movilización, masaje</small>
+                        </div>
+                        <span class="badge bg-success">28%</span>
+                    </div>
+                    
+                    <div class="modality-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Electroterapia</div>
+                            <small class="text-muted">TENS, ultrasonido</small>
+                        </div>
+                        <span class="badge bg-info">15%</span>
+                    </div>
+                    
+                    <div class="modality-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Hidroterapia</div>
+                            <small class="text-muted">Ejercicios acuáticos</small>
+                        </div>
+                        <span class="badge bg-warning">10%</span>
+                    </div>
+                    
+                    <div class="modality-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">Termoterapia</div>
+                            <small class="text-muted">Calor superficial/profundo</small>
+                        </div>
+                        <span class="badge bg-secondary">5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recovery Phases -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock text-warning me-2"></i>Fases de Recuperación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="phase-timeline">
+                        <div class="phase-item mb-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="phase-indicator bg-danger me-3"></div>
+                                <h6 class="fw-bold mb-0 text-danger">Fase Aguda</h6>
+                            </div>
+                            <div class="phase-content">
+                                <ul class="list-unstyled small mb-0">
+                                    <li>• Control dolor e inflamación</li>
+                                    <li>• Protección tisular</li>
+                                    <li>• Movilización precoz suave</li>
+                                    <li>• Duración: 0-72 horas</li>
+                                </ul>
+                                <div class="mt-2">
+                                    <span class="badge bg-danger">12 pacientes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-item mb-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="phase-indicator bg-warning me-3"></div>
+                                <h6 class="fw-bold mb-0 text-warning">Fase Subaguda</h6>
+                            </div>
+                            <div class="phase-content">
+                                <ul class="list-unstyled small mb-0">
+                                    <li>• Recuperación movilidad</li>
+                                    <li>• Inicio fortalecimiento</li>  
+                                    <li>• Reeducación funcional</li>
+                                    <li>• Duración: 3 días - 6 semanas</li>
+                                </ul>
+                                <div class="mt-2">
+                                    <span class="badge bg-warning">23 pacientes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-item">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="phase-indicator bg-success me-3"></div>
+                                <h6 class="fw-bold mb-0 text-success">Fase Crónica</h6>
+                            </div>
+                            <div class="phase-content">
+                                <ul class="list-unstyled small mb-0">
+                                    <li>• Fortalecimiento avanzado</li>
+                                    <li>• Reintegración deportiva/laboral</li>
+                                    <li>• Prevención relesiones</li>
+                                    <li>• Duración: > 6 semanas</li>
+                                </ul>
+                                <div class="mt-2">
+                                    <span class="badge bg-success">10 pacientes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="outcomes-info">
+                        <h6 class="fw-bold text-center mb-3">Resultados Clínicos</h6>
+                        <div class="row text-center">
+                            <div class="col-6 mb-2">
+                                <div class="p-2 bg-success text-white rounded">
+                                    <div class="fw-bold">92%</div>
+                                    <small>Satisfacción</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-2">
+                                <div class="p-2 bg-primary text-white rounded">
+                                    <div class="fw-bold">85%</div>
+                                    <small>Mejoría funcional</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 bg-info text-white rounded">
+                                    <div class="fw-bold">78%</div>
+                                    <small>Retorno actividad</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 bg-warning text-white rounded">
+                                    <div class="fw-bold">8%</div>
+                                    <small>Reincidencia</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modality-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.modality-item:last-child {
+    border-bottom: none;
+}
+
+.phase-timeline {
+    position: relative;
+}
+
+.phase-item {
+    position: relative;
+    padding-left: 25px;
+}
+
+.phase-indicator {
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.phase-content {
+    background: rgba(76, 175, 80, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+.outcomes-info {
+    background: rgba(76, 175, 80, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

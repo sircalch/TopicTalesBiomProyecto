@@ -1,0 +1,456 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:dentistry' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-teeth fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Ortodoncia</h1>
+                                    <p class="mb-0 opacity-75">Corrección de maloclusiones y alineación dental</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Paciente
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Controles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Pacientes Activos</div>
+                            <div class="stats-number h3 mb-0 text-info">156</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+8 este mes</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-teeth fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Brackets Metálicos</div>
+                            <div class="stats-number h3 mb-0 text-success">72%</div>
+                            <small class="text-success"><i class="fas fa-cog me-1"></i>Más usados</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-cog fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Invisalign</div>
+                            <div class="stats-number h3 mb-0 text-warning">24</div>
+                            <small class="text-info"><i class="fas fa-eye-slash me-1"></i>Estéticos</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-eye-slash fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Tiempo Promedio</div>
+                            <div class="stats-number h3 mb-0 text-primary">18</div>
+                            <small class="text-primary"><i class="fas fa-clock me-1"></i>Meses</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-hourglass-half fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Orthodontic Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-check text-info me-2"></i>Pacientes en Tratamiento
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>Brackets metálicos</option>
+                            <option>Brackets estéticos</option>
+                            <option>Invisalign</option>
+                            <option>Fase activa</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>Aparato</th>
+                                    <th>Fase</th>
+                                    <th>Progreso</th>
+                                    <th>Próxima Cita</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/17a2b8/ffffff?text=AG" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana González</div>
+                                                <small class="text-muted">ID: PAC-086</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">14 años</span>
+                                        <br><small class="text-muted">Femenino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">Brackets metálicos</span>
+                                        <br><small class="text-muted">Roth 0.022"</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-info">Nivelación</span>
+                                        <br><small class="text-muted">Arco 0.016" NiTi</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-info" style="width: 35%;"></div>
+                                        </div>
+                                        <small class="text-muted">35% - 6 meses</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">05 Feb 2025</div>
+                                        <small class="text-muted">10:00 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Activo</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver expediente">
+                                                <i class="fas fa-folder-open"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Fotos">
+                                                <i class="fas fa-camera"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=CM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Carlos Martínez</div>
+                                                <small class="text-muted">ID: PAC-087</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">28 años</span>
+                                        <br><small class="text-muted">Masculino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Invisalign</span>
+                                        <br><small class="text-muted">Alineador #8/20</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-success">Refinamiento</span>
+                                        <br><small class="text-muted">Detallado</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: 75%;"></div>
+                                        </div>
+                                        <small class="text-muted">75% - 15 meses</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">08 Feb 2025</div>
+                                        <small class="text-muted">16:30 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-info">Refinamiento</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="ClinCheck">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Nuevos alineadores">
+                                                <i class="fas fa-boxes"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=LS" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Laura Silva</div>
+                                                <small class="text-muted">ID: PAC-088</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">16 años</span>
+                                        <br><small class="text-muted">Femenino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Brackets estéticos</span>
+                                        <br><small class="text-muted">Cerámicos</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-warning">Cierre espacios</span>
+                                        <br><small class="text-muted">Cadenas elásticas</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" style="width: 60%;"></div>
+                                        </div>
+                                        <small class="text-muted">60% - 12 meses</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">12 Feb 2025</div>
+                                        <small class="text-muted">14:00 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Fase activa</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Ajuste">
+                                                <i class="fas fa-tools"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Radiografías">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Treatment Progress -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-info btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Paciente
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-calendar me-2"></i>Programar Control
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-camera me-2"></i>Fotos de Progreso
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-x-ray me-2"></i>Cefalometría
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Reportes
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-invoice me-2"></i>Pagos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie text-info me-2"></i>Estadísticas de Tratamiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="treatment-stats">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Brackets Metálicos</div>
+                                <small class="text-muted">Convencionales</small>
+                            </div>
+                            <span class="badge bg-secondary">72%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Brackets Estéticos</div>
+                                <small class="text-muted">Cerámicos/Zafiro</small>
+                            </div>
+                            <span class="badge bg-warning">18%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Invisalign</div>
+                                <small class="text-muted">Alineadores transparentes</small>
+                            </div>
+                            <span class="badge bg-info">8%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-medium">Otros</div>
+                                <small class="text-muted">Interceptivos, funcionales</small>
+                            </div>
+                            <span class="badge bg-success">2%</span>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <h6 class="text-muted mb-2">Tiempo Promedio por Tipo</h6>
+                            
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="fw-medium text-secondary">Brackets</div>
+                                    <small class="text-muted">24 meses</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-medium text-info">Invisalign</div>
+                                    <small class="text-muted">18 meses</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.text-info { color: #17a2b8 !important; }
+.btn-info { background-color: #17a2b8; border-color: #17a2b8; color: white; }
+.btn-outline-info { color: #17a2b8; border-color: #17a2b8; }
+.specialty-icon { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 15px; 
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stats-card { 
+    border: none; 
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.treatment-stats > div {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+.treatment-stats > div:last-child {
+    border-bottom: none;
+}
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

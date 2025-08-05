@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:pediatrics' %}">Pediatría</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-baby fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ page_title }}</h1>
+                                    <p class="mb-0 opacity-75">{{ description }}</p>
+                                    <nav aria-label="breadcrumb" class="mt-2">
+                                        <ol class="breadcrumb mb-0">
+                                            <li class="breadcrumb-item">
+                                                <a href="{% url 'specialties:index' %}" class="text-white-50">Especialidades</a>
+                                            </li>
+                                            <li class="breadcrumb-item">
+                                                <a href="{% url 'specialties:pediatrics' %}" class="text-white-50">Pediatría</a>
+                                            </li>
+                                            <li class="breadcrumb-item active text-white" aria-current="page">{{ page_title }}</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="{% url 'specialties:pediatrics' %}" class="btn btn-light btn-sm">
+                                    <i class="fas fa-arrow-left me-1"></i>Volver
+                                </a>
+                                <a href="{% url 'specialties:create_consultation' %}" class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nueva Consulta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'specialties:pediatric_consultations' %}" 
+                               class="btn btn-outline-primary w-100 {% if request.resolver_match.url_name == 'pediatric_consultations' %}active{% endif %}">
+                                <i class="fas fa-stethoscope me-2"></i>Consultas Pediátricas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'specialties:growth_charts' %}" 
+                               class="btn btn-outline-warning w-100 {% if request.resolver_match.url_name == 'growth_charts' %}active{% endif %}">
+                                <i class="fas fa-chart-line me-2"></i>Tablas de Crecimiento
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'specialties:vaccines' %}" 
+                               class="btn btn-outline-success w-100 {% if request.resolver_match.url_name == 'vaccines' %}active{% endif %}">
+                                <i class="fas fa-syringe me-2"></i>Control de Vacunas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'specialties:development' %}" 
+                               class="btn btn-outline-info w-100 {% if request.resolver_match.url_name == 'development' %}active{% endif %}">
+                                <i class="fas fa-child me-2"></i>Desarrollo Infantil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Content Area -->
+    <div class="row">
+        <div class="col-12">
+            {% block pediatric_content %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ page_title }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">{{ description }}</p>
+                    
+                    <!-- Quick Actions -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-info">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-plus-circle fa-2x text-info mb-3"></i>
+                                    <h6>Crear Nuevo</h6>
+                                    <p class="text-muted small">Registrar nueva información</p>
+                                    <a href="{% url 'specialties:create_consultation' %}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-plus me-1"></i>Crear
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-search fa-2x text-success mb-3"></i>
+                                    <h6>Buscar</h6>
+                                    <p class="text-muted small">Encontrar registros existentes</p>
+                                    <a href="{% url 'specialties:consultation_list' %}" class="btn btn-success btn-sm">
+                                        <i class="fas fa-search me-1"></i>Buscar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chart-bar fa-2x text-warning mb-3"></i>
+                                    <h6>Reportes</h6>
+                                    <p class="text-muted small">Generar informes estadísticos</p>
+                                    <a href="{% url 'specialties:consultation_list' %}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-chart-bar me-1"></i>Ver Reportes
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Description -->
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>Acerca de {{ page_title }}
+                        </h6>
+                        <p class="mb-0">{{ description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-info) 0%, var(--bs-info-dark) 100%);
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+    
+    .d-flex.gap-2 {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('bg-gradient')) {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('bg-gradient')) {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

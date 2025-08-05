@@ -1,0 +1,575 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:traumatology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #795548 0%, #5d4037 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-bone fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ page_title }}</h1>
+                                    <p class="mb-0 opacity-75">{{ description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nueva Fractura
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-hand-paper me-1"></i>Inmovilizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Fracturas Activas</div>
+                            <div class="stats-number h3 mb-0 text-primary">32</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+8%</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-bone fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Tratamiento Conservador</div>
+                            <div class="stats-number h3 mb-0 text-success">18</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>56%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-hand-paper fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Tratamiento Quirúrgico</div>
+                            <div class="stats-number h3 mb-0 text-warning">14</div>
+                            <small class="text-warning"><i class="fas fa-user-md me-1"></i>44%</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Complicaciones</div>
+                            <div class="stats-number h3 mb-0 text-danger">2</div>
+                            <small class="text-info"><i class="fas fa-exclamation me-1"></i>6%</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Fracture Management -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bone text-primary me-2"></i>Manejo de Fracturas
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas</option>
+                            <option>Abiertas</option>
+                            <option>Cerradas</option>
+                            <option>Quirúrgicas</option>
+                            <option>Conservadoras</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Localización</th>
+                                    <th>Tipo de Fractura</th>
+                                    <th>Tratamiento</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/795548/ffffff?text=AM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Antonio Méndez</div>
+                                                <small class="text-muted">52 años, Obrero</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Radio distal</span>
+                                        <br><small class="text-muted">Muñeca derecha</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Colles</span>
+                                        <br><small class="text-muted">Desplazada, estable</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Conservador</span>
+                                        <br><small class="text-muted">Yeso antebraquial</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">Día 0</small>
+                                    </td>
+                                    <td><span class="badge bg-primary">Reducción OK</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver Rx">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Control 2 sem">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Evolución">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/795548/ffffff?text=CF" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Carmen Flores</div>
+                                                <small class="text-muted">65 años, Jubilada</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Cuello femoral</span>
+                                        <br><small class="text-muted">Cadera izquierda</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">Subcapital</span>
+                                        <br><small class="text-muted">Garden III, desplazada</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Quirúrgico</span>
+                                        <br><small class="text-muted">Prótesis parcial</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">Post-op día 1</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Cirugía exitosa</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver Rx post-op">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Movilización">
+                                                <i class="fas fa-walking"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Rehabilitación">
+                                                <i class="fas fa-dumbbell"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/795548/ffffff?text=DG" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Diego González</div>
+                                                <small class="text-muted">25 años, Futbolista</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Tibia proximal</span>
+                                        <br><small class="text-muted">Meseta tibial</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">Schatzker II</span>
+                                        <br><small class="text-muted">Intraarticular</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Quirúrgico</span>
+                                        <br><small class="text-muted">RAFI con placa</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">29 Ene 2025</div>
+                                        <small class="text-muted">Post-op día 2</small>
+                                    </td>
+                                    <td><span class="badge bg-primary">Consolidando</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver Rx">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="TAC control">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Fisioterapia">
+                                                <i class="fas fa-dumbbell"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/795548/ffffff?text=LR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Luis Ramírez</div>
+                                                <small class="text-muted">38 años, Conductor</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Maléolos</span>
+                                        <br><small class="text-muted">Tobillo derecho</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">Bimaleolar</span>
+                                        <br><small class="text-muted">Weber B, desplazada</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Quirúrgico</span>
+                                        <br><small class="text-muted">RAFI bilateral</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">28 Ene 2025</div>
+                                        <small class="text-muted">Post-op día 3</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Edema importante</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver Rx">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Controlar edema">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Doppler">
+                                                <i class="fas fa-heartbeat"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fracture Classification & Tools -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools text-primary me-2"></i>Herramientas de Manejo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-2"></i>Registrar Fractura
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-hand-paper me-2"></i>Reducción Cerrada
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-user-md me-2"></i>Programar Cirugía
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-calendar me-2"></i>Control Radiológico
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-line me-2"></i>Seguimiento
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-alt me-2"></i>Reportes AO
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AO Classification -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-info me-2"></i>Clasificación AO
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="ao-classification mb-3">
+                        <h6 class="fw-bold text-primary">Fracturas Simples (A)</h6>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">A1 - Espiral</span>
+                            <span class="badge bg-success">8</span>
+                        </div>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">A2 - Oblicua</span>
+                            <span class="badge bg-success">6</span>
+                        </div>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">A3 - Transversa</span>
+                            <span class="badge bg-success">4</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ao-classification mb-3">
+                        <h6 class="fw-bold text-warning">Fracturas Cuña (B)</h6>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">B1 - Cuña espiral</span>
+                            <span class="badge bg-warning">5</span>
+                        </div>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">B2 - Cuña flexión</span>
+                            <span class="badge bg-warning">3</span>
+                        </div>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">B3 - Cuña fragmentada</span>
+                            <span class="badge bg-warning">2</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ao-classification">
+                        <h6 class="fw-bold text-danger">Fracturas Complejas (C)</h6>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">C1 - Espiral compleja</span>
+                            <span class="badge bg-danger">2</span>
+                        </div>
+                        <div class="classification-item d-flex justify-content-between mb-2">
+                            <span class="small">C2 - Segmentaria</span>
+                            <span class="badge bg-danger">1</span>
+                        </div>
+                        <div class="classification-item d-flex justify-content-between">
+                            <span class="small">C3 - Irregular</span>
+                            <span class="badge bg-danger">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Healing Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock text-warning me-2"></i>Tiempos de Consolidación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="healing-timeline">
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-medium">Falange</span>
+                                    <br><small class="text-muted">Huesos pequeños</small>
+                                </div>
+                                <span class="badge bg-success">3-4 sem</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-medium">Radio/Cúbito</span>
+                                    <br><small class="text-muted">Huesos medianos</small>
+                                </div>
+                                <span class="badge bg-primary">6-8 sem</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-medium">Húmero/Tibia</span>
+                                    <br><small class="text-muted">Huesos largos</small>
+                                </div>
+                                <span class="badge bg-warning">10-12 sem</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-medium">Fémur</span>
+                                    <br><small class="text-muted">Hueso mayor</small>
+                                </div>
+                                <span class="badge bg-danger">12-16 sem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="factors-info">
+                        <h6 class="fw-bold mb-2">Factores que Influyen</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="factor-positive p-2 bg-success bg-opacity-10 rounded mb-2">
+                                    <small class="text-success fw-bold">Favorables</small>
+                                    <ul class="list-unstyled small mt-1 mb-0">
+                                        <li>• Edad joven</li>
+                                        <li>• Buena vascularización</li>
+                                        <li>• Estabilidad</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="factor-negative p-2 bg-danger bg-opacity-10 rounded mb-2">
+                                    <small class="text-danger fw-bold">Desfavorables</small>
+                                    <ul class="list-unstyled small mt-1 mb-0">
+                                        <li>• Edad avanzada</li>
+                                        <li>• Tabaquismo</li>
+                                        <li>• Infección</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, #795548 0%, #5d4037 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ao-classification {
+    border-left: 3px solid #dee2e6;
+    padding-left: 15px;
+}
+
+.classification-item {
+    padding: 4px 0;
+}
+
+.timeline-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+}
+
+.healing-timeline {
+    position: relative;
+}
+
+.factors-info {
+    background: rgba(121, 85, 72, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

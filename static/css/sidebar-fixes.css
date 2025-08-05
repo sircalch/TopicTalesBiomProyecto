@@ -1,0 +1,349 @@
+/* ============================================================
+   SIDEBAR FIXES - TopicTales Biomédica
+   Correcciones para problemas visuales y de comportamiento
+   ============================================================ */
+
+/* Resetear estados hover oscuros problemáticos */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item {
+    background: transparent !important;
+    transition: all 0.3s ease;
+}
+
+/* Corregir hover states extraños */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item:not(.active):hover {
+    background: rgba(4, 169, 245, 0.08) !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item:not(.active):hover .nav-link {
+    color: #04a9f5 !important;
+    background: transparent !important;
+}
+
+/* Prevenir estados activos automáticos */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.pcoded-hasmenu {
+    background: transparent !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.pcoded-hasmenu:not(.pcoded-trigger) {
+    background: transparent !important;
+}
+
+/* Corregir menús desplegables que se abren solos */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu {
+    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+}
+
+/* Solo mostrar submenu cuando esté activamente triggeado */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu.pcoded-trigger .pcoded-submenu {
+    display: block !important;
+    opacity: 1;
+    visibility: visible;
+    max-height: 500px;
+    animation: slideDown 0.3s ease-in-out;
+}
+
+/* Animación suave para dropdown */
+@keyframes slideDown {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 500px;
+        opacity: 1;
+    }
+}
+
+/* Prevenir auto-trigger en hover */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu:hover .pcoded-submenu {
+    display: none !important;
+}
+
+/* Solo permitir trigger manual con click */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu.pcoded-trigger:hover .pcoded-submenu {
+    display: block !important;
+}
+
+/* Corregir colores de links normales */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link {
+    color: #ffffff !important;
+    background: transparent !important;
+    transition: all 0.3s ease;
+}
+
+/* Estados hover limpios */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link:hover {
+    color: #04a9f5 !important;
+    background: rgba(4, 169, 245, 0.1) !important;
+}
+
+/* Estados activos claros */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.active .nav-link,
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link.active {
+    color: #04a9f5 !important;
+    background: rgba(4, 169, 245, 0.15) !important;
+    position: relative;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.active .nav-link:before,
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link.active:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #04a9f5;
+    border-radius: 0 3px 3px 0;
+}
+
+/* Corregir iconos en hover */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link .pcoded-micon i {
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+}
+
+/* Iconos en hover con color azul */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link:hover .pcoded-micon i {
+    color: #04a9f5 !important;
+}
+
+/* Submenu styling mejorado */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu {
+    background: #39465e !important;
+    border-radius: 0 0 8px 8px;
+    margin-top: 0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li {
+    padding: 0;
+    margin: 0;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li > a {
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: 10px 20px 10px 60px !important;
+    background: transparent !important;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li > a:hover {
+    color: #fff !important;
+    background: rgba(4, 169, 245, 0.1) !important;
+    border-left-color: #04a9f5;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li.active > a,
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu li > a.active {
+    color: #04a9f5 !important;
+    background: rgba(4, 169, 245, 0.15) !important;
+    border-left-color: #04a9f5;
+}
+
+/* Arrow indicator para dropdown */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu > .nav-link:after {
+    content: "\e844";
+    font-family: "feather";
+    font-size: 14px;
+    float: right;
+    margin-top: 2px;
+    transition: transform 0.3s ease;
+    color: inherit;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu.pcoded-trigger > .nav-link:after {
+    transform: rotate(90deg);
+}
+
+/* Prevenir auto-expansion en collapsed mode */
+.pcoded-navbar.navbar-collapsed .pcoded-inner-navbar > li.pcoded-hasmenu .pcoded-submenu {
+    display: none !important;
+}
+
+.pcoded-navbar.navbar-collapsed .pcoded-inner-navbar > li.pcoded-hasmenu:hover .pcoded-submenu {
+    display: none !important;
+}
+
+/* Badges y contadores */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .pcoded-badge {
+    background: #04a9f5;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    float: right;
+    margin-top: 2px;
+}
+
+/* Mejorar separadores de sección */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-menu-caption {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-menu-caption:first-child {
+    margin-top: 0;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-menu-caption label {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 20px;
+    line-height: 1;
+}
+
+/* Corregir scroll en sidebar */
+.pcoded-navbar .navbar-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.pcoded-navbar .navbar-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.pcoded-navbar .navbar-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.pcoded-navbar .navbar-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.pcoded-navbar .navbar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Estados de focus mejorados */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item .nav-link:focus {
+    outline: 2px solid rgba(4, 169, 245, 0.5);
+    outline-offset: 2px;
+    background: rgba(4, 169, 245, 0.1) !important;
+}
+
+/* Prevenir interferencias de JavaScript automático */
+.pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu[data-auto-expanded="false"] .pcoded-submenu {
+    display: none !important;
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 991.98px) {
+    .pcoded-navbar .pcoded-inner-navbar li.pcoded-hasmenu .pcoded-submenu {
+        position: static;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+}
+
+/* Especialidades con colores específicos - Corregir problemas de hover */
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="pediatría"] .nav-link:hover .pcoded-micon i {
+    color: #22c55e !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="cardiología"] .nav-link:hover .pcoded-micon i {
+    color: #ef4444 !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="oftalmología"] .nav-link:hover .pcoded-micon i {
+    color: #3b82f6 !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="odontología"] .nav-link:hover .pcoded-micon i {
+    color: #f59e0b !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="dermatología"] .nav-link:hover .pcoded-micon i {
+    color: #10b981 !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="ginecología"] .nav-link:hover .pcoded-micon i {
+    color: #ec4899 !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="traumatología"] .nav-link:hover .pcoded-micon i {
+    color: #f97316 !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li[data-username*="psicología"] .nav-link:hover .pcoded-micon i {
+    color: #8b5cf6 !important;
+}
+
+/* Estados loading */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.loading .pcoded-micon i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Prevenir flickering durante carga */
+.pcoded-navbar .pcoded-inner-navbar {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.pcoded-navbar .pcoded-inner-navbar.loading {
+    opacity: 0.8;
+}
+
+/* CORRECCIÓN GLOBAL DE COLORES DE TEXTO DEL SIDEBAR */
+/* Asegurar que todos los textos principales sean blancos */
+.pcoded-navbar .pcoded-inner-navbar li .nav-link .pcoded-mtext {
+    color: #ffffff !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar a {
+    color: #ffffff !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item a {
+    color: #ffffff !important;
+}
+
+/* Textos hover con color azul */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item:hover a {
+    color: #04a9f5 !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item:hover .pcoded-mtext {
+    color: #04a9f5 !important;
+}
+
+/* Textos activos con color azul */
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.active a,
+.pcoded-navbar .pcoded-inner-navbar li.nav-item.active .pcoded-mtext {
+    color: #04a9f5 !important;
+}
+
+/* Brand text en header del sidebar */
+.pcoded-navbar .navbar-brand .b-title {
+    color: #ffffff !important;
+}
+
+/* Override para cualquier estilo que haga los textos grises */
+.pcoded-navbar * {
+    color: inherit;
+}
+
+.pcoded-navbar .pcoded-inner-navbar li.nav-item * {
+    color: inherit;
+}

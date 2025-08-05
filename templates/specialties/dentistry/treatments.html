@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:dentistry' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-procedures fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Tratamientos Dentales</h1>
+                                    <p class="mb-0 opacity-75">Procedimientos y terapias odontológicas</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Tratamiento
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Programar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Tratamientos Hoy</div>
+                            <div class="stats-number h3 mb-0 text-info">31</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+7 vs ayer</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-procedures fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Restauraciones</div>
+                            <div class="stats-number h3 mb-0 text-success">68%</div>
+                            <small class="text-success"><i class="fas fa-tooth me-1"></i>Más común</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-fill-drip fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Endodoncias</div>
+                            <div class="stats-number h3 mb-0 text-warning">12</div>
+                            <small class="text-warning"><i class="fas fa-exclamation me-1"></i>Complejas</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-prescription fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Limpiezas</div>
+                            <div class="stats-number h3 mb-0 text-primary">8</div>
+                            <small class="text-primary"><i class="fas fa-sparkles me-1"></i>Preventivo</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-broom fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Treatment Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-procedures text-info me-2"></i>Tratamientos Recientes
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>Restauraciones</option>
+                            <option>Endodoncias</option>
+                            <option>Limpiezas</option>
+                            <option>Extracciones</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Procedimiento</th>
+                                    <th>Diente</th>
+                                    <th>Material</th>
+                                    <th>Duración</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/17a2b8/ffffff?text=CF" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Carlos Fernández</div>
+                                                <small class="text-muted">ID: PAC-083</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Restauración</span>
+                                        <br><small class="text-muted">Caries clase II</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">16</span>
+                                        <br><small class="text-muted">Primer molar sup.</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Resina</span>
+                                        <br><small class="text-success">Composite</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">45 min</span>
+                                        <br><small class="text-muted">Normal</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">09:00 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Control">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=SL" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Sandra López</div>
+                                                <small class="text-muted">ID: PAC-084</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Endodoncia</span>
+                                        <br><small class="text-muted">Pulpitis irreversible</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">24</span>
+                                        <br><small class="text-muted">Primer premolar inf.</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Gutapercha</span>
+                                        <br><small class="text-info">Obturación</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">90 min</span>
+                                        <br><small class="text-warning">Compleja</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">10:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-info">En proceso</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="Continuar">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Rx control">
+                                                <i class="fas fa-x-ray"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=RG" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Roberto García</div>
+                                                <small class="text-muted">ID: PAC-085</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Limpieza</span>
+                                        <br><small class="text-muted">Profilaxis</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Todos</span>
+                                        <br><small class="text-muted">Boca completa</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Ultrasonido</span>
+                                        <br><small class="text-primary">+ Fluoruro</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">30 min</span>
+                                        <br><small class="text-success">Rutina</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">14:15 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Próxima cita">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Treatment Info -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-info btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nuevo Tratamiento
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-fill-drip me-2"></i>Restauración
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-prescription me-2"></i>Endodoncia
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-broom me-2"></i>Limpieza
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-medical me-2"></i>Protocolos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Types -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-info me-2"></i>Tipos de Tratamiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="treatment-types">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Restauraciones</div>
+                                <small class="text-muted">Obturaciones, incrustaciones</small>
+                            </div>
+                            <span class="badge bg-success">68%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Limpiezas</div>
+                                <small class="text-muted">Profilaxis, destartaje</small>
+                            </div>
+                            <span class="badge bg-primary">15%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Endodoncias</div>
+                                <small class="text-muted">Tratamiento de conducto</small>
+                            </div>
+                            <span class="badge bg-warning">10%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="fw-medium">Extracciones</div>
+                                <small class="text-muted">Simple y quirúrgica</small>
+                            </div>
+                            <span class="badge bg-danger">5%</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-medium">Otros</div>
+                                <small class="text-muted">Prótesis, implantes</small>
+                            </div>
+                            <span class="badge bg-secondary">2%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.text-info { color: #17a2b8 !important; }
+.btn-info { background-color: #17a2b8; border-color: #17a2b8; color: white; }
+.btn-outline-info { color: #17a2b8; border-color: #17a2b8; }
+.specialty-icon { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 15px; 
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stats-card { 
+    border: none; 
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.treatment-types > div {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+.treatment-types > div:last-child {
+    border-bottom: none;
+}
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

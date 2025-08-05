@@ -1,0 +1,537 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:gynecology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #ff6f61 0%, #de3163 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-microscope fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ page_title }}</h1>
+                                    <p class="mb-0 opacity-75">{{ description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nueva Citología
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Programar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Citologías Hoy</div>
+                            <div class="stats-number h3 mb-0 text-primary">34</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+22%</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-vial fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Resultados Normales</div>
+                            <div class="stats-number h3 mb-0 text-success">28</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>82%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Resultados Anormales</div>
+                            <div class="stats-number h3 mb-0 text-warning">6</div>
+                            <small class="text-warning"><i class="fas fa-exclamation me-1"></i>18%</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Colposcopias</div>
+                            <div class="stats-number h3 mb-0 text-danger">3</div>
+                            <small class="text-info"><i class="fas fa-calendar me-1"></i>Programadas</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-search fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Pap Smear Results -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-microscope text-primary me-2"></i>Resultados de Citología Cervical
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>NILM</option>
+                            <option>ASCUS</option>
+                            <option>LSIL</option>
+                            <option>HSIL</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>Resultado Citológico</th>
+                                    <th>HPV</th>
+                                    <th>Fecha</th>
+                                    <th>Seguimiento</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ff6f61/ffffff?text=MC" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">María Castro</div>
+                                                <small class="text-muted">ID: GYN-015</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">32 años</span>
+                                        <br><small class="text-muted">Última FUR: 15 Ene</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">NILM</span>
+                                        <br><small class="text-muted">Sin lesión intraepitelial</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Negativo</span>
+                                        <br><small class="text-muted">Alto riesgo</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">08:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-info">3 años</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver reporte">
+                                                <i class="fas fa-file-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Programar seguimiento">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Imprimir">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ff6f61/ffffff?text=AR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana Rodríguez</div>
+                                                <small class="text-muted">ID: GYN-016</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">28 años</span>
+                                        <br><small class="text-muted">Última FUR: 20 Ene</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">ASCUS</span>
+                                        <br><small class="text-muted">Células atípicas</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Positivo</span>
+                                        <br><small class="text-muted">Tipo 16</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">10:15 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Colposcopia</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Programar colposcopia">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Ver reporte">
+                                                <i class="fas fa-file-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Contactar paciente">
+                                                <i class="fas fa-phone"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ff6f61/ffffff?text=LM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Laura Martínez</div>
+                                                <small class="text-muted">ID: GYN-017</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">35 años</span>
+                                        <br><small class="text-muted">Última FUR: 10 Ene</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">HSIL</span>
+                                        <br><small class="text-muted">Lesión alto grado</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">Positivo</span>
+                                        <br><small class="text-muted">Tipo 18</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">29 Ene 2025</div>
+                                        <small class="text-muted">14:00 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-danger">Inmediata</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-danger" title="Prioridad alta">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Ver reporte">
+                                                <i class="fas fa-file-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Referir oncología">
+                                                <i class="fas fa-user-md"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ff6f61/ffffff?text=SF" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Sofía Fernández</div>
+                                                <small class="text-muted">ID: GYN-018</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">26 años</span>
+                                        <br><small class="text-muted">Última FUR: 25 Ene</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">LSIL</span>
+                                        <br><small class="text-muted">Lesión bajo grado</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Positivo</span>
+                                        <br><small class="text-muted">Bajo riesgo</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">28 Ene 2025</div>
+                                        <small class="text-muted">11:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-primary">12 meses</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver reporte">
+                                                <i class="fas fa-file-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Control 12m">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Educación">
+                                                <i class="fas fa-graduation-cap"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pap Smear Tools & Guidelines -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools text-primary me-2"></i>Herramientas Citológicas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nueva Citología
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-search me-2"></i>Programar Colposcopia
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-calendar me-2"></i>Control de Seguimiento
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-phone me-2"></i>Contactar Pacientes
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-download me-2"></i>Exportar Resultados
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classification System -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-info me-2"></i>Sistema Bethesda 2014
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="classification-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">NILM</div>
+                            <small class="text-muted">Sin lesión intraepitelial</small>
+                        </div>
+                        <span class="badge bg-success">Normal</span>
+                    </div>
+                    
+                    <div class="classification-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">ASCUS</div>
+                            <small class="text-muted">Células atípicas</small>
+                        </div>
+                        <span class="badge bg-warning">Seguimiento</span>
+                    </div>
+                    
+                    <div class="classification-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">LSIL</div>
+                            <small class="text-muted">Lesión bajo grado</small>
+                        </div>
+                        <span class="badge bg-primary">12 meses</span>
+                    </div>
+                    
+                    <div class="classification-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">HSIL</div>
+                            <small class="text-muted">Lesión alto grado</small>
+                        </div>
+                        <span class="badge bg-danger">Colposcopia</span>
+                    </div>
+                    
+                    <div class="classification-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">ASC-H</div>
+                            <small class="text-muted">Atipias sugestivas HSIL</small>
+                        </div>
+                        <span class="badge bg-danger">Inmediata</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HPV Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-virus text-warning me-2"></i>Estado HPV
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="hpv-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-medium">HPV Alto Riesgo</span>
+                            <span class="badge bg-danger">18%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-danger" style="width: 18%"></div>
+                        </div>
+                        <small class="text-muted">Tipos 16, 18, 31, 33, 45</small>
+                    </div>
+                    
+                    <div class="hpv-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-medium">HPV Bajo Riesgo</span>
+                            <span class="badge bg-warning">12%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-warning" style="width: 12%"></div>
+                        </div>
+                        <small class="text-muted">Tipos 6, 11, 42, 43</small>
+                    </div>
+                    
+                    <div class="hpv-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-medium">HPV Negativo</span>
+                            <span class="badge bg-success">70%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 70%"></div>
+                        </div>
+                        <small class="text-muted">Sin detección viral</small>
+                    </div>
+
+                    <hr>
+                    
+                    <div class="vaccine-info text-center">
+                        <h6 class="fw-bold text-primary">Vacunación HPV</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <span class="h5 text-success">85%</span>
+                                <br><small class="text-muted">9-14 años</small>
+                            </div>
+                            <div class="col-6">
+                                <span class="h5 text-info">45%</span>
+                                <br><small class="text-muted">15-26 años</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, #ff6f61 0%, #de3163 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.classification-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.classification-item:last-child {
+    border-bottom: none;
+}
+
+.hpv-item {
+    padding: 10px 0;
+}
+
+.vaccine-info {
+    background: rgba(0, 123, 255, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

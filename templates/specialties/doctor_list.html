@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Doctores Especialistas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-user-md me-2 text-primary"></i>Doctores Especialistas
+                </h1>
+                <a href="{% url 'specialties:index' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="specialty" class="form-label">Especialidad</label>
+                            <select class="form-select" id="specialty" name="specialty">
+                                <option value="">Todas las especialidades</option>
+                                {% for spec in specialties %}
+                                <option value="{{ spec.id }}" {% if spec.id|stringformat:"s" == specialty_filter %}selected{% endif %}>{{ spec.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="availability" class="form-label">Disponibilidad</label>
+                            <select class="form-select" id="availability" name="availability">
+                                <option value="">Todos</option>
+                                <option value="accepting" {% if availability_filter == 'accepting' %}selected{% endif %}>Acepta nuevos pacientes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-1"></i>Filtrar
+                            </button>
+                            <a href="{% url 'specialties:doctor_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Doctors List -->
+            <div class="row">
+                {% for doctor in doctors %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar avatar-lg bg-primary text-white rounded-circle me-3">
+                                    <i class="fas fa-user-md fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-0">{{ doctor.user.get_full_name }}</h5>
+                                    <small class="text-muted">{{ doctor.license_number }}</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="fw-bold mb-2">Especialidades:</h6>
+                                {% for specialty in doctor.specialties.all %}
+                                    <span class="badge bg-info me-1">{{ specialty.name }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div class="mb-3">
+                                <p class="mb-1">
+                                    <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                                    <strong>{{ doctor.years_experience }}</strong> años de experiencia
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-envelope me-2 text-muted"></i>
+                                    {{ doctor.user.email }}
+                                </p>
+                                {% if doctor.phone %}
+                                <p class="mb-1">
+                                    <i class="fas fa-phone me-2 text-muted"></i>
+                                    {{ doctor.phone }}
+                                </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {% if doctor.accepts_new_patients %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Acepta nuevos pacientes
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-times me-1"></i>No acepta nuevos pacientes
+                                    </span>
+                                {% endif %}
+                                
+                                {% if doctor.is_active %}
+                                    <span class="badge bg-primary">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="{% url 'specialties:doctor_detail' doctor.pk %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>Ver Perfil
+                                </a>
+                                {% if doctor.accepts_new_patients %}
+                                <button type="button" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-calendar-plus me-1"></i>Agendar
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay doctores disponibles</h5>
+                            <p class="text-muted">Configure los doctores especialistas para comenzar.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if doctors.has_other_pages %}
+            <nav aria-label="Paginación de doctores">
+                <ul class="pagination justify-content-center">
+                    {% if doctors.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if availability_filter %}&availability={{ availability_filter }}{% endif %}">Primera</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ doctors.previous_page_number }}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if availability_filter %}&availability={{ availability_filter }}{% endif %}">Anterior</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Página {{ doctors.number }} de {{ doctors.paginator.num_pages }}
+                        </span>
+                    </li>
+                    
+                    {% if doctors.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ doctors.next_page_number }}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if availability_filter %}&availability={{ availability_filter }}{% endif %}">Siguiente</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ doctors.paginator.num_pages }}{% if specialty_filter %}&specialty={{ specialty_filter }}{% endif %}{% if availability_filter %}&availability={{ availability_filter }}{% endif %}">Última</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

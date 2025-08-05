@@ -1,0 +1,490 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:cardiology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #198754 0%, #146c43 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-running fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Pruebas de Esfuerzo</h1>
+                                    <p class="mb-0 opacity-75">Evaluación cardiovascular bajo estrés</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nueva Prueba
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-play me-1"></i>Iniciar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Pruebas Hoy</div>
+                            <div class="stats-number h3 mb-0 text-success">8</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+2 vs ayer</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-running fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Negativos</div>
+                            <div class="stats-number h3 mb-0 text-success">82%</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>Sin isquemia</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Positivos</div>
+                            <div class="stats-number h3 mb-0 text-warning">3</div>
+                            <small class="text-warning"><i class="fas fa-exclamation me-1"></i>Evaluar</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Programados</div>
+                            <div class="stats-number h3 mb-0 text-info">12</div>
+                            <small class="text-info"><i class="fas fa-calendar me-1"></i>Esta semana</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Stress Test Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line text-success me-2"></i>Pruebas de Esfuerzo
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas</option>
+                            <option>Ergometría</option>
+                            <option>Farmacológica</option>
+                            <option>Eco-Stress</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>Tipo</th>
+                                    <th>FC Máx</th>
+                                    <th>METS</th>
+                                    <th>Resultado</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/198754/ffffff?text=CM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Carlos Mendoza</div>
+                                                <small class="text-muted">ID: PAC-040</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">55 años</span>
+                                        <br><small class="text-muted">Masculino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Ergometría</span>
+                                        <br><small class="text-muted">Bruce</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">165</span>
+                                        <br><small class="text-success">100% objetivo</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-success">12.8</span>
+                                        <br><small class="text-muted">Excelente</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Negativo</span>
+                                        <br><small class="text-success">Sin isquemia</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-success" title="Ver resultados">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Informe">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Imprimir">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=LT" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Lucía Torres</div>
+                                                <small class="text-muted">ID: PAC-041</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">48 años</span>
+                                        <br><small class="text-muted">Femenino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Farmacológica</span>
+                                        <br><small class="text-muted">Dobutamina</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">148</span>
+                                        <br><small class="text-warning">87% objetivo</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-info">8.5</span>
+                                        <br><small class="text-muted">Bueno</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Dudoso</span>
+                                        <br><small class="text-warning">Evaluar</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Revisión</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Evaluar resultado">
+                                                <i class="fas fa-exclamation"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Informe">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Cardiólogo">
+                                                <i class="fas fa-user-md"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/17a2b8/ffffff?text=PR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Pedro Ramírez</div>
+                                                <small class="text-muted">ID: PAC-042</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">62 años</span>
+                                        <br><small class="text-muted">Masculino</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Eco-Stress</span>
+                                        <br><small class="text-muted">Ejercicio</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">--</span>
+                                        <br><small class="text-info">Programado</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium text-muted">--</span>
+                                        <br><small class="text-muted">Pendiente</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">Pendiente</span>
+                                        <br><small class="text-muted">02 Feb 2025</small>
+                                    </td>
+                                    <td><span class="badge bg-secondary">Programado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-primary" title="Iniciar prueba">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Reagendar">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historia">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Mostrando 3 de 8 pruebas</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Info -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success btn-sm">
+                            <i class="fas fa-plus me-2"></i>Nueva Prueba de Esfuerzo
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Estudio
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-play me-2"></i>Iniciar Prueba
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-eye me-2"></i>Revisar Resultados
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Ver Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-export me-2"></i>Exportar Datos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Parameters -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-heartbeat text-success me-2"></i>Parámetros de Evaluación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="test-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">FC Máxima</div>
+                            <small class="text-muted">220 - edad</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">85% objetivo</div>
+                            <small class="text-success">Adecuado</small>
+                        </div>
+                    </div>
+                    
+                    <div class="test-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Capacidad (METS)</div>
+                            <small class="text-muted">Equivalentes metabólicos</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">> 10</div>
+                            <small class="text-success">Buena</small>
+                        </div>
+                    </div>
+                    
+                    <div class="test-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Presión Arterial</div>
+                            <small class="text-muted">Respuesta al ejercicio</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">Normal</div>
+                            <small class="text-info">Sin hipertensión</small>
+                        </div>
+                    </div>
+                    
+                    <div class="test-param-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Cambios ST</div>
+                            <small class="text-muted">Electrocardiográficos</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">Negativos</div>
+                            <small class="text-success">Sin isquemia</small>
+                        </div>
+                    </div>
+                    
+                    <div class="test-param-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">Síntomas</div>
+                            <small class="text-muted">Durante la prueba</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-medium">Ausentes</div>
+                            <small class="text-success">Tolerancia buena</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.test-param-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.test-param-item:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

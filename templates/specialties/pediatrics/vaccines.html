@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:pediatrics' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #6f42c1 0%, #5a3a9a 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-syringe fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">Control de Vacunación</h1>
+                                    <p class="mb-0 opacity-75">Esquemas de inmunización y seguimiento</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Aplicar Vacuna
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Programar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Vacunas Hoy</div>
+                            <div class="stats-number h3 mb-0 text-purple">15</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+5 vs ayer</small>
+                        </div>
+                        <div class="stats-icon text-purple">
+                            <i class="fas fa-syringe fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Esquemas Completos</div>
+                            <div class="stats-number h3 mb-0 text-success">92%</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+3%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Pendientes</div>
+                            <div class="stats-number h3 mb-0 text-warning">8</div>
+                            <small class="text-warning"><i class="fas fa-exclamation me-1"></i>Programar</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Reacciones Adversas</div>
+                            <div class="stats-number h3 mb-0 text-danger">2</div>
+                            <small class="text-muted"><i class="fas fa-minus me-1"></i>Sin cambios</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Vaccination Records -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-purple me-2"></i>Registro de Vacunación
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todas</option>
+                            <option>Aplicadas</option>
+                            <option>Pendientes</option>
+                            <option>Vencidas</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-purple">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Edad</th>
+                                    <th>Vacuna</th>
+                                    <th>Dosis</th>
+                                    <th>Fecha Aplicación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/6f42c1/ffffff?text=AM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Andrea Morales</div>
+                                                <small class="text-muted">ID: PAC-020</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">12 meses</span>
+                                        <br><small class="text-muted">1 año</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Triple Viral</span>
+                                        <br><small class="text-muted">SPR</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">1ra Dosis</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">10:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Aplicada</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-success" title="Ver certificado">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/ffc107/ffffff?text=DR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Diego Ramírez</div>
+                                                <small class="text-muted">ID: PAC-021</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">4 años</span>
+                                        <br><small class="text-muted">48 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">DPT</span>
+                                        <br><small class="text-muted">Difteria, Tos ferina, Tétanos</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Refuerzo</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">02 Feb 2025</div>
+                                        <small class="text-warning">Programada</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Pendiente</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-warning" title="Aplicar vacuna">
+                                                <i class="fas fa-syringe"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Reagendar">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/28a745/ffffff?text=VH" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Valeria Herrera</div>
+                                                <small class="text-muted">ID: PAC-022</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">6 meses</span>
+                                        <br><small class="text-muted">6 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Hexavalente</span>
+                                        <br><small class="text-muted">6 en 1</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">3ra Dosis</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">15:00 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Aplicada</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-success" title="Ver certificado">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Mostrando 3 de 18 registros</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Info -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-purple btn-sm">
+                            <i class="fas fa-syringe me-2"></i>Aplicar Vacuna
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Vacunación
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-certificate me-2"></i>Generar Certificado
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-bell me-2"></i>Recordatorios
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-chart-bar me-2"></i>Ver Estadísticas
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-file-export me-2"></i>Exportar Registros
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vaccination Schedule -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-check text-purple me-2"></i>Esquema de Vacunación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="vaccine-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Recién Nacido</div>
+                            <small class="text-muted">BCG, Hepatitis B</small>
+                        </div>
+                        <span class="badge bg-success">100%</span>
+                    </div>
+                    
+                    <div class="vaccine-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">2 Meses</div>
+                            <small class="text-muted">Pentavalente, Rotavirus, Neumococo</small>
+                        </div>
+                        <span class="badge bg-success">95%</span>
+                    </div>
+                    
+                    <div class="vaccine-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">4 Meses</div>
+                            <small class="text-muted">Pentavalente, Rotavirus, Neumococo</small>
+                        </div>
+                        <span class="badge bg-warning">85%</span>
+                    </div>
+                    
+                    <div class="vaccine-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">6 Meses</div>
+                            <small class="text-muted">Pentavalente, Rotavirus</small>
+                        </div>
+                        <span class="badge bg-warning">82%</span>
+                    </div>
+                    
+                    <div class="vaccine-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">12 Meses</div>
+                            <small class="text-muted">SPR, Neumococo, Varicela</small>
+                        </div>
+                        <span class="badge bg-info">75%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vaccine-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.vaccine-item:last-child {
+    border-bottom: none;
+}
+
+.text-purple {
+    color: #6f42c1 !important;
+}
+
+.btn-purple {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+    color: white;
+}
+
+.btn-purple:hover {
+    background-color: #5a3a9a;
+    border-color: #5a3a9a;
+    color: white;
+}
+
+.btn-outline-purple {
+    color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.btn-outline-purple:hover {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

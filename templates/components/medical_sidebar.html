@@ -1,0 +1,456 @@
+<!-- [ Medical Navigation Menu ] start -->
+<nav class="pcoded-navbar menupos-fixed">
+  <div class="navbar-wrapper">
+    
+    <!-- Brand Header -->
+    <div class="navbar-brand header-logo">
+      <a href="{% url 'dashboard:index' %}" class="b-brand">
+        <div class="b-bg">
+          <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+        <span class="b-title">TopicTales Biomédica</span>
+      </a>
+      <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
+    </div>
+    
+    <!-- Navigation Content -->
+    <div class="navbar-content scroll-div">
+      <ul class="nav pcoded-inner-navbar">
+        
+        <!-- Dashboard Section -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Panel Principal</label>
+        </li>
+        <li data-username="dashboard principal inicio estadisticas" class="nav-item">
+          <a href="{% url 'dashboard:index' %}" class="nav-link {% if request.resolver_match.namespace == 'dashboard' and request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <span class="pcoded-micon">
+              <i class="bi bi-speedometer2"></i>
+            </span>
+            <span class="pcoded-mtext">Dashboard</span>
+          </a>
+        </li>
+
+        <!-- Patient Management Section -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Gestión de Pacientes</label>
+        </li>
+        <li data-username="pacientes gestión lista nuevo buscar perfil" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-people-fill"></i>
+            </span>
+            <span class="pcoded-mtext">Pacientes</span>
+            <span class="pcoded-badge label label-primary">{{ total_patients|default:0 }}</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'patients:list' %}">Lista de Pacientes</a></li>
+            <li><a href="{% url 'patients:create' %}">Nuevo Paciente</a></li>
+            <li><a href="{% url 'patients:search' %}">Búsqueda Avanzada</a></li>
+            <li><a href="{% url 'reports:patients' %}">Reportes de Pacientes</a></li>
+          </ul>
+        </li>
+
+        <!-- Appointments & Schedule -->
+        <li data-username="agenda citas calendario nueva lista programar" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-calendar-event-fill"></i>
+            </span>
+            <span class="pcoded-mtext">Agenda & Citas</span>
+            <span class="pcoded-badge label label-warning">{{ todays_appointments|default:0 }}</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'appointments:calendar' %}">Calendario</a></li>
+            <li><a href="{% url 'appointments:list' %}">Lista de Citas</a></li>
+            <li><a href="{% url 'appointments:create' %}">Nueva Cita</a></li>
+            <li><a href="{% url 'appointments:todays_appointments' %}">Citas del Día</a></li>
+            <li><a href="{% url 'appointments:schedule_config' %}">Configurar Horarios</a></li>
+          </ul>
+        </li>
+
+        <!-- Medical Records -->
+        <li data-username="expedientes médicos historial clínico" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-file-medical-fill"></i>
+            </span>
+            <span class="pcoded-mtext">Expedientes</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'medical_records:index' %}">Todos los Expedientes</a></li>
+            <li><a href="{% url 'medical_records:create_record' %}">Crear Expediente</a></li>
+            <li><a href="{% url 'medical_records:templates' %}">Plantillas</a></li>
+            <li><a href="{% url 'medical_records:clinical_history' %}">Historial Clínico</a></li>
+            <li><a href="{% url 'medical_records:all_consultations' %}">Todas las Consultas</a></li>
+            <li><a href="{% url 'medical_records:search' %}">Buscar Expedientes</a></li>
+          </ul>
+        </li>
+
+        <!-- Medical Specialties Section -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Especialidades Médicas</label>
+        </li>
+
+        <!-- Specialties Dashboard -->
+        <li data-username="especialidades médicas dashboard" class="nav-item">
+          <a href="{% url 'specialties:index' %}" class="nav-link {% if request.resolver_match.namespace == 'specialties' and request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <span class="pcoded-micon">
+              <i class="bi bi-hospital"></i>
+            </span>
+            <span class="pcoded-mtext">Dashboard Especialidades</span>
+          </a>
+        </li>
+
+        <!-- Pediatrics -->
+        <li data-username="pediatría consultas niños" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-person-hearts"></i>
+            </span>
+            <span class="pcoded-mtext">Pediatría</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:pediatrics' %}">Dashboard Pediatría</a></li>
+            <li><a href="{% url 'specialties:pediatric_consultations' %}">Consultas Pediátricas</a></li>
+            <li><a href="{% url 'specialties:growth_charts' %}">Tablas de Crecimiento</a></li>
+            <li><a href="{% url 'specialties:vaccines' %}">Control de Vacunas</a></li>
+            <li><a href="{% url 'specialties:development' %}">Desarrollo Infantil</a></li>
+          </ul>
+        </li>
+
+        <!-- Cardiology -->
+        <li data-username="cardiología corazón ecg" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-heart-pulse"></i>
+            </span>
+            <span class="pcoded-mtext">Cardiología</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:cardiology' %}">Dashboard Cardiología</a></li>
+            <li><a href="{% url 'specialties:ecg' %}">Electrocardiogramas</a></li>
+            <li><a href="{% url 'specialties:echo' %}">Ecocardiogramas</a></li>
+            <li><a href="{% url 'specialties:stress_test' %}">Pruebas de Esfuerzo</a></li>
+            <li><a href="{% url 'specialties:cardiac_rehabilitation' %}">Rehabilitación Cardíaca</a></li>
+          </ul>
+        </li>
+
+        <!-- Ophthalmology -->
+        <li data-username="oftalmología ojos visión" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-eye"></i>
+            </span>
+            <span class="pcoded-mtext">Oftalmología</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:ophthalmology' %}">Dashboard Oftalmología</a></li>
+            <li><a href="{% url 'specialties:eye_exams' %}">Exámenes Oculares</a></li>
+            <li><a href="{% url 'specialties:vision_tests' %}">Pruebas de Visión</a></li>
+            <li><a href="{% url 'specialties:prescriptions' %}">Recetas Ópticas</a></li>
+            <li><a href="{% url 'specialties:surgeries' %}">Cirugías Oculares</a></li>
+          </ul>
+        </li>
+
+        <!-- Dentistry -->
+        <li data-username="odontología dientes dental" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-tooth"></i>
+            </span>
+            <span class="pcoded-mtext">Odontología</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:dentistry' %}">Dashboard Odontología</a></li>
+            <li><a href="{% url 'specialties:dental_exams' %}">Exámenes Dentales</a></li>
+            <li><a href="{% url 'specialties:treatments' %}">Tratamientos Dentales</a></li>
+            <li><a href="{% url 'specialties:orthodontics' %}">Ortodoncia</a></li>
+            <li><a href="{% url 'specialties:oral_surgery' %}">Cirugía Oral</a></li>
+          </ul>
+        </li>
+
+        <!-- Dermatology -->
+        <li data-username="dermatología piel" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-droplet"></i>
+            </span>
+            <span class="pcoded-mtext">Dermatología</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:dermatology' %}">Dashboard Dermatología</a></li>
+            <li><a href="{% url 'specialties:skin_exams' %}">Exámenes de Piel</a></li>
+            <li><a href="{% url 'specialties:dermatoscopy' %}">Dermatoscopia</a></li>
+            <li><a href="{% url 'specialties:dermatology_treatments' %}">Tratamientos</a></li>
+            <li><a href="{% url 'specialties:cosmetic' %}">Dermatología Cosmética</a></li>
+          </ul>
+        </li>
+
+        <!-- Gynecology -->
+        <li data-username="ginecología mujer embarazo" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-gender-female"></i>
+            </span>
+            <span class="pcoded-mtext">Ginecología</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:gynecology' %}">Dashboard Ginecología</a></li>
+            <li><a href="{% url 'specialties:gynecologic_exams' %}">Exámenes Ginecológicos</a></li>
+            <li><a href="{% url 'specialties:pregnancy' %}">Control Prenatal</a></li>
+            <li><a href="{% url 'specialties:pap_smear' %}">Citología</a></li>
+            <li><a href="{% url 'specialties:contraception' %}">Anticonceptivos</a></li>
+          </ul>
+        </li>
+
+        <!-- Traumatology -->
+        <li data-username="traumatología huesos fracturas" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-bandaid-fill"></i>
+            </span>
+            <span class="pcoded-mtext">Traumatología</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:traumatology' %}">Dashboard Traumatología</a></li>
+            <li><a href="{% url 'specialties:xrays' %}">Radiografías</a></li>
+            <li><a href="{% url 'specialties:fractures' %}">Fracturas</a></li>
+            <li><a href="{% url 'specialties:therapy' %}">Fisioterapia</a></li>
+            <li><a href="{% url 'specialties:orthopedic_surgeries' %}">Cirugías Ortopédicas</a></li>
+          </ul>
+        </li>
+
+        <!-- Dynamic Medical Modules (fallback) -->
+        {% for category, modules in sidebar_modules.items %}
+          {% if modules and category == 'medical' %}
+            {% for module_data in modules %}
+              {% with module=module_data.module submodules=module_data.submodules %}
+                <li data-username="{{ module.display_name|lower }}" class="nav-item pcoded-hasmenu">
+                  <a href="#" class="nav-link">
+                    <span class="pcoded-micon">
+                      <i class="bi {{ module.icon|default:'bi-folder2-open' }}"></i>
+                    </span>
+                    <span class="pcoded-mtext">{{ module.display_name }}</span>
+                    {% if user_subscription.plan == 'BASIC' and module.min_plan_required != 'BASIC' %}
+                      <span class="pcoded-badge label label-danger">PRO</span>
+                    {% endif %}
+                  </a>
+                  {% if submodules %}
+                    <ul class="pcoded-submenu">
+                      {% for submodule in submodules %}
+                        <li>
+                          <a href="{% if submodule.url_name %}{% url submodule.url_name %}{% else %}#{% endif %}">
+                            {{ submodule.display_name }}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <ul class="pcoded-submenu">
+                      <li><a href="{% if module.url_name %}{% url module.url_name %}{% else %}#{% endif %}">Dashboard {{ module.display_name }}</a></li>
+                      <li><a href="{% url 'specialties:consultation_list' %}">Consultas {{ module.display_name }}</a></li>
+                      <li><a href="{% url 'specialties:index' %}">Ver Especialidades</a></li>
+                    </ul>
+                  {% endif %}
+                </li>
+              {% endwith %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+        <!-- Additional Medical Specialties -->
+        <li data-username="psicología consultas terapia" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-brain"></i>
+            </span>
+            <span class="pcoded-mtext">Psicología</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:psychology' %}">Dashboard Psicología</a></li>
+            <li><a href="{% url 'specialties:consultation_list' %}">Consultas Psicológicas</a></li>
+            <li><a href="{% url 'specialties:index' %}">Ver Especialidades</a></li>
+          </ul>
+        </li>
+        
+        <li data-username="nutrición dietas planes alimentarios" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-apple"></i>
+            </span>
+            <span class="pcoded-mtext">Nutrición</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'specialties:nutrition' %}">Dashboard Nutrición</a></li>
+            <li><a href="{% url 'specialties:consultation_list' %}">Consultas Nutricionales</a></li>
+            <li><a href="{% url 'specialties:index' %}">Ver Especialidades</a></li>
+          </ul>
+        </li>
+
+        <!-- Reports & Analytics -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Reportes & Analytics</label>
+        </li>
+        <li data-username="reportes analytics estadísticas gráficos" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-graph-up-arrow"></i>
+            </span>
+            <span class="pcoded-mtext">Reportes</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'reports:index' %}">Dashboard Reportes</a></li>
+            <li><a href="{% url 'reports:patients' %}">Reportes de Pacientes</a></li>
+            <li><a href="{% url 'reports:appointments' %}">Reportes de Citas</a></li>
+            <li><a href="{% url 'reports:index' %}">Estadísticas Médicas</a></li>
+            <li><a href="{% url 'reports:index' %}">Exportar Datos</a></li>
+          </ul>
+        </li>
+
+        <!-- Communication & Tools -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Herramientas</label>
+        </li>
+        
+        <!-- Dynamic Communication Modules -->
+        {% for category, modules in sidebar_modules.items %}
+          {% if modules and category == 'communication' %}
+            {% for module_data in modules %}
+              {% with module=module_data.module submodules=module_data.submodules %}
+                <li data-username="{{ module.display_name|lower }}" class="nav-item pcoded-hasmenu">
+                  <a href="#" class="nav-link">
+                    <span class="pcoded-micon">
+                      <i class="bi {{ module.icon|default:'bi-chat-dots' }}"></i>
+                    </span>
+                    <span class="pcoded-mtext">{{ module.display_name }}</span>
+                  </a>
+                  <ul class="pcoded-submenu">
+                    {% if submodules %}
+                      {% for submodule in submodules %}
+                        <li>
+                          <a href="{% if submodule.url_name %}{% url submodule.url_name %}{% else %}#{% endif %}">
+                            {{ submodule.display_name }}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    {% else %}
+                      <li><a href="{% if module.url_name %}{% url module.url_name %}{% else %}#{% endif %}">{{ module.display_name }}</a></li>
+                    {% endif %}
+                  </ul>
+                </li>
+              {% endwith %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+        <!-- File Manager -->
+        <li data-username="archivos documentos gestión" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-folder2-open"></i>
+            </span>
+            <span class="pcoded-mtext">Gestión de Archivos</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'medical_records:index' %}">Documentos Médicos</a></li>
+            <li><a href="{% url 'medical_records:templates' %}">Plantillas</a></li>
+            <li><a href="{% url 'reports:index' %}">Reportes</a></li>
+            <li><a href="{% url 'dashboard:index' %}">Panel Principal</a></li>
+          </ul>
+        </li>
+
+        <!-- Configuration & Admin -->
+        {% if user.is_superuser or user.is_staff %}
+          <li class="nav-item pcoded-menu-caption">
+            <label>Administración</label>
+          </li>
+          
+          <!-- Dynamic Admin Modules -->
+          {% for category, modules in sidebar_modules.items %}
+            {% if modules and category == 'admin' %}
+              {% for module_data in modules %}
+                {% with module=module_data.module submodules=module_data.submodules %}
+                  <li data-username="{{ module.display_name|lower }}" class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link">
+                      <span class="pcoded-micon">
+                        <i class="bi {{ module.icon|default:'bi-gear-fill' }}"></i>
+                      </span>
+                      <span class="pcoded-mtext">{{ module.display_name }}</span>
+                    </a>
+                    {% if submodules %}
+                      <ul class="pcoded-submenu">
+                        {% for submodule in submodules %}
+                          <li>
+                            <a href="{% if submodule.url_name %}{% url submodule.url_name %}{% else %}#{% endif %}">
+                              {{ submodule.display_name }}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </li>
+                {% endwith %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+
+          <!-- System Admin -->
+          <li data-username="admin panel administración sistema" class="nav-item pcoded-hasmenu">
+            <a href="#" class="nav-link">
+              <span class="pcoded-micon">
+                <i class="bi bi-gear-fill"></i>
+              </span>
+              <span class="pcoded-mtext">Sistema</span>
+            </a>
+            <ul class="pcoded-submenu">
+              <li><a href="{% url 'admin:index' %}">Panel Admin</a></li>
+              <li><a href="{% url 'accounts:settings' %}">Configuraciones</a></li>
+              <li><a href="{% url 'admin:index' %}">Gestión de Usuarios</a></li>
+              <li><a href="{% url 'reports:index' %}">Reportes del Sistema</a></li>
+            </ul>
+          </li>
+        {% endif %}
+
+        <!-- User Profile & Settings -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Usuario</label>
+        </li>
+        <li data-username="perfil usuario configuración cuenta" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-person-circle"></i>
+            </span>
+            <span class="pcoded-mtext">Mi Cuenta</span>
+            <span class="pcoded-badge label label-success">Online</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'accounts:profile' %}">Mi Perfil</a></li>
+            <li><a href="{% url 'accounts:settings' %}">Configuración</a></li>
+            {% if user_subscription.plan == 'BASIC' %}
+              <li><a href="{% url 'accounts:subscription' %}">Actualizar Plan</a></li>
+            {% endif %}
+            <li><a href="{% url 'accounts:logout' %}">Cerrar Sesión</a></li>
+          </ul>
+        </li>
+
+        <!-- Subscription Info -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Plan: {{ user_subscription.plan|default:"Básico" }}</label>
+        </li>
+        <li data-username="subscripción plan límites" class="nav-item">
+          <a href="{% if user_subscription.plan == 'BASIC' %}{% url 'accounts:subscription' %}{% else %}#{% endif %}" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-award-fill"></i>
+            </span>
+            <span class="pcoded-mtext">{{ subscription_features.current_patients|default:0 }}{% if subscription_features.max_patients != -1 %}/{{ subscription_features.max_patients }}{% endif %} Pacientes</span>
+            {% if user_subscription.plan == 'BASIC' %}
+              <span class="pcoded-badge label label-warning">Upgrade</span>
+            {% endif %}
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- [ Medical Navigation Menu ] end -->

@@ -1,0 +1,674 @@
+{% extends 'base.html' %}
+
+{% block title %}Gynecological Examinations - Women's Health{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'specialties:gynecology' %}">Gynecology</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Gynecologic Exams</li>
+        </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);">
+                <div class="card-body text-white p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="feature-icon me-3">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-1">Gynecological Examinations</h2>
+                            <p class="mb-0 opacity-90">Comprehensive women's health examinations including pelvic exams, reproductive health assessments, and preventive screenings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stats-icon text-primary mb-2">
+                        <i class="fas fa-stethoscope fa-2x"></i>
+                    </div>
+                    <h3 class="h2 fw-bold text-primary mb-1">423</h3>
+                    <p class="text-muted mb-0">Annual Exams</p>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +15% this quarter</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stats-icon text-warning mb-2">
+                        <i class="fas fa-search fa-2x"></i>
+                    </div>
+                    <h3 class="h2 fw-bold text-warning mb-1">156</h3>
+                    <p class="text-muted mb-0">Abnormal Findings</p>
+                    <small class="text-info">Requiring follow-up</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stats-icon text-success mb-2">
+                        <i class="fas fa-shield-alt fa-2x"></i>
+                    </div>
+                    <h3 class="h2 fw-bold text-success mb-1">94.7%</h3>
+                    <p class="text-muted mb-0">Screening Compliance</p>
+                    <small class="text-success">Preventive care rate</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="stats-icon text-info mb-2">
+                        <i class="fas fa-calendar-check fa-2x"></i>
+                    </div>
+                    <h3 class="h2 fw-bold text-info mb-1">2.1</h3>
+                    <p class="text-muted mb-0">Years Avg. Interval</p>
+                    <small class="text-primary">Between exams</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Recent Examinations -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clipboard-list text-primary me-2"></i>
+                        Recent Gynecological Examinations
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Age</th>
+                                    <th>Exam Type</th>
+                                    <th>Last Period</th>
+                                    <th>Findings</th>
+                                    <th>Recommendations</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>GYN-001</strong></td>
+                                    <td>28</td>
+                                    <td>Annual Exam</td>
+                                    <td>Jan 15, 2024</td>
+                                    <td><span class="badge bg-success">Normal</span></td>
+                                    <td>Routine screening</td>
+                                    <td>Jan 30, 2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-calendar"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GYN-002</strong></td>
+                                    <td>34</td>
+                                    <td>Problem Visit</td>
+                                    <td>Dec 20, 2023</td>
+                                    <td><span class="badge bg-warning">Irregular bleeding</span></td>
+                                    <td>Ultrasound + Hormone panel</td>
+                                    <td>Jan 29, 2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GYN-003</strong></td>
+                                    <td>45</td>
+                                    <td>Menopause Consult</td>
+                                    <td>Amenorrhea 8mo</td>
+                                    <td><span class="badge bg-info">Perimenopausal</span></td>
+                                    <td>HRT evaluation</td>
+                                    <td>Jan 28, 2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-pills"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GYN-004</strong></td>
+                                    <td>22</td>
+                                    <td>First Exam</td>
+                                    <td>Jan 5, 2024</td>
+                                    <td><span class="badge bg-success">Normal</span></td>
+                                    <td>Contraception counseling</td>
+                                    <td>Jan 27, 2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-graduation-cap"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GYN-005</strong></td>
+                                    <td>38</td>
+                                    <td>Follow-up</td>
+                                    <td>Jan 10, 2024</td>
+                                    <td><span class="badge bg-danger">Abnormal Pap</span></td>
+                                    <td>Colposcopy scheduled</td>
+                                    <td>Jan 26, 2024</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-microscope"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Examination Categories -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie text-info me-2"></i>
+                        Examination Type Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Exam Types</h6>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Annual/Routine</span>
+                                    <span class="fw-bold">52%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: 52%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Problem-focused</span>
+                                    <span class="fw-bold">28%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: 28%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Contraception Consult</span>
+                                    <span class="fw-bold">12%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 12%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Menopause</span>
+                                    <span class="fw-bold">8%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-info" style="width: 8%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Age Distribution</h6>
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <div class="p-3 bg-light rounded">
+                                        <h4 class="text-primary mb-1">18-25</h4>
+                                        <small class="text-muted">23% of patients</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="p-3 bg-light rounded">
+                                        <h4 class="text-success mb-1">26-35</h4>
+                                        <small class="text-muted">34% of patients</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="p-3 bg-light rounded">
+                                        <h4 class="text-warning mb-1">36-45</h4>
+                                        <small class="text-muted">28% of patients</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="p-3 bg-light rounded">
+                                        <h4 class="text-info mb-1">46+</h4>
+                                        <small class="text-muted">15% of patients</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screening Results -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-microscope text-success me-2"></i>
+                        Recent Screening Results
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Screening Type</th>
+                                    <th>Result</th>
+                                    <th>Risk Level</th>
+                                    <th>Follow-up</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>GYN-001</strong></td>
+                                    <td>Pap Smear</td>
+                                    <td>NILM</td>
+                                    <td><span class="badge bg-success">Low</span></td>
+                                    <td>3 years</td>
+                                    <td>Jan 30, 2024</td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GYN-006</strong></td>
+                                    <td>HPV Test</td>
+                                    <td>Negative</td>
+                                    <td><span class="badge bg-success">Low</span></td>
+                                    <td>5 years</td>
+                                    <td>Jan 29, 2024</td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GYN-005</strong></td>
+                                    <td>Pap Smear</td>
+                                    <td>ASCUS</td>
+                                    <td><span class="badge bg-warning">Moderate</span></td>
+                                    <td>6 months</td>
+                                    <td>Jan 26, 2024</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GYN-007</strong></td>
+                                    <td>Mammography</td>
+                                    <td>BI-RADS 2</td>
+                                    <td><span class="badge bg-success">Low</span></td>
+                                    <td>1 year</td>
+                                    <td>Jan 25, 2024</td>
+                                    <td><span class="badge bg-info">Reviewed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-plus me-2"></i>Schedule Annual Exam
+                        </button>
+                        <button class="btn btn-outline-info">
+                            <i class="fas fa-microscope me-2"></i>Order Pap Smear
+                        </button>
+                        <button class="btn btn-outline-warning">
+                            <i class="fas fa-stethoscope me-2"></i>Problem Visit
+                        </button>
+                        <button class="btn btn-outline-success">
+                            <i class="fas fa-file-medical me-2"></i>Review Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screening Guidelines -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-clipboard-list text-primary me-2"></i>
+                        Screening Guidelines
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-primary">Cervical Cancer Screening</h6>
+                        <ul class="list-unstyled small">
+                            <li><strong>Ages 21-29:</strong> Pap every 3 years</li>
+                            <li><strong>Ages 30-65:</strong> Pap + HPV every 5 years</li>
+                            <li><strong>Over 65:</strong> May discontinue if adequate screening</li>
+                        </ul>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-success">Breast Cancer Screening</h6>
+                        <ul class="list-unstyled small">
+                            <li><strong>Ages 40-49:</strong> Annual mammogram (optional)</li>
+                            <li><strong>Ages 50-74:</strong> Mammogram every 1-2 years</li>
+                            <li><strong>High risk:</strong> Earlier/more frequent screening</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-warning">STI Screening</h6>
+                        <ul class="list-unstyled small">
+                            <li><strong>Chlamydia/Gonorrhea:</strong> Sexually active ≤25</li>
+                            <li><strong>HIV:</strong> Ages 15-65, at least once</li>
+                            <li><strong>Syphilis:</strong> High-risk populations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Checklist -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-check-square text-success me-2"></i>
+                        Standard Exam Components
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label small">
+                            Medical/Sexual History
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label small">
+                            Vital Signs & BMI
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label small">
+                            Breast Examination
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" checked>
+                        <label class="form-check-label small">
+                            Pelvic Examination
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label small">
+                            Pap Smear (if due)
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label small">
+                            STI Testing
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label small">
+                            Contraception Counseling
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label small">
+                            Health Maintenance Discussion
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-calendar-alt text-info me-2"></i>
+                        Today's Appointments
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item mb-3">
+                            <div class="timeline-badge bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Sarah M. (29)</h6>
+                                <p class="mb-1 text-muted small">Annual exam + Pap</p>
+                                <small class="text-primary">9:00 AM - 9:45 AM</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item mb-3">
+                            <div class="timeline-badge bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Jennifer K. (34)</h6>
+                                <p class="mb-1 text-muted small">Irregular bleeding</p>
+                                <small class="text-warning">10:30 AM - 11:15 AM</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item mb-3">
+                            <div class="timeline-badge bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Lisa T. (22)</h6>
+                                <p class="mb-1 text-muted small">First exam + contraception</p>
+                                <small class="text-success">2:00 PM - 2:30 PM</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-badge bg-info"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Maria R. (45)</h6>
+                                <p class="mb-1 text-muted small">Menopause consultation</p>
+                                <small class="text-info">3:15 PM - 4:00 PM</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overdue Screenings -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        Overdue Screenings
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small">Pap Smears</span>
+                            <span class="badge bg-warning">23</span>
+                        </div>
+                        <small class="text-muted">Due for screening</small>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small">Mammograms</span>
+                            <span class="badge bg-info">15</span>
+                        </div>
+                        <small class="text-muted">Annual screening</small>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small">HPV Testing</span>
+                            <span class="badge bg-success">8</span>
+                        </div>
+                        <small class="text-muted">Co-testing due</small>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-outline-warning w-100">
+                            <i class="fas fa-phone me-1"></i>
+                            Send Reminders
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stats-card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    position: relative;
+}
+
+.timeline-badge {
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    padding-left: 10px;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate statistics cards on page load
+    const statsCards = document.querySelectorAll('.stats-card');
+    statsCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s, transform 0.5s';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 100);
+    });
+
+    // Add hover effects to action buttons
+    const actionButtons = document.querySelectorAll('.btn');
+    actionButtons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+            this.style.transition = 'transform 0.2s';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+
+    // Progress bar animations
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.transition = 'width 1s ease-in-out';
+            bar.style.width = width;
+        }, 600);
+    });
+
+    // Interactive checklist
+    const checkboxes = document.querySelectorAll('.form-check-input');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const label = this.nextElementSibling;
+            if (this.checked) {
+                label.style.color = '#28a745';
+                label.style.fontWeight = 'bold';
+            } else {
+                label.style.color = '';
+                label.style.fontWeight = '';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

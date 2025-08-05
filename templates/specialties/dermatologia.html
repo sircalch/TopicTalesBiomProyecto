@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item active">{{ specialty_name }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-user-md fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ specialty_name }}</h1>
+                                    <p class="mb-0 opacity-75">Diagnóstico y tratamiento de enfermedades de la piel</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="{% url 'patients:list' %}" class="btn btn-light btn-sm">
+                                    <i class="fas fa-calendar-plus me-1"></i>Nueva Consulta
+                                </a>
+                                <a href="{% url 'reports:index' %}" class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-chart-line me-1"></i>Reportes
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Consultas del Mes</div>
+                            <div class="stats-number h3 mb-0 text-warning">52</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+20%</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Dermatoscopías</div>
+                            <div class="stats-number h3 mb-0 text-primary">18</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+15%</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-search fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Criocirugías</div>
+                            <div class="stats-number h3 mb-0 text-info">12</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+8%</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-snowflake fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Biopsias</div>
+                            <div class="stats-number h3 mb-0 text-danger">6</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+3%</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-cut fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-search me-2"></i>Dermatoscopía
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-snowflake me-2"></i>Criocirugía
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-cut me-2"></i>Biopsia de Piel
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-sun me-2"></i>Fototerapia
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-ambulance me-2"></i>Urgencia Dermatológica
+                        </a>
+                        <a href="{% url 'patients:search' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-camera me-2"></i>Mapeo Fotográfico
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Dermatology Consultations -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-primary me-2"></i>Consultas Dermatológicas Recientes
+                    </h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tipo</th>
+                                    <th>Motivo</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/32x32/ffc107/ffffff?text=RS" 
+                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Roberto Silva</div>
+                                                <small class="text-muted">45 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Revisión</span>
+                                    </td>
+                                    <td>Control de Lunares</td>
+                                    <td>30 Ene 2025</td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/32x32/ffc107/ffffff?text=PJ" 
+                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Patricia Jiménez</div>
+                                                <small class="text-muted">35 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Tratamiento</span>
+                                    </td>
+                                    <td>Acné Severo</td>
+                                    <td>29 Ene 2025</td>
+                                    <td><span class="badge bg-warning">En Proceso</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/32x32/ffc107/ffffff?text=MT" 
+                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Miguel Torres</div>
+                                                <small class="text-muted">60 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">Criocirugía</span>
+                                    </td>
+                                    <td>Queratosis Actínica</td>
+                                    <td>28 Ene 2025</td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialists and Services -->
+    <div class="row">
+        <!-- Dermatology Specialists -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-md text-warning me-2"></i>Especialistas en Dermatología
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="specialist-card">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="https://via.placeholder.com/50x50/007bff/ffffff?text=CM" 
+                                         class="rounded-circle me-3" width="50" height="50" alt="Dr. Mendoza">
+                                    <div>
+                                        <h6 class="mb-1">Dr. Carlos Mendoza</h6>
+                                        <small class="text-muted">Dermatólogo General</small>
+                                    </div>
+                                </div>
+                                <div class="specialist-details">
+                                    <small class="text-muted d-block">15 años de experiencia</small>
+                                    <span class="badge bg-success">Disponible</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="specialist-card">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="https://via.placeholder.com/50x50/28a745/ffffff?text=ER" 
+                                         class="rounded-circle me-3" width="50" height="50" alt="Dra. Ruiz">
+                                    <div>
+                                        <h6 class="mb-1">Dra. Elena Ruiz</h6>
+                                        <small class="text-muted">Dermatóloga Estética</small>
+                                    </div>
+                                </div>
+                                <div class="specialist-details">
+                                    <small class="text-muted d-block">12 años de experiencia</small>
+                                    <span class="badge bg-warning">En Consulta</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Services -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-stethoscope text-success me-2"></i>Servicios Disponibles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="services-list">
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-search text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Dermatoscopía</h6>
+                                <small class="text-muted">Análisis detallado de lunares</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-primary">Programar</a>
+                            </div>
+                        </div>
+                        
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-snowflake text-info"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Criocirugía</h6>
+                                <small class="text-muted">Tratamiento con nitrógeno líquido</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-info">Programar</a>
+                            </div>
+                        </div>
+                        
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-cut text-warning"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Biopsia de Piel</h6>
+                                <small class="text-muted">Estudio histopatológico</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-warning">Programar</a>
+                            </div>
+                        </div>
+                        
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-sun text-success"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Fototerapia</h6>
+                                <small class="text-muted">Tratamiento con luz UV</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-success">Programar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.specialist-card {
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.specialist-card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.service-item {
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.service-item:hover {
+    background-color: #f8f9fa;
+}
+
+.service-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card, .specialist-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

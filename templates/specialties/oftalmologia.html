@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item active">{{ specialty_name }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-eye fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ specialty_name }}</h1>
+                                    <p class="mb-0 opacity-75">Diagnóstico y tratamiento de enfermedades oculares</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="{% url 'patients:list' %}" class="btn btn-light btn-sm">
+                                    <i class="fas fa-calendar-plus me-1"></i>Nueva Consulta
+                                </a>
+                                <a href="{% url 'reports:index' %}" class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-chart-line me-1"></i>Reportes
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Consultas del Mes</div>
+                            <div class="stats-number h3 mb-0 text-primary">38</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+18%</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-user-md fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Exámenes de Fondo</div>
+                            <div class="stats-number h3 mb-0 text-success">22</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+14%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Tonometrías</div>
+                            <div class="stats-number h3 mb-0 text-info">16</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+6%</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-tachometer-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Urgencias Oculares</div>
+                            <div class="stats-number h3 mb-0 text-danger">4</div>
+                            <small class="text-muted"><i class="fas fa-minus me-1"></i>Sin cambios</small>
+                        </div>
+                        <div class="stats-icon text-danger">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-2"></i>Examen de Fondo de Ojo
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-tachometer-alt me-2"></i>Medir Presión Intraocular
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-glasses me-2"></i>Refracción y Graduación
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-search me-2"></i>Agudeza Visual
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-ambulance me-2"></i>Urgencia Ocular
+                        </a>
+                        <a href="{% url 'patients:search' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-prescription me-2"></i>Receta Óptica
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Ophthalmology Consultations -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-primary me-2"></i>Consultas Oftalmológicas Recientes
+                    </h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tipo</th>
+                                    <th>Motivo</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/32x32/007bff/ffffff?text=EL" 
+                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Eduardo López</div>
+                                                <small class="text-muted">45 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Rutina</span>
+                                    </td>
+                                    <td>Control de Glaucoma</td>
+                                    <td>30 Ene 2025</td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/32x32/007bff/ffffff?text=AC" 
+                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Ana Castro</div>
+                                                <small class="text-muted">28 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Refracción</span>
+                                    </td>
+                                    <td>Graduación de Lentes</td>
+                                    <td>29 Ene 2025</td>
+                                    <td><span class="badge bg-warning">En Proceso</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/32x32/007bff/ffffff?text=MR" 
+                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Miguel Ramírez</div>
+                                                <small class="text-muted">62 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">Urgencia</span>
+                                    </td>
+                                    <td>Dolor Ocular Agudo</td>
+                                    <td>28 Ene 2025</td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialists and Services -->
+    <div class="row">
+        <!-- Ophthalmology Specialists -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-md text-primary me-2"></i>Especialistas en Oftalmología
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="specialist-card">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="https://via.placeholder.com/50x50/007bff/ffffff?text=MF" 
+                                         class="rounded-circle me-3" width="50" height="50" alt="Dr. Fernández">
+                                    <div>
+                                        <h6 class="mb-1">Dr. Miguel Fernández</h6>
+                                        <small class="text-muted">Oftalmólogo General</small>
+                                    </div>
+                                </div>
+                                <div class="specialist-details">
+                                    <small class="text-muted d-block">10 años de experiencia</small>
+                                    <span class="badge bg-success">Disponible</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="specialist-card">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="https://via.placeholder.com/50x50/28a745/ffffff?text=SV" 
+                                         class="rounded-circle me-3" width="50" height="50" alt="Dra. Vega">
+                                    <div>
+                                        <h6 class="mb-1">Dra. Sandra Vega</h6>
+                                        <small class="text-muted">Retinóloga</small>
+                                    </div>
+                                </div>
+                                <div class="specialist-details">
+                                    <small class="text-muted d-block">8 años de experiencia</small>
+                                    <span class="badge bg-warning">En Consulta</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Services -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-stethoscope text-success me-2"></i>Servicios Disponibles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="services-list">
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-eye text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Examen de Fondo de Ojo</h6>
+                                <small class="text-muted">Evaluación completa de la retina</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-primary">Programar</a>
+                            </div>
+                        </div>
+                        
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-tachometer-alt text-success"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Tonometría</h6>
+                                <small class="text-muted">Medición de presión intraocular</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-success">Programar</a>
+                            </div>
+                        </div>
+                        
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-glasses text-info"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Refracción</h6>
+                                <small class="text-muted">Graduación de lentes correctivos</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-info">Programar</a>
+                            </div>
+                        </div>
+                        
+                        <div class="service-item d-flex align-items-center mb-3">
+                            <div class="service-icon me-3">
+                                <i class="fas fa-search text-warning"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Agudeza Visual</h6>
+                                <small class="text-muted">Evaluación de la capacidad de visión</small>
+                            </div>
+                            <div class="service-action">
+                                <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-warning">Programar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark) 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.specialist-card {
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.specialist-card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.service-item {
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.service-item:hover {
+    background-color: #f8f9fa;
+}
+
+.service-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.stats-card, .specialist-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

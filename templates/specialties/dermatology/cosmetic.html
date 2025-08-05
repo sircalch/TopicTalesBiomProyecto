@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'specialties:index' %}">Especialidades</a></li>
+<li class="breadcrumb-item"><a href="{% url 'specialties:dermatology' %}">{{ specialty_name }}</a></li>
+<li class="breadcrumb-item active">{{ page_title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #f06292 0%, #e91e63 100%);">
+                <div class="card-body text-white py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="specialty-icon me-4">
+                                    <i class="fas fa-magic fa-3x"></i>
+                                </div>
+                                <div>
+                                    <h1 class="h2 mb-1">{{ page_title }}</h1>
+                                    <p class="mb-0 opacity-75">{{ description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Nuevo Tratamiento
+                                </button>
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-calendar me-1"></i>Programar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Tratamientos Hoy</div>
+                            <div class="stats-number h3 mb-0 text-primary">16</div>
+                            <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+18%</small>
+                        </div>
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-spa fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Botox</div>
+                            <div class="stats-number h3 mb-0 text-info">8</div>
+                            <small class="text-success"><i class="fas fa-check me-1"></i>50%</small>
+                        </div>
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-syringe fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Rellenos</div>
+                            <div class="stats-number h3 mb-0 text-warning">5</div>
+                            <small class="text-info"><i class="fas fa-equals me-1"></i>31%</small>
+                        </div>
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-fill-drip fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-label text-muted small">Peelings</div>
+                            <div class="stats-number h3 mb-0 text-success">3</div>
+                            <small class="text-success"><i class="fas fa-chart-line me-1"></i>19%</small>
+                        </div>
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-leaf fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Cosmetic Treatments -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-magic text-primary me-2"></i>Tratamientos Estéticos
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" style="width: auto;">
+                            <option>Todos</option>
+                            <option>Botox</option>
+                            <option>Rellenos</option>
+                            <option>Peelings</option>
+                            <option>Láser</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtros
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tratamiento</th>
+                                    <th>Zona</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/f06292/ffffff?text=CM" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Carmen Méndez</div>
+                                                <small class="text-muted">42 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Botox</span>
+                                        <br><small class="text-muted">20 unidades</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Frente</span>
+                                        <br><small class="text-muted">Líneas de expresión</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">10:00 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-success">Completado</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver fotos">
+                                                <i class="fas fa-camera"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Seguimiento">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Retocar">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/f06292/ffffff?text=VS" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Valeria Sánchez</div>
+                                                <small class="text-muted">35 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Relleno</span>
+                                        <br><small class="text-muted">Ácido Hialurónico 1ml</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Labios</span>
+                                        <br><small class="text-muted">Aumento de volumen</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">31 Ene 2025</div>
+                                        <small class="text-muted">11:30 AM</small>
+                                    </td>
+                                    <td><span class="badge bg-primary">En Proceso</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-primary" title="Continuar">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="Antes/Después">
+                                                <i class="fas fa-exchange-alt"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" title="Protocolos">
+                                                <i class="fas fa-clipboard-list"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://via.placeholder.com/40x40/f06292/ffffff?text=IR" 
+                                                 class="rounded-circle me-3" width="40" height="40" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">Isabel Romero</div>
+                                                <small class="text-muted">48 años</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Peeling</span>
+                                        <br><small class="text-muted">Ácido Glicólico 30%</small>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">Cara completa</span>
+                                        <br><small class="text-muted">Rejuvenecimiento</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">30 Ene 2025</div>
+                                        <small class="text-muted">15:00 PM</small>
+                                    </td>
+                                    <td><span class="badge bg-warning">Seguimiento</span></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="Ver evolución">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="Próxima sesión">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="Cuidados">
+                                                <i class="fas fa-hand-holding-heart"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treatment Categories & Aesthetic Services -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-sparkles text-warning me-2"></i>Servicios Estéticos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-syringe me-2"></i>Aplicar Botox
+                        </button>
+                        <button class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-fill-drip me-2"></i>Rellenos Dérmicos
+                        </button>
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-leaf me-2"></i>Peeling Químico
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-bolt me-2"></i>Tratamiento Láser
+                        </button>
+                        <hr>
+                        <button class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-camera me-2"></i>Consulta Estética
+                        </button>
+                        <button class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-calendar-alt me-2"></i>Programar Seguimiento
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Treatments -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star text-warning me-2"></i>Tratamientos Populares
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="treatment-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Botox Facial</div>
+                            <small class="text-muted">Frente, entrecejo, patas de gallo</small>
+                        </div>
+                        <span class="badge bg-primary">45%</span>
+                    </div>
+                    
+                    <div class="treatment-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Relleno Labial</div>
+                            <small class="text-muted">Aumento y definición</small>
+                        </div>
+                        <span class="badge bg-info">25%</span>
+                    </div>
+                    
+                    <div class="treatment-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Peeling Facial</div>
+                            <small class="text-muted">Rejuvenecimiento</small>
+                        </div>
+                        <span class="badge bg-success">15%</span>
+                    </div>
+                    
+                    <div class="treatment-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-medium">Láser Fraccionado</div>
+                            <small class="text-muted">Cicatrices y textura</small>
+                        </div>
+                        <span class="badge bg-warning">10%</span>
+                    </div>
+                    
+                    <div class="treatment-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-medium">Mesoterapia</div>
+                            <small class="text-muted">Hidratación profunda</small>
+                        </div>
+                        <span class="badge bg-secondary">5%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient {
+    background: linear-gradient(135deg, #f06292 0%, #e91e63 100%);
+}
+
+.stats-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stats-icon {
+    opacity: 0.7;
+}
+
+.specialty-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.treatment-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.treatment-item:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    .specialty-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

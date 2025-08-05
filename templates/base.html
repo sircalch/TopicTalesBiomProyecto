@@ -1,75 +1,400 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TopicTales Biomédica{% endblock %}</title>
+  <title>{% block title %}TopicTales Biomédica - Sistema Médico Integral{% endblock title %}</title>
+  
+  <!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
+  <!--[if lt IE 11]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  
+  <!-- Meta -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="{% block meta_description %}TopicTales Biomédica - Sistema integral de gestión médica especializada{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}medicina, gestión, pacientes, psicología, nutrición, dashboard médico{% endblock %}">
+  <meta name="author" content="TopicTales Biomédica" />
+  
+  {% block style %}
+    <!-- Favicon icon -->
+    <link rel="icon" href="{% static 'assets/images/favicon.ico' %}" type="image/x-icon">
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% load static %}{% static 'css/style.css' %}">
+    <!-- Bootstrap Icons for medical UI - Local -->
+    <link rel="stylesheet" href="{% static 'assets/bootstrap-icons.css' %}">
     
-    {% block extra_css %}{% endblock %}
-</head>
-<body>
-    <!-- Navigation -->
-    {% if user.is_authenticated %}
-        {% include 'components/navbar.html' %}
-        {% include 'components/sidebar.html' %}
+    <!-- Datta Able Pro CSS Files -->
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/fonts/feather/css/feather.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/perfect-scrollbar.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.min.css' %}">
+    
+    {% block extrastyle %}{% endblock extrastyle %}
+    
+    <!-- Main Datta Able Pro CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    
+    <!-- Sidebar Fixes CSS -->
+    <link rel="stylesheet" href="{% static 'css/sidebar-fixes.css' %}">
+    
+    <!-- Sidebar Force White Text CSS -->
+    <link rel="stylesheet" href="{% static 'css/sidebar-force-white.css' %}">
+    
+    <!-- Medical Theme Customizations -->
+    <style>
+        /* Medical specific color overrides for Datta Able */
+        :root {
+            --primary: #004d7a;
+            --success: #00c851;
+            --info: #33b5e5;
+            --warning: #ffbb33;
+            --danger: #cc0000;
+            --light: #f4f7fa;
+            --dark: #212529;
+        }
         
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="container-fluid">
-                <!-- Breadcrumb -->
-                {% block breadcrumb %}
-                <nav aria-label="breadcrumb" class="mb-4">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Inicio</a></li>
-                        {% block breadcrumb_items %}{% endblock %}
-                    </ol>
-                </nav>
-                {% endblock %}
-                
-                <!-- Messages -->
-                {% if messages %}
-                    <div class="messages-container mb-4">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'warning' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                
-                <!-- Page Content -->
-                {% block content %}{% endblock %}
-            </div>
-        </div>
-    {% else %}
-        <!-- Authentication Pages -->
-        <div class="auth-wrapper">
-            {% block auth_content %}{% endblock %}
-        </div>
-    {% endif %}
-    
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    
-    {% block extra_js %}{% endblock %}
-    
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" class="d-none">
-        <div class="spinner-overlay">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
+        /* Medical Icons and Badges */
+        .medical-icon {
+            color: var(--primary);
+        }
+        
+        .medical-badge {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+        }
+        
+        /* Override theme colors for medical context */
+        .theme-bg, .bg-c-blue {
+            background: var(--primary) !important;
+        }
+        
+        .text-c-blue {
+            color: var(--primary) !important;
+        }
+        
+        /* Ensure proper loading */
+        .pcoded-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 270px;
+            z-index: 1025;
+        }
+        
+        .pcoded-header {
+            position: fixed;
+            top: 0;
+            left: 270px;
+            right: 0;
+            z-index: 1020;
+            height: 70px;
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            overflow: visible;
+            width: calc(100vw - 270px);
+            max-width: calc(100vw - 270px);
+        }
+        
+        /* Navbar structure fix */
+        .pcoded-header .navbar-collapse {
+            display: flex !important;
+            justify-content: space-between;
+            width: 100%;
+            height: 70px;
+            align-items: center;
+        }
+        
+        .pcoded-header .navbar-nav {
+            display: flex;
+            align-items: center;
+            height: 70px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .pcoded-header .navbar-nav > li {
+            display: flex;
+            align-items: center;
+            height: 70px;
+        }
+        
+        .pcoded-header .navbar-nav > li > a,
+        .pcoded-header .navbar-nav > li > div > a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            height: auto;
+            line-height: normal;
+        }
+        
+        /* Navbar container fixes */
+        .pcoded-header .container-fluid {
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            height: 70px;
+        }
+        
+        /* Navbar positioning */
+        .pcoded-header .navbar-left {
+            z-index: 10;
+        }
+        
+        .pcoded-header .navbar-right {
+            z-index: 10;
+            white-space: nowrap;
+        }
+        
+        .pcoded-header .navbar-search {
+            z-index: 10;
+        }
+        
+        /* Icons and links styling */
+        .pcoded-header i {
+            font-size: 1.4rem;
+            color: #495057;
+        }
+        
+        .pcoded-header a {
+            color: #495057;
+            text-decoration: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+        
+        .pcoded-header a:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+        }
+        
+        /* Badge positioning */
+        .pcoded-header .position-absolute {
+            position: absolute !important;
+            top: -8px !important;
+            right: -8px !important;
+            font-size: 0.65rem !important;
+            min-width: 18px !important;
+            height: 18px !important;
+            line-height: 16px !important;
+            border-radius: 9px !important;
+        }
+        
+        /* Dropdown positioning */
+        .pcoded-header .dropdown-menu {
+            top: 100% !important;
+            margin-top: 5px;
+        }
+        
+        /* Sidebar scroll fix */
+        .navbar-content.scroll-div {
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 20px;
+        }
+        
+        .navbar-content.scroll-div::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .navbar-content.scroll-div::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .navbar-content.scroll-div::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+        
+        .navbar-content.scroll-div::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        .pcoded-main-container {
+            margin-left: 270px;
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+        }
+        
+        /* Desktop optimizations - Always show search */
+        .pcoded-header .navbar-search {
+            display: block !important;
+        }
+        
+        /* Desktop hover effects */
+        .pcoded-header a:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        /* Enhanced desktop tooltips */
+        .tooltip {
+            font-size: 0.875rem;
+        }
+        
+        /* Desktop focused styles */
+        .pcoded-header .dropdown-menu {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border: 1px solid #e9ecef;
+        }
+        
+        /* Always show text labels on desktop */
+        .pcoded-header .dropdown .dropdown-toggle span,
+        .pcoded-header .navbar-right span {
+            display: inline !important;
+        }
+    </style>
+  {% endblock style %}
+  
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock body_class %}">
+
+  {% block pre_loader %}
+    <!-- Pre-loader start -->
+    <div class="loader-bg" id="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
         </div>
     </div>
+    <!-- Pre-loader End -->
+  {% endblock pre_loader %}
+
+  {% if user.is_authenticated %}
+    {% block sidebar %}
+      {% include 'components/medical_sidebar.html' %}
+    {% endblock sidebar %}
+
+    {% block header %}
+      {% include 'components/medical_navbar.html' %}
+    {% endblock header %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+      <div class="pcoded-wrapper">
+        <div class="pcoded-content">
+          <div class="pcoded-inner-content">
+
+            {% block breadcrumbs %}
+              <!-- Page Header -->
+              <div class="page-header">
+                <div class="page-block">
+                  <div class="row align-items-center">
+                    <div class="col-md-12">
+                      <div class="page-header-title">
+                        <h5 class="m-b-10">{% block page_title %}Dashboard{% endblock %}</h5>
+                      </div>
+                      <ul class="breadcrumb">
+                        <li class="breadcrumb-item">
+                          <a href="{% url 'dashboard:index' %}">
+                            <i class="bi bi-house-door"></i>
+                          </a>
+                        </li>
+                        {% block breadcrumb_items %}{% endblock %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endblock breadcrumbs %}
+
+            <!-- Messages -->
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  <strong>
+                    {% if message.tags == 'success' %}¡Éxito!
+                    {% elif message.tags == 'error' %}Error
+                    {% elif message.tags == 'warning' %}Advertencia
+                    {% else %}Información{% endif %}
+                  </strong> {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <div class="main-body">
+              <div class="page-wrapper">
+                {% block content %}{% endblock content %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- [ Main Content ] end -->
+    
+  {% else %}
+    <!-- Authentication Pages -->
+    <div class="auth-wrapper">
+      {% block auth_content %}{% endblock %}
+    </div>
+  {% endif %}
+
+  <!-- Pre-loader and Dark Mode Script -->
+  <script>
+    // Hide preloader
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('loader-bg');
+      if (loader) {
+        loader.style.display = 'none';
+      }
+    });
+    
+    // Fallback hide after 1 second
+    setTimeout(function() {
+      const loader = document.getElementById('loader-bg');
+      if (loader) {
+        loader.style.display = 'none';
+      }
+    }, 1000);
+
+    // Dark mode support
+    try {
+      document.querySelector('head').insertAdjacentHTML("beforeend", '<link rel="stylesheet" class="layout-css" href="">');
+
+      if ('{{ request.user.profile.dark_mode }}' === 'True') {
+        setTimeout(function() {
+          const navbar = document.querySelector(".pcoded-navbar");
+          if (navbar) {
+            navbar.classList.add("navbar-dark");
+          }
+          document.querySelector(".layout-css").setAttribute('href', '{% static 'assets/css/layouts/dark.css' %}');
+        }, 100);
+      }
+    } catch(e) {
+      console.log('Theme setup completed');
+    }
+  </script>
+
+  <!-- Required Js - Local -->
+  <script src="{% static 'assets/js/jquery-3.7.1.min.js' %}"></script>
+  <script src="{% static 'assets/js/plugins/popper.min.js' %}"></script>
+  <script src="{% static 'assets/js/plugins/bootstrap.min.js' %}"></script>
+  <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}"></script>
+  <script src="{% static 'assets/js/pcoded.js' %}"></script>
+  
+  <!-- Sidebar Behavior Fix JavaScript -->
+  <script src="{% static 'js/sidebar-behavior.js' %}"></script>
+  
+  <!-- Force White Sidebar Colors JavaScript -->
+  <script src="{% static 'js/force-white-sidebar.js' %}"></script>
+  
+  {% block extra_js %}{% endblock extra_js %}
+
 </body>
 </html>
