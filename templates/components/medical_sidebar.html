@@ -321,10 +321,10 @@
             <span class="pcoded-mtext">Comunicación</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="#">Mensajes Pacientes</a></li>
-            <li><a href="#">Chat Interno</a></li>
-            <li><a href="#">Notificaciones</a></li>
-            <li><a href="#">Email Templates</a></li>
+            <li><a href="{% url 'dashboard:index' %}"><i class="bi bi-envelope me-2"></i>Mensajes Pacientes</a></li>
+            <li><a href="{% url 'dashboard:index' %}"><i class="bi bi-chat me-2"></i>Chat Interno</a></li>
+            <li><a href="{% url 'dashboard:index' %}"><i class="bi bi-bell me-2"></i>Notificaciones</a></li>
+            <li><a href="{% url 'dashboard:index' %}"><i class="bi bi-file-text me-2"></i>Email Templates</a></li>
           </ul>
         </li>
         
@@ -337,10 +337,10 @@
             <span class="pcoded-mtext">Equipos Médicos</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'equipment:list' %}">Lista de Equipos</a></li>
-            <li><a href="{% url 'equipment:maintenance' %}">Mantenimiento</a></li>
-            <li><a href="{% url 'equipment:calibration' %}">Calibración</a></li>
-            <li><a href="{% url 'equipment:inventory' %}">Inventario</a></li>
+            <li><a href="{% url 'equipment:list' %}"><i class="bi bi-list-ul me-2"></i>Lista de Equipos</a></li>
+            <li><a href="{% url 'equipment:maintenance_list' %}"><i class="bi bi-wrench me-2"></i>Mantenimiento</a></li>
+            <li><a href="{% url 'equipment:categories' %}"><i class="bi bi-tags me-2"></i>Categorías</a></li>
+            <li><a href="{% url 'equipment:locations' %}"><i class="bi bi-geo-alt me-2"></i>Ubicaciones</a></li>
           </ul>
         </li>
         
@@ -353,10 +353,10 @@
             <span class="pcoded-mtext">Facturación</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="{% url 'billing:invoices' %}">Facturas</a></li>
-            <li><a href="{% url 'billing:payments' %}">Pagos</a></li>
-            <li><a href="{% url 'billing:insurance' %}">Seguros</a></li>
-            <li><a href="{% url 'billing:reports' %}">Reportes Financieros</a></li>
+            <li><a href="{% url 'billing:invoices' %}"><i class="bi bi-receipt me-2"></i>Facturas</a></li>
+            <li><a href="{% url 'billing:payments' %}"><i class="bi bi-credit-card me-2"></i>Pagos</a></li>
+            <li><a href="{% url 'billing:services' %}"><i class="bi bi-list-check me-2"></i>Servicios</a></li>
+            <li><a href="{% url 'billing:index' %}"><i class="bi bi-bar-chart me-2"></i>Reportes Financieros</a></li>
           </ul>
         </li>
 
@@ -416,10 +416,10 @@
             <span class="pcoded-mtext">Laboratorio</span>
           </a>
           <ul class="pcoded-submenu">
-            <li><a href="#"><i class="bi bi-droplet me-2"></i>Análisis de Sangre</a></li>
-            <li><a href="#"><i class="bi bi-cup me-2"></i>Análisis de Orina</a></li>
-            <li><a href="#"><i class="bi bi-graph-up me-2"></i>Resultados</a></li>
-            <li><a href="#"><i class="bi bi-printer me-2"></i>Imprimir Reportes</a></li>
+            <li><a href="{% url 'dashboard:index' %}"><i class="bi bi-droplet me-2"></i>Análisis de Sangre</a></li>
+            <li><a href="{% url 'dashboard:index' %}"><i class="bi bi-cup me-2"></i>Análisis de Orina</a></li>
+            <li><a href="{% url 'reports:index' %}"><i class="bi bi-graph-up me-2"></i>Resultados</a></li>
+            <li><a href="{% url 'reports:index' %}"><i class="bi bi-printer me-2"></i>Imprimir Reportes</a></li>
           </ul>
         </li>
 
