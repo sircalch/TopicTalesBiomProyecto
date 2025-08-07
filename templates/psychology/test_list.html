@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tests Psicológicos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-file-alt me-2 text-warning"></i>Tests Psicológicos
+                </h1>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'psychology:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                    <button type="button" class="btn btn-warning">
+                        <i class="fas fa-plus me-2"></i>Aplicar Test
+                    </button>
+                </div>
+            </div>
+
+            <!-- Available Tests -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <i class="fas fa-brain fa-2x text-primary mb-3"></i>
+                            <h6 class="card-title">Tests Cognitivos</h6>
+                            <p class="card-text small">MMSE, MoCA, WAIS-IV</p>
+                            <button type="button" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-2"></i>Aplicar Test
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <i class="fas fa-heart fa-2x text-success mb-3"></i>
+                            <h6 class="card-title">Tests de Personalidad</h6>
+                            <p class="card-text small">16PF, NEO-PI-R, MMPI-2</p>
+                            <button type="button" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus me-2"></i>Aplicar Test
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-2x text-warning mb-3"></i>
+                            <h6 class="card-title">Tests Clínicos</h6>
+                            <p class="card-text small">Beck, Hamilton, GAD-7</p>
+                            <button type="button" class="btn btn-warning btn-sm">
+                                <i class="fas fa-plus me-2"></i>Aplicar Test
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applied Tests -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Tests Aplicados Recientemente</h5>
+                    <span class="badge bg-secondary">15 tests</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Test Aplicado</th>
+                                    <th>Fecha de Aplicación</th>
+                                    <th>Puntuación</th>
+                                    <th>Interpretación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-primary text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>María González</strong><br>
+                                                <small class="text-muted">PAC001</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Inventario de Ansiedad de Beck</strong><br>
+                                        <small class="text-muted">BAI</small>
+                                    </td>
+                                    <td>
+                                        <small>30 Ene 2025<br>09:30 AM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">32/63</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-warning">Ansiedad Moderada</strong><br>
+                                        <small class="text-muted">Rango clínico significativo</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completado</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Resultados">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Generar Reporte">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Re-aplicar">
+                                                <i class="fas fa-redo"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-success text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Carlos Rodríguez</strong><br>
+                                                <small class="text-muted">PAC002</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Inventario de Depresión de Beck</strong><br>
+                                        <small class="text-muted">BDI-II</small>
+                                    </td>
+                                    <td>
+                                        <small>28 Ene 2025<br>02:15 PM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">24/63</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-danger">Depresión Moderada</strong><br>
+                                        <small class="text-muted">Requiere intervención</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completado</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Resultados">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Generar Reporte">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" title="Seguimiento">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-info text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Ana López</strong><br>
+                                                <small class="text-muted">PAC003</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Mini-Mental State Examination</strong><br>
+                                        <small class="text-muted">MMSE</small>
+                                    </td>
+                                    <td>
+                                        <small>27 Ene 2025<br>11:00 AM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">28/30</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">Normal</strong><br>
+                                        <small class="text-muted">Sin deterioro cognitivo</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completado</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Resultados">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Comparar">
+                                                <i class="fas fa-balance-scale"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-warning text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Luis Martín</strong><br>
+                                                <small class="text-muted">PAC004</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Test de Personalidad 16PF</strong><br>
+                                        <small class="text-muted">16PF-5</small>
+                                    </td>
+                                    <td>
+                                        <small>26 Ene 2025<br>04:30 PM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Procesando</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-info">En Análisis</strong><br>
+                                        <small class="text-muted">Interpretación en progreso</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">En Proceso</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-warning" title="Continuar">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" title="Ver Progreso">
+                                                <i class="fas fa-tasks"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" title="Cancelar">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Statistics -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">15</h3>
+                            <small class="text-muted">Tests Este Mes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">12</h3>
+                            <small class="text-muted">Completados</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">3</h3>
+                            <small class="text-muted">En Proceso</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">8</h3>
+                            <small class="text-muted">Tests Disponibles</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

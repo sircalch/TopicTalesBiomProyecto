@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <a href="{% url 'accounts:users' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    {% if user != request.user %}
+                    <a href="{% url 'accounts:edit_user' user.pk %}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    {% endif %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs"></i> Acciones
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'accounts:reset_password' user.pk %}">Restablecer Contraseña</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:user_permissions' user.pk %}">Gestionar Permisos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:user_activity_log' user.pk %}">Ver Actividad</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:send_notification' user.pk %}">Enviar Notificación</a></li>
+                            {% if user != request.user %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'accounts:toggle_user_status' user.pk %}">
+                                    {% if user.is_active %}Desactivar Cuenta{% else %}Activar Cuenta{% endif %}
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <!-- Información del Usuario -->
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                {% if user.profile.avatar %}
+                                    <img src="{{ user.profile.avatar.url }}" alt="Avatar" 
+                                         class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                                         style="width: 120px; height: 120px;">
+                                        <i class="fas fa-user fa-3x text-white"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <h4>{{ user.get_full_name|default:user.username }}</h4>
+                            <p class="text-muted">@{{ user.username }}</p>
+                            
+                            <div class="mb-3">
+                                {% if user.is_active %}
+                                    <span class="badge bg-success fs-6">Activo</span>
+                                    {% if user.is_online %}
+                                        <span class="badge bg-info fs-6">En línea</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary fs-6">Inactivo</span>
+                                {% endif %}
+                                
+                                {% if user.is_superuser %}
+                                    <span class="badge bg-danger fs-6">Administrador</span>
+                                {% elif user.is_staff %}
+                                    <span class="badge bg-warning fs-6">Staff</span>
+                                {% endif %}
+                            </div>
+
+                            {% if user.profile.bio %}
+                            <div class="text-start">
+                                <h6>Acerca de</h6>
+                                <p class="text-muted">{{ user.profile.bio }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información de Contacto -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Información de Contacto</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">
+                                    <i class="fas fa-envelope"></i> Email:
+                                </div>
+                                <div class="col-8">
+                                    <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                                </div>
+                            </div>
+                            
+                            {% if user.profile.phone %}
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">
+                                    <i class="fas fa-phone"></i> Teléfono:
+                                </div>
+                                <div class="col-8">
+                                    <a href="tel:{{ user.profile.phone }}">{{ user.profile.phone }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if user.profile.address %}
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">
+                                    <i class="fas fa-map-marker-alt"></i> Dirección:
+                                </div>
+                                <div class="col-8">
+                                    {{ user.profile.address }}
+                                    {% if user.profile.city %}
+                                        <br>{{ user.profile.city }}{% if user.profile.state %}, {{ user.profile.state }}{% endif %}
+                                        {% if user.profile.postal_code %} {{ user.profile.postal_code }}{% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if user.profile.emergency_contact_name %}
+                            <hr>
+                            <h6>Contacto de Emergencia</h6>
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">Nombre:</div>
+                                <div class="col-8">{{ user.profile.emergency_contact_name }}</div>
+                            </div>
+                            {% if user.profile.emergency_contact_phone %}
+                            <div class="row mb-2">
+                                <div class="col-4 text-muted">Teléfono:</div>
+                                <div class="col-8">
+                                    <a href="tel:{{ user.profile.emergency_contact_phone }}">{{ user.profile.emergency_contact_phone }}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Configuraciones -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Configuraciones</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Zona Horaria:</div>
+                                <div class="col-6">{{ user.profile.timezone|default:"-" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Idioma:</div>
+                                <div class="col-6">{{ user.profile.get_language_display|default:"-" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Notificaciones:</div>
+                                <div class="col-6">
+                                    {% if user.profile.receive_notifications %}
+                                        <i class="fas fa-check text-success"></i> Activadas
+                                    {% else %}
+                                        <i class="fas fa-times text-danger"></i> Desactivadas
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <!-- Información Profesional -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Información Profesional</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row mb-3">
+                                        <div class="col-4 text-muted">Organización:</div>
+                                        <div class="col-8">
+                                            {% if user.profile.organization %}
+                                                {{ user.profile.organization.name }}
+                                            {% else %}
+                                                <span class="text-muted">Sin asignar</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4 text-muted">Cargo:</div>
+                                        <div class="col-8">{{ user.profile.position|default:"-" }}</div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4 text-muted">Departamento:</div>
+                                        <div class="col-8">{{ user.profile.department|default:"-" }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row mb-3">
+                                        <div class="col-4 text-muted">ID Empleado:</div>
+                                        <div class="col-8">{{ user.profile.employee_id|default:"-" }}</div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4 text-muted">Fecha de Ingreso:</div>
+                                        <div class="col-8">{{ user.profile.hire_date|date:"d/m/Y"|default:"-" }}</div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-4 text-muted">Registro:</div>
+                                        <div class="col-8">{{ user.date_joined|date:"d/m/Y" }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actividad Reciente -->
+                    <div class="card mt-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Actividad Reciente</h5>
+                            <a href="{% url 'accounts:user_activity_log' user.pk %}" class="btn btn-outline-primary btn-sm">
+                                Ver Todo
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_activity %}
+                                <div class="timeline">
+                                    {% for activity in recent_activity %}
+                                    <div class="timeline-item mb-3">
+                                        <div class="row">
+                                            <div class="col-2 text-muted text-end">
+                                                {{ activity.timestamp|date:"H:i" }}
+                                            </div>
+                                            <div class="col-10">
+                                                <div class="d-flex">
+                                                    <div class="activity-icon me-2">
+                                                        <i class="fas fa-{{ activity.icon }} text-{{ activity.color }}"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div>{{ activity.description }}</div>
+                                                        <small class="text-muted">{{ activity.timestamp|date:"d/m/Y" }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center">No hay actividad reciente</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas de Usuario -->
+                    {% if user.stats %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Estadísticas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h4 class="text-primary">{{ user.stats.total_logins }}</h4>
+                                            <small class="text-muted">Inicios de Sesión</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h4 class="text-success">{{ user.stats.patients_created }}</h4>
+                                            <small class="text-muted">Pacientes Creados</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h4 class="text-info">{{ user.stats.appointments_scheduled }}</h4>
+                                            <small class="text-muted">Citas Programadas</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body">
+                                            <h4 class="text-warning">{{ user.stats.reports_generated }}</h4>
+                                            <small class="text-muted">Reportes Generados</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Permisos -->
+                    {% if user.user_permissions.exists or user.groups.exists %}
+                    <div class="card mt-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Permisos y Grupos</h5>
+                            <a href="{% url 'accounts:user_permissions' user.pk %}" class="btn btn-outline-primary btn-sm">
+                                Gestionar
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            {% if user.groups.exists %}
+                            <div class="mb-3">
+                                <h6>Grupos</h6>
+                                {% for group in user.groups.all %}
+                                    <span class="badge bg-primary me-1">{{ group.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            {% if user.user_permissions.exists %}
+                            <h6>Permisos Específicos</h6>
+                            <div class="row">
+                                {% for permission in user.user_permissions.all %}
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <i class="fas fa-key"></i> {{ permission.name }}
+                                    </small>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Sesiones Activas -->
+                    {% if active_sessions %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Sesiones Activas</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for session in active_sessions %}
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                <div>
+                                    <div class="fw-bold">{{ session.device_info }}</div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt"></i> {{ session.ip_address }}
+                                        - {{ session.last_activity|date:"d/m/Y H:i" }}
+                                    </small>
+                                </div>
+                                <div>
+                                    {% if session.is_current %}
+                                        <span class="badge bg-success">Sesión Actual</span>
+                                    {% else %}
+                                        <button class="btn btn-outline-danger btn-sm" onclick="revokeSession('{{ session.session_key }}')">
+                                            <i class="fas fa-times"></i> Cerrar
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function revokeSession(sessionKey) {
+    if (confirm('¿Estás seguro de que deseas cerrar esta sesión?')) {
+        fetch('{% url "accounts:revoke_session" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                session_key: sessionKey
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al cerrar la sesión');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <a href="{% url 'billing:create_invoice' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-plus"></i> Nueva Factura
+                    </a>
+                    <a href="{% url 'billing:create_service' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus"></i> Nuevo Servicio
+                    </a>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>{{ stats.total_invoices }}</h3>
+                                    <p class="mb-0">Total Facturas</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-file-invoice fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>{{ stats.pending_invoices }}</h3>
+                                    <p class="mb-0">Pendientes</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>{{ stats.overdue_invoices }}</h3>
+                                    <p class="mb-0">Vencidas</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>${{ stats.total_revenue|floatformat:2 }}</h3>
+                                    <p class="mb-0">Ingresos</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-dollar-sign fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facturas Recientes -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Facturas Recientes</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_invoices %}
+                                <div class="list-group list-group-flush">
+                                    {% for invoice in recent_invoices %}
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ invoice.invoice_number }}</h6>
+                                            <p class="mb-1">{{ invoice.patient.full_name }}</p>
+                                            <small>{{ invoice.created_at|date:"d/m/Y" }}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-{% if invoice.status == 'paid' %}success{% elif invoice.status == 'overdue' %}danger{% else %}warning{% endif %}">
+                                                {{ invoice.get_status_display }}
+                                            </span>
+                                            <br>
+                                            <strong>${{ invoice.total_amount|floatformat:2 }}</strong>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="mt-3">
+                                    <a href="{% url 'billing:invoices' %}" class="btn btn-outline-primary btn-sm">Ver todas</a>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No hay facturas recientes</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Pagos Recientes</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_payments %}
+                                <div class="list-group list-group-flush">
+                                    {% for payment in recent_payments %}
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ payment.payment_number }}</h6>
+                                            <p class="mb-1">{{ payment.invoice.patient.full_name }}</p>
+                                            <small>{{ payment.payment_date|date:"d/m/Y H:i" }}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-{% if payment.status == 'completed' %}success{% elif payment.status == 'failed' %}danger{% else %}warning{% endif %}">
+                                                {{ payment.get_status_display }}
+                                            </span>
+                                            <br>
+                                            <strong>${{ payment.amount|floatformat:2 }}</strong>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="mt-3">
+                                    <a href="{% url 'billing:payments' %}" class="btn btn-outline-primary btn-sm">Ver todos</a>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No hay pagos recientes</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facturas Vencidas -->
+            {% if overdue_invoices %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Facturas Vencidas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Factura</th>
+                                            <th>Paciente</th>
+                                            <th>Vencimiento</th>
+                                            <th>Días Vencida</th>
+                                            <th>Monto</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for invoice in overdue_invoices %}
+                                        <tr>
+                                            <td>{{ invoice.invoice_number }}</td>
+                                            <td>{{ invoice.patient.full_name }}</td>
+                                            <td>{{ invoice.due_date|date:"d/m/Y" }}</td>
+                                            <td>
+                                                <span class="badge bg-danger">{{ invoice.days_overdue }} días</span>
+                                            </td>
+                                            <td>${{ invoice.total_amount|floatformat:2 }}</td>
+                                            <td>
+                                                <a href="{% url 'billing:invoice_detail' invoice.pk %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

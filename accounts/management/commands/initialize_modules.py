@@ -109,10 +109,10 @@ class Command(BaseCommand):
                     'name': 'nutrition',
                     'display_name': 'Nutrición',
                     'description': 'Evaluación y planes nutricionales',
-                    'icon': 'fas fa-apple-alt',
-                    'url_name': '',
+                    'icon': 'fas fa-leaf',
+                    'url_name': 'nutrition:dashboard',
                     'category': 'medical',
-                    'min_plan_required': 'ADVANCED',
+                    'min_plan_required': 'MEDIUM',
                     'order': 5,
                     'requires_medical_license': True,
                     'allowed_roles': ['admin', 'doctor']
@@ -122,9 +122,9 @@ class Command(BaseCommand):
                     'display_name': 'Psicología',
                     'description': 'Evaluaciones y terapias psicológicas',
                     'icon': 'fas fa-brain',
-                    'url_name': '',
+                    'url_name': 'psychology:dashboard',
                     'category': 'medical',
-                    'min_plan_required': 'ADVANCED',
+                    'min_plan_required': 'MEDIUM',
                     'order': 6,
                     'requires_medical_license': True,
                     'allowed_roles': ['admin', 'doctor']
@@ -273,6 +273,7 @@ class Command(BaseCommand):
             created_count = 0
             updated_count = 0
 
+            # First, create/update all parent modules
             for module_data in all_modules:
                 module, created = SystemModule.objects.update_or_create(
                     name=module_data['name'],
@@ -286,6 +287,9 @@ class Command(BaseCommand):
                     updated_count += 1
                     self.stdout.write(f'[*] Actualizado: {module.display_name}')
 
+            # Create submodules for specialty modules
+            self.create_specialty_submodules(created_count, updated_count)
+
             self.stdout.write(
                 self.style.SUCCESS(
                     f'\nInicialización completada:\n'
@@ -294,3 +298,166 @@ class Command(BaseCommand):
                     f'- {len(all_modules)} módulos totales'
                 )
             )
+
+    def create_specialty_submodules(self, created_count, updated_count):
+        """Create submodules for specialty modules"""
+        
+        # Get parent modules
+        nutrition_module = SystemModule.objects.get(name='nutrition')
+        psychology_module = SystemModule.objects.get(name='psychology')
+        
+        # Nutrition submodules
+        nutrition_submodules = [
+            {
+                'name': 'nutrition_dashboard',
+                'display_name': 'Dashboard',
+                'description': 'Panel principal de nutrición',
+                'icon': 'fas fa-tachometer-alt',
+                'url_name': 'nutrition:dashboard',
+                'category': 'medical',
+                'parent_module': nutrition_module,
+                'order': 1,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'nutrition_assessments',
+                'display_name': 'Evaluaciones',
+                'description': 'Evaluaciones nutricionales',
+                'icon': 'fas fa-clipboard-check',
+                'url_name': 'nutrition:assessment_list',
+                'category': 'medical',
+                'parent_module': nutrition_module,
+                'order': 2,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'nutrition_diet_plans',
+                'display_name': 'Planes Dietéticos',
+                'description': 'Planes y menús dietéticos',
+                'icon': 'fas fa-utensils',
+                'url_name': 'nutrition:diet_plan_list',
+                'category': 'medical',
+                'parent_module': nutrition_module,
+                'order': 3,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'nutrition_consultations',
+                'display_name': 'Consultas',
+                'description': 'Consultas nutricionales',
+                'icon': 'fas fa-stethoscope',
+                'url_name': 'nutrition:consultation_list',
+                'category': 'medical',
+                'parent_module': nutrition_module,
+                'order': 4,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'nutrition_goals',
+                'display_name': 'Metas',
+                'description': 'Objetivos nutricionales',
+                'icon': 'fas fa-bullseye',
+                'url_name': 'nutrition:goals_list',
+                'category': 'medical',
+                'parent_module': nutrition_module,
+                'order': 5,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+        ]
+        
+        # Psychology submodules
+        psychology_submodules = [
+            {
+                'name': 'psychology_dashboard',
+                'display_name': 'Dashboard',
+                'description': 'Panel principal de psicología',
+                'icon': 'fas fa-tachometer-alt',
+                'url_name': 'psychology:dashboard',
+                'category': 'medical',
+                'parent_module': psychology_module,
+                'order': 1,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'psychology_evaluations',
+                'display_name': 'Evaluaciones',
+                'description': 'Evaluaciones psicológicas',
+                'icon': 'fas fa-clipboard-list',
+                'url_name': 'psychology:evaluation_list',
+                'category': 'medical',
+                'parent_module': psychology_module,
+                'order': 2,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'psychology_sessions',
+                'display_name': 'Sesiones de Terapia',
+                'description': 'Sesiones de terapia psicológica',
+                'icon': 'fas fa-calendar-check',
+                'url_name': 'psychology:session_list',
+                'category': 'medical',
+                'parent_module': psychology_module,
+                'order': 3,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'psychology_treatment_plans',
+                'display_name': 'Planes de Tratamiento',
+                'description': 'Planes de tratamiento psicológico',
+                'icon': 'fas fa-map',
+                'url_name': 'psychology:treatment_plan_list',
+                'category': 'medical',
+                'parent_module': psychology_module,
+                'order': 4,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'psychology_goals',
+                'display_name': 'Objetivos',
+                'description': 'Objetivos psicológicos',
+                'icon': 'fas fa-bullseye',
+                'url_name': 'psychology:goal_list',
+                'category': 'medical',
+                'parent_module': psychology_module,
+                'order': 5,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+            {
+                'name': 'psychology_tests',
+                'display_name': 'Tests Psicológicos',
+                'description': 'Catálogo de tests psicológicos',
+                'icon': 'fas fa-brain',
+                'url_name': 'psychology:test_list',
+                'category': 'medical',
+                'parent_module': psychology_module,
+                'order': 6,
+                'min_plan_required': 'MEDIUM',
+                'allowed_roles': ['admin', 'doctor']
+            },
+        ]
+        
+        # Create/update all submodules
+        all_submodules = nutrition_submodules + psychology_submodules
+        
+        for submodule_data in all_submodules:
+            submodule, created = SystemModule.objects.update_or_create(
+                name=submodule_data['name'],
+                defaults=submodule_data
+            )
+            
+            if created:
+                created_count += 1
+                self.stdout.write(f'[+] Submódulo creado: {submodule.display_name}')
+            else:
+                updated_count += 1
+                self.stdout.write(f'[*] Submódulo actualizado: {submodule.display_name}')

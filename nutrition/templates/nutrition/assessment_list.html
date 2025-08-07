@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Evaluaciones Nutricionales - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assessment-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .assessment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .bmi-badge {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .bmi-normal { background-color: #d4edda; color: #155724; }
+    .bmi-underweight { background-color: #cce5ff; color: #004085; }
+    .bmi-overweight { background-color: #fff3cd; color: #856404; }
+    .bmi-obese { background-color: #f8d7da; color: #721c24; }
+    
+    .patient-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .search-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>Evaluaciones Nutricionales
+                    </h1>
+                    <p class="text-muted mb-0">Gestión de evaluaciones y análisis nutricionales</p>
+                </div>
+                <a href="{% url 'nutrition:assessment_create' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Búsqueda -->
+    <div class="row">
+        <div class="col-12">
+            <div class="search-box">
+                <form method="get" class="d-flex align-items-center">
+                    {{ search_form.patient_search }}
+                    <button type="submit" class="btn btn-primary ms-3">
+                        <i class="fas fa-search me-1"></i>Buscar
+                    </button>
+                    {% if request.GET.patient_search %}
+                    <a href="{% url 'nutrition:assessment_list' %}" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-times me-1"></i>Limpiar
+                    </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Evaluaciones -->
+    <div class="row">
+        {% if page_obj %}
+            {% for assessment in page_obj %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="assessment-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="patient-avatar me-3">
+                            {{ assessment.patient.first_name.0 }}{{ assessment.patient.last_name.0 }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">{{ assessment.patient.get_full_name }}</h5>
+                            <small class="text-muted">{{ assessment.patient.identification_number }}</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ assessment.created_at|date:"d/m/Y" }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-primary mb-1">{{ assessment.weight }}</h4>
+                                <small class="text-muted">Peso (kg)</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h4 class="text-success mb-1">{{ assessment.height }}</h4>
+                                <small class="text-muted">Altura (cm)</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-3">
+                        <div class="d-inline-block">
+                            <h3 class="mb-1">IMC: {{ assessment.bmi }}</h3>
+                            {% if assessment.get_bmi_category == 'Peso normal' %}
+                                <span class="bmi-badge bmi-normal">{{ assessment.get_bmi_category }}</span>
+                            {% elif assessment.get_bmi_category == 'Bajo peso' %}
+                                <span class="bmi-badge bmi-underweight">{{ assessment.get_bmi_category }}</span>
+                            {% elif assessment.get_bmi_category == 'Sobrepeso' %}
+                                <span class="bmi-badge bmi-overweight">{{ assessment.get_bmi_category }}</span>
+                            {% else %}
+                                <span class="bmi-badge bmi-obese">{{ assessment.get_bmi_category }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Objetivo:</small>
+                            <div class="fw-bold">{{ assessment.get_objective_display }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Actividad:</small>
+                            <div class="fw-bold">{{ assessment.get_activity_level_display }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <small class="text-muted">Calorías Recomendadas:</small>
+                            <div class="fw-bold text-info">{{ assessment.daily_calories }} kcal/día</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-user-md me-1"></i>{{ assessment.nutritionist.get_full_name }}
+                        </small>
+                        <div>
+                            <a href="{% url 'nutrition:assessment_detail' assessment.pk %}" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'nutrition:assessment_edit' assessment.pk %}" class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-5x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No hay evaluaciones nutricionales</h3>
+                    <p class="text-muted mb-4">Comienza creando la primera evaluación nutricional para un paciente.</p>
+                    <a href="{% url 'nutrition:assessment_create' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Crear Primera Evaluación
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="Navegación de evaluaciones">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

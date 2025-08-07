@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Metas Nutricionales - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .goal-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .goal-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .goal-card.active {
+        border-left: 4px solid #28a745;
+    }
+    
+    .goal-card.achieved {
+        border-left: 4px solid #17a2b8;
+        background: linear-gradient(135deg, rgba(23, 162, 184, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+    
+    .goal-card.paused {
+        border-left: 4px solid #ffc107;
+        background: rgba(255, 193, 7, 0.05);
+    }
+    
+    .goal-card.cancelled {
+        border-left: 4px solid #dc3545;
+        background: rgba(220, 53, 69, 0.05);
+    }
+    
+    .goal-type-badge {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+    
+    .weight { background-color: #e3f2fd; color: #1565c0; }
+    .bmi { background-color: #f3e5f5; color: #7b1fa2; }
+    .body_fat { background-color: #fff3e0; color: #ef6c00; }
+    .muscle_mass { background-color: #e8f5e8; color: #2e7d32; }
+    .waist { background-color: #fce4ec; color: #c2185b; }
+    .habit { background-color: #f1f8e9; color: #558b2f; }
+    .nutrition { background-color: #e0f2f1; color: #00695c; }
+    
+    .priority-indicator {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .priority-1 { background-color: #28a745; }
+    .priority-2 { background-color: #ffc107; }
+    .priority-3 { background-color: #fd7e14; }
+    .priority-4 { background-color: #dc3545; }
+    
+    .progress-bar-container {
+        background: #e9ecef;
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .progress-bar-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    
+    .patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-active { background-color: #d4edda; color: #155724; }
+    .status-achieved { background-color: #cce5ff; color: #004085; }
+    .status-paused { background-color: #fff3cd; color: #856404; }
+    .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    
+    .filter-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .days-remaining {
+        font-size: 0.9rem;
+        padding: 4px 8px;
+        border-radius: 8px;
+        background: #f8f9fa;
+        color: #495057;
+    }
+    
+    .overdue {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .due-soon {
+        background: #fff3cd;
+        color: #856404;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-primary">
+                        <i class="fas fa-bullseye me-2"></i>Metas Nutricionales
+                    </h1>
+                    <p class="text-muted mb-0">Seguimiento de objetivos y logros de pacientes</p>
+                </div>
+                <a href="{% url 'nutrition:goal_create' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Nueva Meta
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row">
+        <div class="col-12">
+            <div class="filter-box">
+                <form method="get" class="row align-items-end">
+                    <div class="col-md-3">
+                        <label for="goal_type" class="form-label">Tipo de Meta</label>
+                        <select name="goal_type" id="goal_type" class="form-control">
+                            <option value="">Todos los tipos</option>
+                            {% for choice in goal_types %}
+                            <option value="{{ choice.0 }}" {% if request.GET.goal_type == choice.0 %}selected{% endif %}>
+                                {{ choice.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Estado</label>
+                        <select name="status" id="status" class="form-control">
+                            <option value="">Todos los estados</option>
+                            {% for choice in status_choices %}
+                            <option value="{{ choice.0 }}" {% if request.GET.status == choice.0 %}selected{% endif %}>
+                                {{ choice.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>Filtrar
+                        </button>
+                        {% if request.GET.goal_type or request.GET.status %}
+                        <a href="{% url 'nutrition:goals_list' %}" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-times me-1"></i>Limpiar
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Metas -->
+    <div class="row">
+        {% if page_obj %}
+            {% for goal in page_obj %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="goal-card {{ goal.status }}">
+                    <!-- Indicador de Prioridad -->
+                    <div class="priority-indicator priority-{{ goal.priority }}" 
+                         title="Prioridad: {% if goal.priority == 1 %}Baja{% elif goal.priority == 2 %}Media{% elif goal.priority == 3 %}Alta{% else %}Crítica{% endif %}"></div>
+                    
+                    <!-- Header de la Meta -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="patient-avatar">
+                            {{ goal.patient.first_name.0 }}{{ goal.patient.last_name.0 }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ goal.patient.get_full_name }}</h6>
+                            <small class="text-muted">{{ goal.patient.identification_number }}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Tipo y Estado -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="goal-type-badge {{ goal.goal_type }}">
+                            {{ goal.get_goal_type_display }}
+                        </span>
+                        <span class="status-badge status-{{ goal.status }}">
+                            {{ goal.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <!-- Título de la Meta -->
+                    <h5 class="mb-2">{{ goal.title }}</h5>
+                    <p class="text-muted small mb-3">{{ goal.description|truncatechars:100 }}</p>
+                    
+                    <!-- Progreso -->
+                    {% if goal.target_value and goal.current_value %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">Progreso:</small>
+                            <small class="fw-bold">{{ goal.get_progress_percentage }}%</small>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill 
+                                {% if goal.get_progress_percentage >= 100 %}bg-success
+                                {% elif goal.get_progress_percentage >= 75 %}bg-info
+                                {% elif goal.get_progress_percentage >= 50 %}bg-warning
+                                {% else %}bg-danger{% endif %}" 
+                                style="width: {{ goal.get_progress_percentage }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">Actual: {{ goal.current_value }} {{ goal.unit }}</small>
+                            <small class="text-muted">Meta: {{ goal.target_value }} {{ goal.unit }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Fechas -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Inicio:</small>
+                            <div class="fw-bold">{{ goal.start_date|date:"d/m/Y" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Meta:</small>
+                            <div class="fw-bold">{{ goal.target_date|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Días Restantes -->
+                    <div class="mb-3">
+                        {% now "Y-m-d" as today %}
+                        {% if goal.target_date|date:"Y-m-d" < today %}
+                            <span class="days-remaining overdue">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Vencida
+                            </span>
+                        {% elif goal.target_date|date:"Y-m-d" == today %}
+                            <span class="days-remaining due-soon">
+                                <i class="fas fa-clock me-1"></i>Vence hoy
+                            </span>
+                        {% else %}
+                            {% with days_left=goal.target_date|timeuntil %}
+                            {% if "day" in days_left and days_left|slice:":1"|add:0 <= 7 %}
+                                <span class="days-remaining due-soon">
+                                    <i class="fas fa-clock me-1"></i>{{ days_left }}
+                                </span>
+                            {% else %}
+                                <span class="days-remaining">
+                                    <i class="fas fa-calendar me-1"></i>{{ days_left }}
+                                </span>
+                            {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Logro -->
+                    {% if goal.achieved_date %}
+                    <div class="alert alert-success py-2 mb-3">
+                        <small>
+                            <i class="fas fa-trophy me-1"></i>
+                            <strong>¡Lograda!</strong> {{ goal.achieved_date|date:"d/m/Y" }}
+                        </small>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Acciones -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-user-md me-1"></i>{{ goal.nutritionist.get_full_name }}
+                        </small>
+                        <div>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>Ver Detalle</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Editar</a></li>
+                                    {% if goal.status == 'active' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-success" href="#"><i class="fas fa-check me-2"></i>Marcar como Lograda</a></li>
+                                    <li><a class="dropdown-item text-warning" href="#"><i class="fas fa-pause me-2"></i>Pausar</a></li>
+                                    {% elif goal.status == 'paused' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-success" href="#"><i class="fas fa-play me-2"></i>Reanudar</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-bullseye fa-5x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No hay metas nutricionales</h3>
+                    <p class="text-muted mb-4">Comienza definiendo la primera meta nutricional para un paciente.</p>
+                    <a href="{% url 'nutrition:goal_create' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Crear Primera Meta
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="Navegación de metas">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.goal_type %}&goal_type={{ request.GET.goal_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.goal_type %}&goal_type={{ request.GET.goal_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.goal_type %}&goal_type={{ request.GET.goal_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.goal_type %}&goal_type={{ request.GET.goal_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.goal_type %}&goal_type={{ request.GET.goal_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

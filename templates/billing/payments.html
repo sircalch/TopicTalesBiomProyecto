@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <button type="button" class="btn btn-primary" onclick="alert('Seleccione una factura para registrar el pago')">
+                        <i class="fas fa-plus"></i> Registrar Pago
+                    </button>
+                    <a href="{% url 'billing:export_payments' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-download"></i> Exportar
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            {{ form.patient.label_tag }}
+                            {{ form.patient }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.payment_method.label_tag }}
+                            {{ form.payment_method }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.status.label_tag }}
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.date_from.label_tag }}
+                            {{ form.date_from }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.date_to.label_tag }}
+                            {{ form.date_to }}
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary mt-4">
+                                <i class="fas fa-search"></i> Filtrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h3>${{ stats.total_received|floatformat:2 }}</h3>
+                            <p class="mb-0">Total Recibido</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h3>${{ stats.pending_amount|floatformat:2 }}</h3>
+                            <p class="mb-0">Pendiente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h3>{{ stats.payment_count }}</h3>
+                            <p class="mb-0">Pagos Este Mes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <h3>${{ stats.average_payment|floatformat:2 }}</h3>
+                            <p class="mb-0">Pago Promedio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Pagos -->
+            <div class="card">
+                <div class="card-body">
+                    {% if payments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Factura</th>
+                                        <th>Paciente</th>
+                                        <th>Fecha</th>
+                                        <th>Método</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in payments %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'billing:payment_detail' payment.pk %}">
+                                                {{ payment.payment_number }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'billing:invoice_detail' payment.invoice.pk %}">
+                                                {{ payment.invoice.invoice_number }}
+                                            </a>
+                                        </td>
+                                        <td>{{ payment.invoice.patient.full_name }}</td>
+                                        <td>{{ payment.payment_date|date:"d/m/Y H:i" }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                {{ payment.get_payment_method_display }}
+                                            </span>
+                                        </td>
+                                        <td>${{ payment.amount|floatformat:2 }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if payment.status == 'completed' %}success{% elif payment.status == 'failed' %}danger{% else %}warning{% endif %}">
+                                                {{ payment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'billing:payment_detail' payment.pk %}" class="btn btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if payment.status == 'pending' %}
+                                                <a href="{% url 'billing:confirm_payment' payment.pk %}" class="btn btn-outline-success">
+                                                    <i class="fas fa-check"></i>
+                                                </a>
+                                                {% endif %}
+                                                <a href="{% url 'billing:payment_receipt' payment.pk %}" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-receipt"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if payments.has_other_pages %}
+                        <nav aria-label="Paginación de pagos">
+                            <ul class="pagination justify-content-center">
+                                {% if payments.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ payments.previous_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ payments.number }} de {{ payments.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if payments.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ payments.next_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ payments.paginator.num_pages }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Última</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-dollar-sign fa-3x text-muted mb-3"></i>
+                            <h5>No hay pagos registrados</h5>
+                            <p class="text-muted">Los pagos aparecerán aquí una vez que se registren</p>
+                            <a href="{% url 'billing:create_payment' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Registrar Primer Pago
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Métodos de Pago más Utilizados -->
+            {% if payment_methods_stats %}
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Métodos de Pago más Utilizados</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for method in payment_methods_stats %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>{{ method.method }}</span>
+                                <div>
+                                    <span class="badge bg-primary me-2">{{ method.count }}</span>
+                                    <span class="text-muted">${{ method.total|floatformat:2 }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Pagos por Estado</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for status in status_stats %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>{{ status.status }}</span>
+                                <div>
+                                    <span class="badge bg-{% if status.status == 'Completado' %}success{% elif status.status == 'Fallido' %}danger{% else %}warning{% endif %} me-2">
+                                        {{ status.count }}
+                                    </span>
+                                    <span class="text-muted">${{ status.total|floatformat:2 }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

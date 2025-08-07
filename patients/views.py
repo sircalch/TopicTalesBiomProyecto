@@ -4,7 +4,11 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.utils import timezone
+from django.http import JsonResponse, HttpResponse
 from datetime import timedelta
+import csv
+import json
+from io import BytesIO
 
 from .models import Patient
 from appointments.models import Appointment
@@ -99,6 +103,12 @@ def patient_list(request):
         'paginator': paginator,
         'page_obj': page_obj,
         'is_paginated': page_obj.has_other_pages(),
+        # Add search parameters to context
+        'search_query': search_query,
+        'gender_filter': gender_filter,
+        'age_range': age_range,
+        'blood_type_filter': blood_type_filter,
+        'per_page': per_page,
     }
     
     return render(request, 'patients/list.html', context)
@@ -297,3 +307,259 @@ def documents(request, patient_id):
         'patient': patient,
         'documents_list': documents_list
     })
+
+
+@login_required
+def patient_search(request):
+    """Búsqueda avanzada de pacientes"""
+    organization = request.user.profile.organization
+    patients = []
+    
+    if request.GET.get('search'):
+        search_query = request.GET.get('search')
+        patients = Patient.objects.filter(
+            organization=organization
+        ).filter(
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(mother_last_name__icontains=search_query) |
+            Q(patient_id__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(phone__icontains=search_query)
+        ).order_by('first_name', 'last_name')
+    
+    # Paginación
+    paginator = Paginator(patients, 20)
+    page_number = request.GET.get('page')
+    patients_page = paginator.get_page(page_number)
+    
+    context = {
+        'title': 'Buscar Pacientes',
+        'patients': patients_page,
+        'search_query': request.GET.get('search', ''),
+    }
+    
+    return render(request, 'patients/search.html', context)
+
+
+@login_required
+def export_patients_csv(request):
+    """
+    Export patients to CSV format
+    """
+    organization = request.user.profile.organization
+    patients = Patient.objects.filter(organization=organization).order_by('first_name', 'last_name')
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="pacientes_{organization.name}_{timezone.now().strftime("%Y%m%d")}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow([
+        'ID Paciente', 'Nombre', 'Apellidos', 'Email', 'Telefono', 
+        'Fecha Nacimiento', 'Genero', 'Fecha Registro', 'Estado'
+    ])
+    
+    for patient in patients:
+        writer.writerow([
+            patient.patient_id,
+            patient.first_name,
+            f"{patient.last_name} {patient.mother_last_name}".strip(),
+            patient.email or '',
+            patient.phone_number or '',
+            patient.birth_date.strftime('%Y-%m-%d') if patient.birth_date else '',
+            patient.get_gender_display(),
+            patient.registration_date.strftime('%Y-%m-%d'),
+            'Activo' if patient.is_active else 'Inactivo'
+        ])
+    
+    return response
+
+
+@login_required
+def export_patients_excel(request):
+    """
+    Export patients to Excel format (using CSV for now, can be enhanced with openpyxl)
+    """
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill
+        from openpyxl.utils import get_column_letter
+        
+        organization = request.user.profile.organization
+        patients = Patient.objects.filter(organization=organization).order_by('first_name', 'last_name')
+        
+        # Create workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Pacientes"
+        
+        # Headers
+        headers = [
+            'ID Paciente', 'Nombre', 'Apellidos', 'Email', 'Teléfono', 
+            'Fecha Nacimiento', 'Género', 'Fecha Registro', 'Estado'
+        ]
+        
+        # Style headers
+        header_font = Font(bold=True, color="FFFFFF")
+        header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+        
+        for i, header in enumerate(headers, 1):
+            cell = ws.cell(row=1, column=i, value=header)
+            cell.font = header_font
+            cell.fill = header_fill
+        
+        # Data
+        for row_num, patient in enumerate(patients, 2):
+            ws.cell(row=row_num, column=1, value=patient.patient_id)
+            ws.cell(row=row_num, column=2, value=patient.first_name)
+            ws.cell(row=row_num, column=3, value=f"{patient.last_name} {patient.mother_last_name}".strip())
+            ws.cell(row=row_num, column=4, value=patient.email or '')
+            ws.cell(row=row_num, column=5, value=patient.phone_number or '')
+            ws.cell(row=row_num, column=6, value=patient.birth_date.strftime('%Y-%m-%d') if patient.birth_date else '')
+            ws.cell(row=row_num, column=7, value=patient.get_gender_display())
+            ws.cell(row=row_num, column=8, value=patient.registration_date.strftime('%Y-%m-%d'))
+            ws.cell(row=row_num, column=9, value='Activo' if patient.is_active else 'Inactivo')
+        
+        # Adjust column widths
+        for i in range(1, len(headers) + 1):
+            ws.column_dimensions[get_column_letter(i)].width = 15
+        
+        # Save to BytesIO
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+        
+        response = HttpResponse(
+            output.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="pacientes_{organization.name}_{timezone.now().strftime("%Y%m%d")}.xlsx"'
+        
+        return response
+        
+    except ImportError:
+        # Fallback to CSV if openpyxl is not available
+        return export_patients_csv(request)
+
+
+@login_required
+def export_patients_pdf(request):
+    """
+    Export patients to PDF format (basic implementation)
+    """
+    try:
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib import colors
+        from reportlab.lib.units import inch
+        
+        organization = request.user.profile.organization
+        patients = Patient.objects.filter(organization=organization).order_by('first_name', 'last_name')
+        
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        
+        # Styles
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=18,
+            spaceAfter=30,
+        )
+        
+        # Content
+        story = []
+        
+        # Title
+        title = Paragraph(f"Lista de Pacientes - {organization.name}", title_style)
+        story.append(title)
+        story.append(Spacer(1, 20))
+        
+        # Table data
+        data = [['ID', 'Nombre Completo', 'Email', 'Teléfono', 'Fecha Registro']]
+        
+        for patient in patients:
+            data.append([
+                patient.patient_id,
+                f"{patient.first_name} {patient.last_name} {patient.mother_last_name}".strip(),
+                patient.email or '',
+                patient.phone_number or '',
+                patient.registration_date.strftime('%d/%m/%Y')
+            ])
+        
+        # Create table
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        
+        story.append(table)
+        
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
+        
+        response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="pacientes_{organization.name}_{timezone.now().strftime("%Y%m%d")}.pdf"'
+        
+        return response
+        
+    except ImportError:
+        # Fallback message if reportlab is not available
+        return HttpResponse(
+            "PDF export requires reportlab library. Please contact administrator.",
+            content_type='text/plain'
+        )
+
+
+@login_required
+def patient_quick_actions(request):
+    """
+    Handle quick actions for patients via AJAX
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            action = data.get('action')
+            patient_id = data.get('patient_id')
+            
+            patient = get_object_or_404(Patient, id=patient_id, organization=request.user.profile.organization)
+            
+            if action == 'toggle_active':
+                patient.is_active = not patient.is_active
+                patient.save()
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Paciente {"activado" if patient.is_active else "desactivado"} exitosamente',
+                    'new_status': patient.is_active
+                })
+            
+            elif action == 'quick_appointment':
+                # Redirect to appointment creation with patient pre-selected
+                return JsonResponse({
+                    'success': True,
+                    'redirect': f'/appointments/create/?patient={patient_id}'
+                })
+            
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Acción no válida'
+                })
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})

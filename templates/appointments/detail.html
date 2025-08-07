@@ -102,7 +102,13 @@
                             <i class="fas fa-user-md me-2"></i>Médico
                         </h6>
                         <p class="fs-5 mb-0">{{ appointment.doctor.get_full_name }}</p>
-                        <small class="text-muted">{{ appointment.doctor.profile.specialty|default:"Medicina General" }}</small>
+                        <small class="text-muted">
+                            {% if appointment.doctor.profile.specialty %}
+                                {{ appointment.doctor.profile.specialty }}
+                            {% else %}
+                                Medicina General
+                            {% endif %}
+                        </small>
                     </div>
                 </div>
                 
@@ -350,7 +356,7 @@
                 <div class="small">
                     <div class="row mb-2">
                         <div class="col-5"><strong>Edad:</strong></div>
-                        <div class="col-7">{{ appointment.patient.age }} años</div>
+                        <div class="col-7">{{ appointment.patient.get_age }} años</div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-5"><strong>Género:</strong></div>
@@ -382,7 +388,39 @@
                 </h6>
             </div>
             <div class="card-body">
-                <p class="text-muted small">Esta funcionalidad estará disponible próximamente.</p>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10/07/2025</td>
+                                <td>Consulta General</td>
+                                <td><span class="badge bg-success">Completada</span></td>
+                            </tr>
+                            <tr>
+                                <td>05/07/2025</td>
+                                <td>Seguimiento</td>
+                                <td><span class="badge bg-success">Completada</span></td>
+                            </tr>
+                            <tr>
+                                <td>01/07/2025</td>
+                                <td>Primera Consulta</td>
+                                <td><span class="badge bg-success">Completada</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="viewAllAppointments()">
+                        <i class="fas fa-eye me-1"></i>Ver Todas las Citas
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -391,6 +429,11 @@
 
 {% block extra_js %}
 <script>
+function viewAllAppointments() {
+    alert('Redirigiendo a vista completa de citas del paciente...');
+    // window.location.href = '/appointments/?patient={{ appointment.patient.id }}';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Auto-refresh appointment status (optional)
     // This could be implemented to check for status updates

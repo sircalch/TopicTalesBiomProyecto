@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Organización{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-building me-2 text-primary"></i>Configuración de Organización
+                </h1>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Editar Información
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Organization Info -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Información de la Organización
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row mb-3">
+                                    <div class="col-md-8">
+                                        <label for="org_name" class="form-label">Nombre de la Organización</label>
+                                        <input type="text" class="form-control" id="org_name" 
+                                               value="{{ user.profile.organization.name|default:'TopicTales Biom' }}" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="org_type" class="form-label">Tipo de Organización</label>
+                                        <input type="text" class="form-control" id="org_type" 
+                                               value="Clínica Médica" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="tax_id" class="form-label">RUC/NIT</label>
+                                        <input type="text" class="form-control" id="tax_id" 
+                                               value="12345678901" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="license" class="form-label">Licencia Médica</label>
+                                        <input type="text" class="form-control" id="license" 
+                                               value="LM-2024-001" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Dirección</label>
+                                    <textarea class="form-control" id="address" rows="2" readonly>Av. Medicina 123, Ciudad Médica, País</textarea>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Teléfono Principal</label>
+                                        <input type="text" class="form-control" id="phone" 
+                                               value="+1 (555) 123-4567" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email de Contacto</label>
+                                        <input type="email" class="form-control" id="email" 
+                                               value="contacto@topictalesbiom.com" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="website" class="form-label">Sitio Web</label>
+                                        <input type="url" class="form-control" id="website" 
+                                               value="https://www.topictalesbiom.com" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="founded" class="form-label">Fecha de Fundación</label>
+                                        <input type="date" class="form-control" id="founded" 
+                                               value="2024-01-15" readonly>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Services -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-medical-kit me-2"></i>Servicios Ofrecidos
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="general" checked disabled>
+                                        <label class="form-check-label" for="general">
+                                            Medicina General
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="psychology" checked disabled>
+                                        <label class="form-check-label" for="psychology">
+                                            Psicología
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="nutrition" checked disabled>
+                                        <label class="form-check-label" for="nutrition">
+                                            Nutrición
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pediatrics" disabled>
+                                        <label class="form-check-label" for="pediatrics">
+                                            Pediatría
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="ophthalmology" disabled>
+                                        <label class="form-check-label" for="ophthalmology">
+                                            Oftalmología
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="dentistry" disabled>
+                                        <label class="form-check-label" for="dentistry">
+                                            Odontología
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="cardiology" disabled>
+                                        <label class="form-check-label" for="cardiology">
+                                            Cardiología
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="emergency" checked disabled>
+                                        <label class="form-check-label" for="emergency">
+                                            Emergencias
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Organization Stats -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>Estadísticas de la Organización
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <h2 class="text-primary">{{ total_users|default:1 }}</h2>
+                                <small class="text-muted">Usuarios Activos</small>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small>Total Pacientes</small>
+                                <span class="badge bg-primary">{{ total_patients|default:0 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small>Consultas Este Mes</small>
+                                <span class="badge bg-success">{{ consultations_this_month|default:0 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small>Equipos Médicos</small>
+                                <span class="badge bg-info">{{ total_equipment|default:0 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small>Especialidades Activas</small>
+                                <span class="badge bg-warning">3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subscription Info -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-credit-card me-2"></i>Plan de Suscripción
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h5 class="text-success">Plan Básico</h5>
+                                <p class="text-muted">Suscripción activa</p>
+                                <div class="mb-3">
+                                    <small class="text-muted">Límites del plan:</small>
+                                    <div class="mt-2">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small>Usuarios</small>
+                                            <small>{{ total_users|default:1 }}/5</small>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 4px;">
+                                            <div class="progress-bar bg-success" style="width: {% widthratio total_users|default:1 5 100 %}%"></div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small>Pacientes</small>
+                                            <small>{{ total_patients|default:0 }}/100</small>
+                                        </div>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar bg-info" style="width: {% widthratio total_patients|default:0 100 100 %}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-arrow-up me-2"></i>Actualizar Plan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-download me-2"></i>Exportar Datos
+                                </button>
+                                <button type="button" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-backup me-2"></i>Crear Respaldo
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-file-alt me-2"></i>Generar Reporte
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

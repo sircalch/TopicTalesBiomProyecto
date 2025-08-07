@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Evaluaciones Psicológicas - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .evaluation-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .evaluation-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .evaluation-card.completed {
+        border-left: 4px solid #28a745;
+    }
+    
+    .evaluation-card.pending {
+        border-left: 4px solid #ffc107;
+    }
+    
+    .evaluation-type-badge {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+    
+    .evaluation-initial { background-color: #e3f2fd; color: #1565c0; }
+    .evaluation-cognitive { background-color: #f3e5f5; color: #7b1fa2; }
+    .evaluation-personality { background-color: #fff3e0; color: #ef6c00; }
+    .evaluation-neuropsychological { background-color: #e8f5e8; color: #2e7d32; }
+    .evaluation-clinical { background-color: #fce4ec; color: #c2185b; }
+    .evaluation-educational { background-color: #f1f8e9; color: #558b2f; }
+    .evaluation-occupational { background-color: #e0f2f1; color: #00695c; }
+    
+    .patient-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 15px;
+        font-size: 1.2rem;
+    }
+    
+    .completion-indicator {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .completed-indicator { background-color: #28a745; }
+    .pending-indicator { background-color: #ffc107; }
+    
+    .filter-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .referral-badge {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 10px;
+        background: #f8f9fa;
+        color: #495057;
+        border: 1px solid #dee2e6;
+    }
+    
+    .evaluation-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .evaluation-meta i {
+        width: 16px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0" style="color: #6f42c1;">
+                        <i class="fas fa-clipboard-list me-2"></i>Evaluaciones Psicológicas
+                    </h1>
+                    <p class="text-muted mb-0">Historial de evaluaciones y diagnósticos psicológicos</p>
+                </div>
+                <a href="{% url 'psychology:evaluation_create' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row">
+        <div class="col-12">
+            <div class="filter-box">
+                <form method="get" class="row align-items-end">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Buscar</label>
+                        <input type="text" name="search" id="search" class="form-control" 
+                               placeholder="Paciente, ID o motivo de consulta" 
+                               value="{{ request.GET.search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="evaluation_type" class="form-label">Tipo de Evaluación</label>
+                        <select name="evaluation_type" id="evaluation_type" class="form-control">
+                            <option value="">Todos los tipos</option>
+                            {% for choice in evaluation_types %}
+                            <option value="{{ choice.0 }}" {% if request.GET.evaluation_type == choice.0 %}selected{% endif %}>
+                                {{ choice.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="completed" class="form-label">Estado</label>
+                        <select name="completed" id="completed" class="form-control">
+                            <option value="">Todas</option>
+                            <option value="true" {% if request.GET.completed == 'true' %}selected{% endif %}>Completadas</option>
+                            <option value="false" {% if request.GET.completed == 'false' %}selected{% endif %}>En Proceso</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-search me-1"></i>Filtrar
+                        </button>
+                        {% if request.GET.search or request.GET.evaluation_type or request.GET.completed %}
+                        <a href="{% url 'psychology:evaluation_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Limpiar
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Evaluaciones -->
+    <div class="row">
+        {% if page_obj %}
+            {% for evaluation in page_obj %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="evaluation-card {% if evaluation.is_completed %}completed{% else %}pending{% endif %}">
+                    <!-- Indicador de Completitud -->
+                    <div class="completion-indicator {% if evaluation.is_completed %}completed-indicator{% else %}pending-indicator{% endif %}" 
+                         title="{% if evaluation.is_completed %}Completada{% else %}En proceso{% endif %}"></div>
+                    
+                    <!-- Header de la Evaluación -->
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="patient-avatar">
+                            {{ evaluation.patient.first_name.0 }}{{ evaluation.patient.last_name.0 }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ evaluation.patient.get_full_name }}</h6>
+                            <small class="text-muted">{{ evaluation.patient.identification_number }}</small>
+                            <div class="mt-1">
+                                <span class="evaluation-type-badge evaluation-{{ evaluation.evaluation_type }}">
+                                    {{ evaluation.get_evaluation_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Motivo de Consulta -->
+                    <div class="mb-3">
+                        <strong class="small text-muted">Motivo de Consulta:</strong>
+                        <p class="mb-2">{{ evaluation.chief_complaint|truncatechars:120 }}</p>
+                    </div>
+                    
+                    <!-- Información de Referencia -->
+                    {% if evaluation.referral_source %}
+                    <div class="mb-3">
+                        <span class="referral-badge">
+                            <i class="fas fa-user-md me-1"></i>{{ evaluation.get_referral_source_display }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Diagnóstico Provisional -->
+                    {% if evaluation.provisional_diagnosis %}
+                    <div class="mb-3">
+                        <strong class="small text-muted">Diagnóstico Provisional:</strong>
+                        <p class="small mb-0">{{ evaluation.provisional_diagnosis|truncatechars:100 }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Metadatos -->
+                    <div class="evaluation-meta">
+                        <span>
+                            <i class="fas fa-calendar-alt"></i>
+                            {{ evaluation.evaluation_date|date:"d/m/Y" }}
+                        </span>
+                        <span>
+                            <i class="fas fa-clock"></i>
+                            {{ evaluation.evaluation_date|time:"H:i" }}
+                        </span>
+                        {% if evaluation.follow_up_date %}
+                        <span class="text-warning">
+                            <i class="fas fa-calendar-check"></i>
+                            Seguimiento: {{ evaluation.follow_up_date|date:"d/m/Y" }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Acciones -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <small class="text-muted">
+                            <i class="fas fa-user-md me-1"></i>{{ evaluation.psychologist.get_full_name }}
+                        </small>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'psychology:evaluation_detail' evaluation.pk %}" 
+                               class="btn btn-outline-primary" title="Ver Detalle">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'psychology:evaluation_edit' evaluation.pk %}" 
+                               class="btn btn-outline-secondary" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-info dropdown-toggle" 
+                                        data-bs-toggle="dropdown" title="Más Opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">
+                                        <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#">
+                                        <i class="fas fa-print me-2"></i>Imprimir
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">
+                                        <i class="fas fa-copy me-2"></i>Duplicar
+                                    </a></li>
+                                    {% if not evaluation.is_completed %}
+                                    <li><a class="dropdown-item text-success" href="#">
+                                        <i class="fas fa-check me-2"></i>Marcar como Completada
+                                    </a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-clipboard-list fa-5x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No hay evaluaciones psicológicas</h3>
+                    <p class="text-muted mb-4">Comienza creando la primera evaluación psicológica.</p>
+                    <a href="{% url 'psychology:evaluation_create' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Crear Primera Evaluación
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="Navegación de evaluaciones">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.evaluation_type %}&evaluation_type={{ request.GET.evaluation_type }}{% endif %}{% if request.GET.completed %}&completed={{ request.GET.completed }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.evaluation_type %}&evaluation_type={{ request.GET.evaluation_type }}{% endif %}{% if request.GET.completed %}&completed={{ request.GET.completed }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.evaluation_type %}&evaluation_type={{ request.GET.evaluation_type }}{% endif %}{% if request.GET.completed %}&completed={{ request.GET.completed }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.evaluation_type %}&evaluation_type={{ request.GET.evaluation_type }}{% endif %}{% if request.GET.completed %}&completed={{ request.GET.completed }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.evaluation_type %}&evaluation_type={{ request.GET.evaluation_type }}{% endif %}{% if request.GET.completed %}&completed={{ request.GET.completed }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Búsqueda en tiempo real
+document.getElementById('search').addEventListener('input', function() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+        this.form.submit();
+    }, 1000);
+});
+
+// Auto-submit para selectores
+document.getElementById('evaluation_type').addEventListener('change', function() {
+    this.form.submit();
+});
+
+document.getElementById('completed').addEventListener('change', function() {
+    this.form.submit();
+});
+</script>
+{% endblock %}

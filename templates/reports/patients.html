@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporte de Pacientes - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'reports:index' %}">Reportes</a></li>
+<li class="breadcrumb-item active">Reporte de Pacientes</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-people-fill me-2"></i>Reporte de Pacientes
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Form for report filters -->
+                <form method="GET" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="date_from" class="form-label">Fecha Desde</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from" value="{{ form.date_from.value|default:'' }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="date_to" class="form-label">Fecha Hasta</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to" value="{{ form.date_to.value|default:'' }}">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="gender" class="form-label">Género</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">Todos</option>
+                                <option value="M" {% if form.gender.value == 'M' %}selected{% endif %}>Masculino</option>
+                                <option value="F" {% if form.gender.value == 'F' %}selected{% endif %}>Femenino</option>
+                                <option value="O" {% if form.gender.value == 'O' %}selected{% endif %}>Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="city" class="form-label">Ciudad</label>
+                            <input type="text" class="form-control" id="city" name="city" placeholder="Ciudad" value="{{ form.city.value|default:'' }}">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-funnel me-1"></i>Filtrar
+                                </button>
+                                <a href="{% url 'reports:patients' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x me-1"></i>Limpiar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="age_range" class="form-label">Rango de Edad</label>
+                            <select class="form-select" id="age_range" name="age_range">
+                                <option value="">Todas las edades</option>
+                                <option value="0-18" {% if form.age_range.value == '0-18' %}selected{% endif %}>0-18 años</option>
+                                <option value="19-30" {% if form.age_range.value == '19-30' %}selected{% endif %}>19-30 años</option>
+                                <option value="31-50" {% if form.age_range.value == '31-50' %}selected{% endif %}>31-50 años</option>
+                                <option value="51-70" {% if form.age_range.value == '51-70' %}selected{% endif %}>51-70 años</option>
+                                <option value="70+" {% if form.age_range.value == '70+' %}selected{% endif %}>70+ años</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" id="active_only" name="active_only" {% if form.active_only.value %}checked{% endif %}>
+                                <label class="form-check-label" for="active_only">
+                                    Solo pacientes activos
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                {% if patients_data %}
+                <!-- Report Results -->
+                <div class="row mb-4">
+                    <!-- Statistics Cards -->
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-uppercase">Total Pacientes</h6>
+                                        <h4 class="mb-0">{{ patients_data.total_count }}</h4>
+                                        <small>en el sistema</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-uppercase">Por Género</h6>
+                                        <h4 class="mb-0">{{ patients_data.stats.by_gender|length }}</h4>
+                                        <small>categorías</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-pie-chart-fill" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-uppercase">Por Ciudad</h6>
+                                        <h4 class="mb-0">{{ patients_data.stats.by_city|length }}</h4>
+                                        <small>ciudades diferentes</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-geo-alt-fill" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-uppercase">Exportación</h6>
+                                        <h4 class="mb-0">2</h4>
+                                        <small>formatos disponibles</small>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="bi bi-download" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Distribución por Género</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="genderChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Top 5 Ciudades</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="cityChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patients Table -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Lista de Pacientes</h6>
+                        <div class="btn-group">
+                            <button class="btn btn-success btn-sm" onclick="exportToExcel()">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="exportToPDF()">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID Paciente</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Género</th>
+                                        <th>Edad</th>
+                                        <th>Ciudad</th>
+                                        <th>Teléfono</th>
+                                        <th>Fecha Registro</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for patient in patients_data.patients %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-primary">{{ patient.patient_id }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-medium">{{ patient.get_full_name }}</div>
+                                            {% if patient.email %}
+                                            <small class="text-muted">{{ patient.email }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ patient.get_gender_display }}</td>
+                                        <td>{{ patient.get_age }} años</td>
+                                        <td>{{ patient.city|default:"-" }}</td>
+                                        <td>{{ patient.phone_number|default:"-" }}</td>
+                                        <td>{{ patient.registration_date|date:"d/m/Y" }}</td>
+                                        <td>
+                                            {% if patient.is_active %}
+                                            <span class="badge bg-success">Activo</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            No se encontraron pacientes con los filtros aplicados.
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- No data state -->
+                <div class="text-center py-5">
+                    <i class="bi bi-bar-chart" style="font-size: 4rem; color: #6c757d;"></i>
+                    <h5 class="text-muted mt-3">Reporte de Pacientes</h5>
+                    <p class="text-muted">
+                        Configura los filtros anteriores y haz clic en "Filtrar" para generar el reporte de pacientes.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+{% if patients_data %}
+// Gender Chart
+const genderData = {
+    {% for item in patients_data.stats.by_gender %}
+    '{{ item.gender }}': {{ item.count }},
+    {% endfor %}
+};
+
+const genderLabels = [];
+const genderValues = [];
+for (const [key, value] of Object.entries(genderData)) {
+    let label = 'Otro';
+    if (key === 'M') label = 'Masculino';
+    else if (key === 'F') label = 'Femenino';
+    genderLabels.push(label);
+    genderValues.push(value);
+}
+
+new Chart(document.getElementById('genderChart'), {
+    type: 'doughnut',
+    data: {
+        labels: genderLabels,
+        datasets: [{
+            data: genderValues,
+            backgroundColor: ['#007bff', '#28a745', '#ffc107']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            }
+        }
+    }
+});
+
+// City Chart
+const cityLabels = [
+    {% for item in patients_data.stats.by_city|slice:":5" %}
+    '{{ item.city|default:"Sin especificar" }}',
+    {% endfor %}
+];
+const cityValues = [
+    {% for item in patients_data.stats.by_city|slice:":5" %}
+    {{ item.count }},
+    {% endfor %}
+];
+
+new Chart(document.getElementById('cityChart'), {
+    type: 'bar',
+    data: {
+        labels: cityLabels,
+        datasets: [{
+            label: 'Pacientes',
+            data: cityValues,
+            backgroundColor: '#007bff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+{% endif %}
+
+// Export functions
+function exportToExcel() {
+    // Get current filter parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const exportUrl = "{% url 'reports:export_patients_excel' %}?" + urlParams.toString();
+    
+    // Show loading message
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Generando...';
+    button.disabled = true;
+    
+    // Create temporary link to download file
+    const link = document.createElement('a');
+    link.href = exportUrl;
+    link.download = 'reporte_pacientes.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Reset button after delay
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }, 2000);
+}
+
+function exportToPDF() {
+    // Get current filter parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const exportUrl = "{% url 'reports:export_patients_pdf' %}?" + urlParams.toString();
+    
+    // Show loading message
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Generando...';
+    button.disabled = true;
+    
+    // Create temporary link to download file
+    const link = document.createElement('a');
+    link.href = exportUrl;
+    link.download = 'reporte_pacientes.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Reset button after delay
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }, 2000);
+}
+</script>
+{% endblock %}

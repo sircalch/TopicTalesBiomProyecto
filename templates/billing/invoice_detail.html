@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <a href="{% url 'billing:invoices' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    {% if invoice.status == 'draft' %}
+                        <a href="{% url 'billing:edit_invoice' invoice.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                    {% endif %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-download"></i> Descargar
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'billing:invoice_pdf' invoice.pk %}">PDF</a></li>
+                            <li><a class="dropdown-item" href="{% url 'billing:invoice_print' invoice.pk %}">Imprimir</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Información de la Factura -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-3">De:</h6>
+                                    <div>
+                                        <strong>{{ organization.name }}</strong>
+                                    </div>
+                                    <div>{{ organization.address }}</div>
+                                    <div>{{ organization.phone }}</div>
+                                    <div>{{ organization.email }}</div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <h6 class="mb-3">Para:</h6>
+                                    <div>
+                                        <strong>{{ invoice.patient.full_name }}</strong>
+                                    </div>
+                                    <div>{{ invoice.patient.email }}</div>
+                                    <div>{{ invoice.patient.phone_number }}</div>
+                                    {% if invoice.patient.address %}
+                                        <div>{{ invoice.patient.address }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalles de Servicios -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Servicios</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Servicio</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-end">Precio Unit.</th>
+                                            <th class="text-center">Descuento</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in invoice.items.all %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ item.service.name }}</div>
+                                                {% if item.description %}
+                                                    <small class="text-muted">{{ item.description }}</small>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">{{ item.quantity }}</td>
+                                            <td class="text-end">${{ item.unit_price|floatformat:2 }}</td>
+                                            <td class="text-center">
+                                                {% if item.discount > 0 %}
+                                                    {{ item.discount }}%
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">${{ item.total_amount|floatformat:2 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagos -->
+                    {% if invoice.payments.exists %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Historial de Pagos</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Método</th>
+                                            <th>Referencia</th>
+                                            <th class="text-end">Monto</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for payment in invoice.payments.all %}
+                                        <tr>
+                                            <td>{{ payment.payment_date|date:"d/m/Y H:i" }}</td>
+                                            <td>{{ payment.get_payment_method_display }}</td>
+                                            <td>{{ payment.reference_number|default:"-" }}</td>
+                                            <td class="text-end">${{ payment.amount|floatformat:2 }}</td>
+                                            <td>
+                                                <span class="badge bg-{% if payment.status == 'completed' %}success{% elif payment.status == 'failed' %}danger{% else %}warning{% endif %}">
+                                                    {{ payment.get_status_display }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Notas -->
+                    {% if invoice.notes %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Notas</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ invoice.notes|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Información de la Factura -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Información</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-0">Número:</h6>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    {{ invoice.invoice_number }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-0">Fecha:</h6>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    {{ invoice.issue_date|date:"d/m/Y" }}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-0">Vencimiento:</h6>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    {{ invoice.due_date|date:"d/m/Y" }}
+                                    {% if invoice.is_overdue %}
+                                        <br><small class="text-danger">Vencida</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-0">Estado:</h6>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    <span class="badge bg-{% if invoice.status == 'paid' %}success{% elif invoice.status == 'overdue' %}danger{% elif invoice.status == 'sent' %}warning{% else %}secondary{% endif %}">
+                                        {{ invoice.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de Totales -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Totales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-0">Subtotal:</h6>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    ${{ invoice.subtotal|floatformat:2 }}
+                                </div>
+                            </div>
+                            {% if invoice.discount_amount > 0 %}
+                            <div class="row mb-2">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-0">Descuento:</h6>
+                                </div>
+                                <div class="col-sm-6 text-sm-end text-success">
+                                    -${{ invoice.discount_amount|floatformat:2 }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="row mb-2">
+                                <div class="col-sm-6">
+                                    <h6 class="mb-0">Impuestos:</h6>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    ${{ invoice.tax_amount|floatformat:2 }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h5 class="mb-0">Total:</h5>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    <h5>${{ invoice.total_amount|floatformat:2 }}</h5>
+                                </div>
+                            </div>
+                            {% if invoice.amount_paid > 0 %}
+                                <div class="row mt-2">
+                                    <div class="col-sm-6">
+                                        <h6 class="mb-0">Pagado:</h6>
+                                    </div>
+                                    <div class="col-sm-6 text-sm-end text-success">
+                                        ${{ invoice.amount_paid|floatformat:2 }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h6 class="mb-0">Pendiente:</h6>
+                                    </div>
+                                    <div class="col-sm-6 text-sm-end {% if invoice.amount_pending > 0 %}text-warning{% else %}text-success{% endif %}">
+                                        ${{ invoice.amount_pending|floatformat:2 }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Acciones</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if invoice.status == 'draft' %}
+                                <a href="{% url 'billing:send_invoice' invoice.pk %}" class="btn btn-primary btn-sm w-100 mb-2">
+                                    <i class="fas fa-paper-plane"></i> Enviar Factura
+                                </a>
+                            {% endif %}
+                            
+                            {% if invoice.amount_pending > 0 %}
+                                <a href="{% url 'billing:create_payment' invoice.pk %}" class="btn btn-success btn-sm w-100 mb-2">
+                                    <i class="fas fa-dollar-sign"></i> Registrar Pago
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'billing:duplicate_invoice' invoice.pk %}" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+                                <i class="fas fa-copy"></i> Duplicar
+                            </a>
+                            
+                            {% if invoice.status == 'draft' %}
+                                <button type="button" class="btn btn-outline-danger btn-sm w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+{% if invoice.status == 'draft' %}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar la factura <strong>{{ invoice.invoice_number }}</strong>?</p>
+                <p class="text-muted">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" action="{% url 'billing:delete_invoice' invoice.pk %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

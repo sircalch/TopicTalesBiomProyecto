@@ -1,0 +1,547 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plan Dietético - {{ diet_plan.name }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plan-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+    
+    .detail-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .macro-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        height: 100%;
+        border-left: 4px solid #28a745;
+    }
+    
+    .macro-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #28a745;
+    }
+    
+    .macro-bar {
+        height: 20px;
+        border-radius: 10px;
+        background: #e9ecef;
+        overflow: hidden;
+        margin: 15px 0;
+    }
+    
+    .macro-segment {
+        height: 100%;
+        display: inline-block;
+        position: relative;
+    }
+    
+    .protein { background: #28a745; }
+    .carbs { background: #ffc107; }
+    .fat { background: #dc3545; }
+    
+    .meal-timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .meal-timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .meal-item {
+        position: relative;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        margin-left: 15px;
+    }
+    
+    .meal-item::before {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 25px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #28a745;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #28a745;
+    }
+    
+    .meal-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+    
+    .breakfast-icon { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+    .lunch-icon { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+    .dinner-icon { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); }
+    .snack-icon { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+    
+    .empty-meals {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+    
+    .weekly-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .day-column {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+    }
+    
+    .day-header {
+        font-weight: bold;
+        color: #495057;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .meal-in-day {
+        background: white;
+        border-radius: 5px;
+        padding: 8px;
+        margin: 5px 0;
+        font-size: 0.85rem;
+        border-left: 3px solid #28a745;
+    }
+    
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .status-active {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .status-inactive {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header del Plan -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="plan-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-2">
+                            <i class="fas fa-utensils me-2"></i>{{ diet_plan.name }}
+                        </h1>
+                        <p class="mb-2 opacity-75">
+                            <i class="fas fa-user me-2"></i>{{ diet_plan.assessment.patient.get_full_name }} |
+                            <i class="fas fa-id-card me-2"></i>{{ diet_plan.assessment.patient.identification_number }} |
+                            <i class="fas fa-calendar me-2"></i>{{ diet_plan.start_date|date:"d/m/Y" }}
+                            {% if diet_plan.end_date %} - {{ diet_plan.end_date|date:"d/m/Y" }}{% endif %}
+                        </p>
+                        <div>
+                            <span class="badge bg-info me-2">{{ diet_plan.get_plan_type_display }}</span>
+                            {% if diet_plan.is_active %}
+                                <span class="status-badge status-active">Plan Activo</span>
+                            {% else %}
+                                <span class="status-badge status-inactive">Plan Inactivo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <a href="{% url 'nutrition:meal_plan_create' diet_plan.pk %}" class="btn btn-light btn-lg me-2">
+                            <i class="fas fa-plus me-2"></i>Agregar Menú
+                        </a>
+                        <a href="{% url 'nutrition:diet_plan_list' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas Nutricionales -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="macro-card">
+                <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+                <div class="macro-value">{{ diet_plan.target_calories }}</div>
+                <small class="text-muted">Calorías Objetivo</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="macro-card">
+                <i class="fas fa-drumstick-bite fa-2x text-success mb-2"></i>
+                <div class="macro-value">{{ diet_plan.protein_grams }}</div>
+                <small class="text-muted">Proteínas (g)</small>
+                <div class="small text-success mt-1">{{ diet_plan.get_protein_percentage }}%</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="macro-card">
+                <i class="fas fa-bread-slice fa-2x text-warning mb-2"></i>
+                <div class="macro-value">{{ diet_plan.carbs_grams }}</div>
+                <small class="text-muted">Carbohidratos (g)</small>
+                <div class="small text-warning mt-1">{{ diet_plan.get_carbs_percentage }}%</div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="macro-card">
+                <i class="fas fa-cheese fa-2x text-danger mb-2"></i>
+                <div class="macro-value">{{ diet_plan.fat_grams }}</div>
+                <small class="text-muted">Grasas (g)</small>
+                <div class="small text-danger mt-1">{{ diet_plan.get_fat_percentage }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribución de Macronutrientes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="detail-card">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Distribución de Macronutrientes
+                </h5>
+                <div class="macro-bar">
+                    <div class="macro-segment protein" style="width: {{ diet_plan.get_protein_percentage }}%">
+                        <span class="position-absolute text-white small fw-bold" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                            {% if diet_plan.get_protein_percentage > 15 %}P: {{ diet_plan.get_protein_percentage }}%{% endif %}
+                        </span>
+                    </div>
+                    <div class="macro-segment carbs" style="width: {{ diet_plan.get_carbs_percentage }}%">
+                        <span class="position-absolute text-dark small fw-bold" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                            {% if diet_plan.get_carbs_percentage > 15 %}C: {{ diet_plan.get_carbs_percentage }}%{% endif %}
+                        </span>
+                    </div>
+                    <div class="macro-segment fat" style="width: {{ diet_plan.get_fat_percentage }}%">
+                        <span class="position-absolute text-white small fw-bold" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+                            {% if diet_plan.get_fat_percentage > 15 %}G: {{ diet_plan.get_fat_percentage }}%{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="row text-center mt-3">
+                    <div class="col-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="protein me-2" style="width: 15px; height: 15px; border-radius: 50%;"></div>
+                            <span class="small"><strong>Proteínas:</strong> {{ diet_plan.protein_grams }}g ({{ diet_plan.get_protein_percentage }}%)</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="carbs me-2" style="width: 15px; height: 15px; border-radius: 50%;"></div>
+                            <span class="small"><strong>Carbohidratos:</strong> {{ diet_plan.carbs_grams }}g ({{ diet_plan.get_carbs_percentage }}%)</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="fat me-2" style="width: 15px; height: 15px; border-radius: 50%;"></div>
+                            <span class="small"><strong>Grasas:</strong> {{ diet_plan.fat_grams }}g ({{ diet_plan.get_fat_percentage }}%)</span>
+                        </div>
+                    </div>
+                </div>
+                {% if diet_plan.fiber_grams %}
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-seedling me-2"></i>
+                    <strong>Fibra Recomendada:</strong> {{ diet_plan.fiber_grams }}g por día
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Menús por Día -->
+        <div class="col-lg-8">
+            {% if meals_by_day %}
+            <div class="detail-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="text-success mb-0">
+                        <i class="fas fa-calendar-week me-2"></i>Menús Semanales
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="viewMode" id="timeline" checked>
+                        <label class="btn btn-outline-success btn-sm" for="timeline">Timeline</label>
+                        
+                        <input type="radio" class="btn-check" name="viewMode" id="grid">
+                        <label class="btn btn-outline-success btn-sm" for="grid">Cuadrícula</label>
+                    </div>
+                </div>
+                
+                <!-- Vista Timeline -->
+                <div id="timelineView">
+                    {% for day_num, meals in meals_by_day.items %}
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-calendar-day me-2"></i>Día {{ day_num }}
+                        </h6>
+                        <div class="meal-timeline">
+                            {% for meal_type, meal in meals.items %}
+                            <div class="meal-item">
+                                <div class="d-flex align-items-start">
+                                    <div class="meal-icon 
+                                        {% if meal_type == 'breakfast' %}breakfast-icon
+                                        {% elif meal_type == 'lunch' %}lunch-icon
+                                        {% elif meal_type == 'dinner' %}dinner-icon
+                                        {% else %}snack-icon{% endif %}">
+                                        {% if meal_type == 'breakfast' %}<i class="fas fa-coffee"></i>
+                                        {% elif meal_type == 'morning_snack' %}<i class="fas fa-apple-alt"></i>
+                                        {% elif meal_type == 'lunch' %}<i class="fas fa-hamburger"></i>
+                                        {% elif meal_type == 'afternoon_snack' %}<i class="fas fa-cookie"></i>
+                                        {% elif meal_type == 'dinner' %}<i class="fas fa-utensils"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0">{{ meal.get_meal_type_display }}</h6>
+                                            <span class="badge bg-light text-dark">{{ meal.calories }} kcal</span>
+                                        </div>
+                                        <h6 class="text-success mb-2">{{ meal.name }}</h6>
+                                        <p class="text-muted mb-2">{{ meal.description }}</p>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="small text-muted">
+                                                    <i class="fas fa-dumbbell me-1"></i>P: {{ meal.protein }}g |
+                                                    <i class="fas fa-bread-slice me-1"></i>C: {{ meal.carbs }}g |
+                                                    <i class="fas fa-cheese me-1"></i>G: {{ meal.fat }}g
+                                                    {% if meal.fiber %} | <i class="fas fa-seedling me-1"></i>F: {{ meal.fiber }}g{% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 text-end">
+                                                <span class="small text-muted">
+                                                    <i class="fas fa-clock me-1"></i>{{ meal.preparation_time }} min
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Vista Cuadrícula -->
+                <div id="gridView" style="display: none;">
+                    <div class="weekly-grid">
+                        {% for i in "1234567"|make_list %}
+                        <div class="day-column">
+                            <div class="day-header">Día {{ i }}</div>
+                            {% for meal_type, meal_display in meal_types %}
+                                {% if meals_by_day|lookup:i|lookup:meal_type %}
+                                    {% with meal=meals_by_day|lookup:i|lookup:meal_type %}
+                                    <div class="meal-in-day">
+                                        <div class="fw-bold">{{ meal_display }}</div>
+                                        <div class="small">{{ meal.name }}</div>
+                                        <div class="small text-muted">{{ meal.calories }} kcal</div>
+                                    </div>
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="detail-card">
+                <div class="empty-meals">
+                    <i class="fas fa-utensils fa-4x mb-3"></i>
+                    <h4 class="mb-3">No hay menús definidos</h4>
+                    <p class="mb-4">Este plan dietético aún no tiene menús asignados. Comience agregando menús para cada día de la semana.</p>
+                    <a href="{% url 'nutrition:meal_plan_create' diet_plan.pk %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus me-2"></i>Agregar Primer Menú
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Distribución de Calorías por Comida -->
+            <div class="detail-card">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Distribución Calórica
+                </h5>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Desayuno:</span>
+                        <strong>{{ diet_plan.breakfast_calories }} kcal</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: {% widthratio diet_plan.breakfast_calories diet_plan.target_calories 100 %}%"></div>
+                    </div>
+                </div>
+                
+                {% if diet_plan.morning_snack_calories %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Colación Matutina:</span>
+                        <strong>{{ diet_plan.morning_snack_calories }} kcal</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-info" style="width: {% widthratio diet_plan.morning_snack_calories diet_plan.target_calories 100 %}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Comida:</span>
+                        <strong>{{ diet_plan.lunch_calories }} kcal</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: {% widthratio diet_plan.lunch_calories diet_plan.target_calories 100 %}%"></div>
+                    </div>
+                </div>
+                
+                {% if diet_plan.afternoon_snack_calories %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Colación Vespertina:</span>
+                        <strong>{{ diet_plan.afternoon_snack_calories }} kcal</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-info" style="width: {% widthratio diet_plan.afternoon_snack_calories diet_plan.target_calories 100 %}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Cena:</span>
+                        <strong>{{ diet_plan.dinner_calories }} kcal</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" style="width: {% widthratio diet_plan.dinner_calories diet_plan.target_calories 100 %}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instrucciones del Plan -->
+            {% if diet_plan.instructions %}
+            <div class="detail-card">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-clipboard-list me-2"></i>Instrucciones Generales
+                </h5>
+                <p class="text-muted">{{ diet_plan.instructions|linebreaks }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Alimentos Recomendados y a Evitar -->
+            {% if diet_plan.recommended_foods or diet_plan.foods_to_avoid %}
+            <div class="detail-card">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-list-ul me-2"></i>Recomendaciones Alimentarias
+                </h5>
+                {% if diet_plan.recommended_foods %}
+                <div class="alert alert-success">
+                    <h6 class="alert-heading"><i class="fas fa-check-circle me-2"></i>Alimentos Recomendados</h6>
+                    <p class="mb-0 small">{{ diet_plan.recommended_foods|linebreaks }}</p>
+                </div>
+                {% endif %}
+                {% if diet_plan.foods_to_avoid %}
+                <div class="alert alert-warning">
+                    <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Alimentos a Evitar</h6>
+                    <p class="mb-0 small">{{ diet_plan.foods_to_avoid|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Información del Sistema -->
+            <div class="detail-card">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Información del Plan
+                </h5>
+                <div class="small text-muted">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Evaluación Base:</span>
+                        <a href="{% url 'nutrition:assessment_detail' diet_plan.assessment.pk %}" class="text-decoration-none">
+                            Ver Evaluación
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Creado:</span>
+                        <span>{{ diet_plan.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Actualizado:</span>
+                        <span>{{ diet_plan.updated_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cambiar entre vista timeline y cuadrícula
+    const timelineRadio = document.getElementById('timeline');
+    const gridRadio = document.getElementById('grid');
+    const timelineView = document.getElementById('timelineView');
+    const gridView = document.getElementById('gridView');
+    
+    timelineRadio.addEventListener('change', function() {
+        if (this.checked) {
+            timelineView.style.display = 'block';
+            gridView.style.display = 'none';
+        }
+    });
+    
+    gridRadio.addEventListener('change', function() {
+        if (this.checked) {
+            timelineView.style.display = 'none';
+            gridView.style.display = 'block';
+        }
+    });
+});
+</script>
+{% endblock %}

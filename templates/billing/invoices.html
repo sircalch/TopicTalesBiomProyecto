@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <a href="{% url 'billing:create_invoice' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Factura
+                    </a>
+                    <a href="{% url 'billing:bulk_invoice' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list"></i> Facturación en Lote
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            {{ form.patient.label_tag }}
+                            {{ form.patient }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.status.label_tag }}
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.date_from.label_tag }}
+                            {{ form.date_from }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.date_to.label_tag }}
+                            {{ form.date_to }}
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check mt-4">
+                                {{ form.overdue_only }}
+                                {{ form.overdue_only.label_tag }}
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary mt-4">
+                                <i class="fas fa-search"></i> Filtrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista de Facturas -->
+            <div class="card">
+                <div class="card-body">
+                    {% if invoices %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Paciente</th>
+                                        <th>Fecha</th>
+                                        <th>Vencimiento</th>
+                                        <th>Estado</th>
+                                        <th>Total</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for invoice in invoices %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'billing:invoice_detail' invoice.pk %}">
+                                                {{ invoice.invoice_number }}
+                                            </a>
+                                        </td>
+                                        <td>{{ invoice.patient.full_name }}</td>
+                                        <td>{{ invoice.issue_date|date:"d/m/Y" }}</td>
+                                        <td>
+                                            {{ invoice.due_date|date:"d/m/Y" }}
+                                            {% if invoice.is_overdue %}
+                                                <span class="badge bg-danger ms-1">Vencida</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if invoice.status == 'paid' %}success{% elif invoice.status == 'overdue' %}danger{% elif invoice.status == 'sent' %}warning{% else %}secondary{% endif %}">
+                                                {{ invoice.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>${{ invoice.total_amount|floatformat:2 }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'billing:invoice_detail' invoice.pk %}" class="btn btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if invoice.status == 'draft' %}
+                                                <a href="{% url 'billing:edit_invoice' invoice.pk %}" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if invoice.amount_pending > 0 %}
+                                                <a href="{% url 'billing:create_payment' invoice.pk %}" class="btn btn-outline-success">
+                                                    <i class="fas fa-dollar-sign"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if invoices.has_other_pages %}
+                        <nav aria-label="Paginación de facturas">
+                            <ul class="pagination justify-content-center">
+                                {% if invoices.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ invoices.previous_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ invoices.number }} de {{ invoices.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if invoices.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ invoices.next_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ invoices.paginator.num_pages }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Última</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+                            <h5>No hay facturas</h5>
+                            <p class="text-muted">Comienza creando tu primera factura</p>
+                            <a href="{% url 'billing:create_invoice' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Crear Factura
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

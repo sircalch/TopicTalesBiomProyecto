@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <a href="{% url 'equipment:list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Información Básica -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Información Básica</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.name.label_tag }}
+                                            {{ form.name }}
+                                            {% if form.name.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.name.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.asset_tag.label_tag }}
+                                            {{ form.asset_tag }}
+                                            <div class="form-text">Se generará automáticamente si se deja vacío</div>
+                                            {% if form.asset_tag.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.asset_tag.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.category.label_tag }}
+                                            {{ form.category }}
+                                            {% if form.category.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.category.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.status.label_tag }}
+                                            {{ form.status }}
+                                            {% if form.status.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.status.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ form.brand.label_tag }}
+                                            {{ form.brand }}
+                                            {% if form.brand.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.brand.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ form.model.label_tag }}
+                                            {{ form.model }}
+                                            {% if form.model.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.model.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ form.serial_number.label_tag }}
+                                            {{ form.serial_number }}
+                                            {% if form.serial_number.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.serial_number.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form.description.label_tag }}
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.description.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ubicación y Proveedor -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Ubicación y Proveedor</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.location.label_tag }}
+                                            {{ form.location }}
+                                            {% if form.location.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.location.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.supplier.label_tag }}
+                                            {{ form.supplier }}
+                                            {% if form.supplier.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.supplier.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información Financiera -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Información Financiera</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ form.purchase_date.label_tag }}
+                                            {{ form.purchase_date }}
+                                            {% if form.purchase_date.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.purchase_date.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ form.purchase_price.label_tag }}
+                                            {{ form.purchase_price }}
+                                            {% if form.purchase_price.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.purchase_price.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ form.warranty_expiry.label_tag }}
+                                            {{ form.warranty_expiry }}
+                                            {% if form.warranty_expiry.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.warranty_expiry.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Especificaciones Técnicas -->
+                        <div class="card mt-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>Especificaciones Técnicas</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-specification">
+                                    <i class="fas fa-plus"></i> Agregar
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="specifications-container">
+                                    <!-- Las especificaciones se agregarán dinámicamente aquí -->
+                                </div>
+                                <div class="form-text">
+                                    Agrega especificaciones técnicas como voltaje, potencia, dimensiones, etc.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Configuración de Mantenimiento -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Mantenimiento</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form.next_maintenance_date.label_tag }}
+                                    {{ form.next_maintenance_date }}
+                                    {% if form.next_maintenance_date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.next_maintenance_date.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form.maintenance_interval_days.label_tag }}
+                                    {{ form.maintenance_interval_days }}
+                                    <div class="form-text">Días entre mantenimientos</div>
+                                    {% if form.maintenance_interval_days.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.maintenance_interval_days.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Imagen del Equipo -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Imagen</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form.image.label_tag }}
+                                    {{ form.image }}
+                                    <div class="form-text">Formatos: JPG, PNG. Máximo 5MB</div>
+                                    {% if form.image.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.image.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div id="image-preview" class="text-center" style="display: none;">
+                                    <img id="preview-img" src="" alt="Vista previa" class="img-fluid rounded" style="max-height: 200px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notas Adicionales -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Notas</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form.notes.label_tag }}
+                                    {{ form.notes }}
+                                    {% if form.notes.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.notes.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'equipment:list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Equipo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let specificationIndex = 0;
+    
+    // Agregar especificación
+    document.getElementById('add-specification').addEventListener('click', function() {
+        const container = document.getElementById('specifications-container');
+        const specDiv = document.createElement('div');
+        specDiv.className = 'row mb-2 specification-row';
+        specDiv.innerHTML = `
+            <div class="col-5">
+                <input type="text" class="form-control form-control-sm" name="spec_key_${specificationIndex}" placeholder="Especificación">
+            </div>
+            <div class="col-6">
+                <input type="text" class="form-control form-control-sm" name="spec_value_${specificationIndex}" placeholder="Valor">
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-outline-danger btn-sm remove-specification">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(specDiv);
+        specificationIndex++;
+    });
+    
+    // Remover especificación
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-specification') || e.target.parentElement.classList.contains('remove-specification')) {
+            const row = e.target.closest('.specification-row');
+            row.remove();
+        }
+    });
+    
+    // Vista previa de imagen
+    const imageInput = document.getElementById('id_image');
+    const previewContainer = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        });
+    }
+    
+    // Validación del formulario
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+    
+    // Generar código de activo automáticamente
+    const nameInput = document.getElementById('id_name');
+    const assetTagInput = document.getElementById('id_asset_tag');
+    
+    if (nameInput && assetTagInput && !assetTagInput.value) {
+        nameInput.addEventListener('blur', function() {
+            if (this.value && !assetTagInput.value) {
+                // Generar código basado en el nombre
+                const code = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 6);
+                const timestamp = Date.now().toString().slice(-4);
+                assetTagInput.value = code + '-' + timestamp;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

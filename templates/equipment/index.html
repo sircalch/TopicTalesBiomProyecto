@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <a href="{% url 'equipment:create' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-plus"></i> Nuevo Equipo
+                    </a>
+                    <a href="{% url 'equipment:maintenance_schedule' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-calendar-alt"></i> Programa Mantenimiento
+                    </a>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>{{ stats.total_equipment }}</h3>
+                                    <p class="mb-0">Total Equipos</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-laptop-medical fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>{{ stats.operational_equipment }}</h3>
+                                    <p class="mb-0">Operativos</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>{{ stats.maintenance_due }}</h3>
+                                    <p class="mb-0">Mantenimiento Pendiente</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-tools fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h3>{{ stats.out_of_service }}</h3>
+                                    <p class="mb-0">Fuera de Servicio</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- Lista de Equipos Recientes -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Equipos Recientes</h5>
+                            <a href="{% url 'equipment:list' %}" class="btn btn-outline-primary btn-sm">Ver Todos</a>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_equipment %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Código</th>
+                                                <th>Nombre</th>
+                                                <th>Ubicación</th>
+                                                <th>Estado</th>
+                                                <th>Próximo Mantenimiento</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for equipment in recent_equipment %}
+                                            <tr>
+                                                <td>
+                                                    <code>{{ equipment.asset_tag }}</code>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'equipment:detail' equipment.pk %}">
+                                                        {{ equipment.name }}
+                                                    </a>
+                                                    <br><small class="text-muted">{{ equipment.category.name }}</small>
+                                                </td>
+                                                <td>
+                                                    {% if equipment.location %}
+                                                        {{ equipment.location.name }}
+                                                    {% else %}
+                                                        <span class="text-muted">Sin asignar</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-{% if equipment.status == 'operational' %}success{% elif equipment.status == 'maintenance' %}warning{% elif equipment.status == 'out_of_service' %}danger{% else %}secondary{% endif %}">
+                                                        {{ equipment.get_status_display }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {% if equipment.next_maintenance_date %}
+                                                        {{ equipment.next_maintenance_date|date:"d/m/Y" }}
+                                                        {% if equipment.is_maintenance_due %}
+                                                            <br><small class="text-danger">Vencido</small>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="text-muted">No programado</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{% url 'equipment:detail' equipment.pk %}" class="btn btn-outline-primary">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{% url 'equipment:edit' equipment.pk %}" class="btn btn-outline-secondary">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-laptop-medical fa-3x text-muted mb-3"></i>
+                                    <h5>No hay equipos registrados</h5>
+                                    <p class="text-muted">Comienza agregando tu primer equipo médico</p>
+                                    <a href="{% url 'equipment:create' %}" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> Agregar Equipo
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Alertas Activas -->
+                    {% if active_alerts %}
+                    <div class="card mt-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Alertas Activas</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for alert in active_alerts %}
+                            <div class="alert alert-{{ alert.get_severity_color }} d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ alert.equipment.name }}</strong> - {{ alert.message }}
+                                    <br><small class="text-muted">{{ alert.created_at|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <div>
+                                    <a href="{% url 'equipment:resolve_alert' alert.pk %}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-check"></i> Resolver
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Mantenimientos Próximos -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Mantenimientos Próximos</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if upcoming_maintenance %}
+                                {% for equipment in upcoming_maintenance %}
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <div>
+                                        <h6 class="mb-1">{{ equipment.name }}</h6>
+                                        <p class="mb-0 text-muted">{{ equipment.location.name|default:"Sin ubicación" }}</p>
+                                        <small class="text-muted">{{ equipment.next_maintenance_date|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <div>
+                                        {% if equipment.is_maintenance_overdue %}
+                                            <span class="badge bg-danger">Vencido</span>
+                                        {% elif equipment.days_until_maintenance <= 7 %}
+                                            <span class="badge bg-warning">{{ equipment.days_until_maintenance }} días</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ equipment.days_until_maintenance }} días</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="text-center">
+                                    <a href="{% url 'equipment:maintenance_schedule' %}" class="btn btn-outline-primary btn-sm">
+                                        Ver Programa Completo
+                                    </a>
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center">No hay mantenimientos programados</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Categorías de Equipos -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Equipos por Categoría</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if equipment_by_category %}
+                                {% for category in equipment_by_category %}
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>{{ category.name }}</span>
+                                    <span class="badge bg-primary">{{ category.equipment_count }}</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted text-center">No hay categorías configuradas</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Estado de Equipos -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Estado General</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span><i class="fas fa-circle text-success"></i> Operativo</span>
+                                <span class="badge bg-success">{{ stats.operational_equipment }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span><i class="fas fa-circle text-warning"></i> Mantenimiento</span>
+                                <span class="badge bg-warning">{{ stats.maintenance_equipment }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span><i class="fas fa-circle text-danger"></i> Fuera de Servicio</span>
+                                <span class="badge bg-danger">{{ stats.out_of_service }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-circle text-secondary"></i> Retirado</span>
+                                <span class="badge bg-secondary">{{ stats.retired_equipment }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

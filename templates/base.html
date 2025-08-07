@@ -26,6 +26,9 @@
     <!-- Bootstrap Icons for medical UI - Local -->
     <link rel="stylesheet" href="{% static 'assets/bootstrap-icons.css' %}">
     
+    <!-- Bootstrap Icons CDN - Backup -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
     <!-- Datta Able Pro CSS Files -->
     <link rel="stylesheet" href="{% static 'assets/css/plugins/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/fonts/feather/css/feather.css' %}">
@@ -42,6 +45,15 @@
     
     <!-- Sidebar Force White Text CSS -->
     <link rel="stylesheet" href="{% static 'css/sidebar-force-white.css' %}">
+    
+    <!-- Bootstrap Icons Fix CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons-fix.css' %}">
+    
+    <!-- Sidebar Layout Fix CSS -->
+    <link rel="stylesheet" href="{% static 'css/sidebar-layout-fix.css' %}">
+    
+    <!-- Navbar Center Fix CSS - DISABLED (usando layout original) -->
+    <!-- <link rel="stylesheet" href="{% static 'css/navbar-center-fix.css' %}"> -->
     
     <!-- Medical Theme Customizations -->
     <style>
@@ -74,128 +86,14 @@
             color: var(--primary) !important;
         }
         
-        /* Ensure proper loading */
-        .pcoded-navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 270px;
-            z-index: 1025;
-        }
+        /* Layout manejado por Datta Able original - sin overrides */
         
-        .pcoded-header {
-            position: fixed;
-            top: 0;
-            left: 270px;
-            right: 0;
-            z-index: 1020;
-            height: 70px;
-            background-color: #fff;
-            border-bottom: 1px solid #e9ecef;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            overflow: visible;
-            width: calc(100vw - 270px);
-            max-width: calc(100vw - 270px);
-        }
+        /* Navbar usando estilos originales de Datta Able */
         
-        /* Navbar structure fix */
-        .pcoded-header .navbar-collapse {
-            display: flex !important;
-            justify-content: space-between;
-            width: 100%;
-            height: 70px;
-            align-items: center;
-        }
         
-        .pcoded-header .navbar-nav {
-            display: flex;
-            align-items: center;
-            height: 70px;
-            margin: 0;
-            padding: 0;
-        }
         
-        .pcoded-header .navbar-nav > li {
-            display: flex;
-            align-items: center;
-            height: 70px;
-        }
         
-        .pcoded-header .navbar-nav > li > a,
-        .pcoded-header .navbar-nav > li > div > a {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            height: auto;
-            line-height: normal;
-        }
-        
-        /* Navbar container fixes */
-        .pcoded-header .container-fluid {
-            max-width: 100%;
-            padding: 0;
-            margin: 0;
-            position: relative;
-            height: 70px;
-        }
-        
-        /* Navbar positioning */
-        .pcoded-header .navbar-left {
-            z-index: 10;
-        }
-        
-        .pcoded-header .navbar-right {
-            z-index: 10;
-            white-space: nowrap;
-        }
-        
-        .pcoded-header .navbar-search {
-            z-index: 10;
-        }
-        
-        /* Icons and links styling */
-        .pcoded-header i {
-            font-size: 1.4rem;
-            color: #495057;
-        }
-        
-        .pcoded-header a {
-            color: #495057;
-            text-decoration: none;
-            padding: 8px 10px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-        
-        .pcoded-header a:hover {
-            background-color: #f8f9fa;
-            color: #007bff;
-        }
-        
-        /* Badge positioning */
-        .pcoded-header .position-absolute {
-            position: absolute !important;
-            top: -8px !important;
-            right: -8px !important;
-            font-size: 0.65rem !important;
-            min-width: 18px !important;
-            height: 18px !important;
-            line-height: 16px !important;
-            border-radius: 9px !important;
-        }
-        
-        /* Dropdown positioning */
-        .pcoded-header .dropdown-menu {
-            top: 100% !important;
-            margin-top: 5px;
-        }
-        
-        /* Sidebar scroll fix */
+        /* Sidebar y layout usando estilos originales de Datta Able */
         .navbar-content.scroll-div {
             height: calc(100vh - 70px);
             overflow-y: auto;
@@ -203,58 +101,7 @@
             padding-bottom: 20px;
         }
         
-        .navbar-content.scroll-div::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .navbar-content.scroll-div::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        .navbar-content.scroll-div::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-        }
-        
-        .navbar-content.scroll-div::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.5);
-        }
-        
-        .pcoded-main-container {
-            margin-left: 270px;
-            margin-top: 70px;
-            min-height: calc(100vh - 70px);
-        }
-        
-        /* Desktop optimizations - Always show search */
-        .pcoded-header .navbar-search {
-            display: block !important;
-        }
-        
-        /* Desktop hover effects */
-        .pcoded-header a:hover {
-            background-color: #f8f9fa;
-            color: #007bff;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        
-        /* Enhanced desktop tooltips */
-        .tooltip {
-            font-size: 0.875rem;
-        }
-        
-        /* Desktop focused styles */
-        .pcoded-header .dropdown-menu {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            border: 1px solid #e9ecef;
-        }
-        
-        /* Always show text labels on desktop */
-        .pcoded-header .dropdown .dropdown-toggle span,
-        .pcoded-header .navbar-right span {
-            display: inline !important;
-        }
+        /* Solo customizaciones médicas mínimas necesarias */
     </style>
   {% endblock style %}
   
@@ -393,6 +240,12 @@
   
   <!-- Force White Sidebar Colors JavaScript -->
   <script src="{% static 'js/force-white-sidebar.js' %}"></script>
+  
+  <!-- Force Icon Display JavaScript -->
+  <script src="{% static 'js/force-icon-display.js' %}"></script>
+  
+  <!-- Navbar Sidebar Sync JavaScript - DISABLED (usando layout original) -->
+  <!-- <script src="{% static 'js/navbar-sidebar-sync.js' %}"></script> -->
   
   {% block extra_js %}{% endblock extra_js %}
 

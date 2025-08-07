@@ -4,7 +4,7 @@ from django.utils import timezone
 from datetime import date, timedelta
 from .models import (
     MedicalRecord, Consultation, VitalSigns, LabResult, 
-    Prescription, MedicalDocument, MedicalAlert
+    Prescription, MedicalDocument, MedicalAlert, MedicalRecordTemplate
 )
 from patients.models import Patient
 from accounts.models import User
@@ -14,15 +14,31 @@ class MedicalRecordForm(forms.ModelForm):
     """
     Form for creating and editing medical records
     """
+    
+    def __init__(self, *args, **kwargs):
+        organization = kwargs.pop('organization', None)
+        super().__init__(*args, **kwargs)
+        
+        if organization:
+            # Filter patients to only show those from the same organization
+            self.fields['patient'].queryset = Patient.objects.filter(
+                organization=organization,
+                is_active=True
+            ).order_by('first_name', 'last_name')
+    
     class Meta:
         model = MedicalRecord
         fields = [
-            'blood_type', 'allergies', 'chronic_conditions', 'current_medications',
+            'patient', 'blood_type', 'allergies', 'chronic_conditions', 'current_medications',
             'family_history', 'smoking_status', 'alcohol_consumption', 'exercise_frequency',
             'emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relationship'
         ]
         
         widgets = {
+            'patient': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
             'blood_type': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ej: O+, A-, AB+, etc.'
@@ -551,3 +567,93 @@ class MedicalRecordSearchForm(forms.Form):
             self.fields['doctor'].queryset = User.objects.filter(
                 profile__organization=organization, role='doctor', is_active=True
             ).order_by('first_name', 'last_name')
+
+
+class MedicalRecordTemplateForm(forms.ModelForm):
+    """
+    Form for creating and editing medical record templates
+    """
+    
+    # Additional fields for custom field management
+    custom_field_names = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(),
+        help_text="JSON string of custom field names"
+    )
+    
+    class Meta:
+        model = MedicalRecordTemplate
+        fields = [
+            'name', 'description', 'category',
+            'include_basic_info', 'include_vital_signs', 'include_allergies',
+            'include_medications', 'include_family_history', 'include_social_history',
+            'include_emergency_contact', 'is_public'
+        ]
+        
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ej: Consulta Cardiológica',
+                'required': True
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Breve descripción de la plantilla'
+            }),
+            'category': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
+            'include_basic_info': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'include_vital_signs': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'include_allergies': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'include_medications': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'include_family_history': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'include_social_history': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'include_emergency_contact': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'is_public': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
+        }
+    
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name:
+            # Check for uniqueness within organization (will be handled in view)
+            return name.strip()
+        return name
+    
+    def save(self, commit=True):
+        template = super().save(commit=False)
+        
+        # Process custom fields if provided
+        custom_field_names = self.cleaned_data.get('custom_field_names')
+        if custom_field_names:
+            try:
+                import json
+                custom_fields = json.loads(custom_field_names)
+                template.custom_fields = [
+                    {'name': field_name, 'type': 'text', 'required': False}
+                    for field_name in custom_fields if field_name.strip()
+                ]
+            except (json.JSONDecodeError, TypeError):
+                template.custom_fields = []
+        
+        if commit:
+            template.save()
+        return template

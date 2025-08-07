@@ -1,0 +1,738 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Test Psicológico - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .form-section {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 25px;
+        background: #f8f9fa;
+    }
+    
+    .form-section h5 {
+        color: #6f42c1;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .category-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .category-option {
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .category-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .category-label {
+        display: block;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .category-option input[type="radio"]:checked + .category-label {
+        border-color: #6f42c1;
+        background: #6f42c1;
+        color: white;
+    }
+    
+    .category-label:hover {
+        border-color: #6f42c1;
+        transform: translateY(-2px);
+    }
+    
+    .difficulty-selector {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .difficulty-option {
+        flex: 1;
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .difficulty-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .difficulty-label {
+        display: block;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .difficulty-option input[type="radio"]:checked + .difficulty-label {
+        border-color: #28a745;
+        background: #28a745;
+        color: white;
+    }
+    
+    .difficulty-option input[type="radio"]:checked + .difficulty-label.medium {
+        border-color: #ffc107;
+        background: #ffc107;
+        color: #212529;
+    }
+    
+    .difficulty-option input[type="radio"]:checked + .difficulty-label.hard {
+        border-color: #dc3545;
+        background: #dc3545;
+        color: white;
+    }
+    
+    .question-builder {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: white;
+    }
+    
+    .question-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: #f8f9fa;
+    }
+    
+    .question-header {
+        display: flex;
+        justify-content-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .btn-add-question {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-add-question:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+    
+    .scoring-section {
+        background: #e8f4fd;
+        border: 1px solid #bee5eb;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    
+    .form-floating label {
+        color: #6c757d;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #6f42c1;
+    }
+    
+    .preview-section {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    
+    .tag-input {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        min-height: 38px;
+    }
+    
+    .tag {
+        background: #6f42c1;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .tag .remove-tag {
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="form-header">
+        <h1 class="h2 mb-3">
+            <i class="fas fa-brain me-3"></i>
+            {% if form.instance.pk %}Editar Test Psicológico{% else %}Nuevo Test Psicológico{% endif %}
+        </h1>
+        <p class="mb-0 opacity-90">
+            {% if form.instance.pk %}
+                Modifica los detalles del test "{{ form.instance.name }}"
+            {% else %}
+                Crea una nueva herramienta de evaluación psicológica
+            {% endif %}
+        </p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" id="testForm">
+        {% csrf_token %}
+        
+        <!-- Información Básica -->
+        <div class="form-container">
+            <div class="form-section">
+                <h5><i class="fas fa-info-circle me-2"></i>Información Básica</h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            {{ form.name }}
+                            <label for="{{ form.name.id_for_label }}">Nombre del Test</label>
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            {{ form.short_name }}
+                            <label for="{{ form.short_name.id_for_label }}">Nombre Corto/Acrónimo</label>
+                            {% if form.short_name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.short_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.description }}
+                    <label for="{{ form.description.id_for_label }}">Descripción</label>
+                    {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.version }}
+                            <label for="{{ form.version.id_for_label }}">Versión</label>
+                            {% if form.version.errors %}
+                                <div class="invalid-feedback d-block">{{ form.version.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.author }}
+                            <label for="{{ form.author.id_for_label }}">Autor/Creador</label>
+                            {% if form.author.errors %}
+                                <div class="invalid-feedback d-block">{{ form.author.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.publication_year }}
+                            <label for="{{ form.publication_year.id_for_label }}">Año de Publicación</label>
+                            {% if form.publication_year.errors %}
+                                <div class="invalid-feedback d-block">{{ form.publication_year.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Categorización -->
+            <div class="form-section">
+                <h5><i class="fas fa-tags me-2"></i>Categorización</h5>
+                
+                <label class="form-label">Categoría Principal</label>
+                <div class="category-selector">
+                    <div class="category-option">
+                        <input type="radio" id="cat_personality" name="category" value="personality" 
+                               {% if form.category.value == 'personality' %}checked{% endif %}>
+                        <label for="cat_personality" class="category-label">
+                            <i class="fas fa-user-circle fa-2x mb-2 d-block"></i>
+                            <strong>Personalidad</strong>
+                            <small class="d-block text-muted">Rasgos de personalidad</small>
+                        </label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="cat_intelligence" name="category" value="intelligence"
+                               {% if form.category.value == 'intelligence' %}checked{% endif %}>
+                        <label for="cat_intelligence" class="category-label">
+                            <i class="fas fa-lightbulb fa-2x mb-2 d-block"></i>
+                            <strong>Inteligencia</strong>
+                            <small class="d-block text-muted">Capacidades cognitivas</small>
+                        </label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="cat_anxiety" name="category" value="anxiety"
+                               {% if form.category.value == 'anxiety' %}checked{% endif %}>
+                        <label for="cat_anxiety" class="category-label">
+                            <i class="fas fa-heart fa-2x mb-2 d-block"></i>
+                            <strong>Ansiedad</strong>
+                            <small class="d-block text-muted">Trastornos de ansiedad</small>
+                        </label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="cat_depression" name="category" value="depression"
+                               {% if form.category.value == 'depression' %}checked{% endif %}>
+                        <label for="cat_depression" class="category-label">
+                            <i class="fas fa-cloud-rain fa-2x mb-2 d-block"></i>
+                            <strong>Depresión</strong>
+                            <small class="d-block text-muted">Estados depresivos</small>
+                        </label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="cat_cognitive" name="category" value="cognitive"
+                               {% if form.category.value == 'cognitive' %}checked{% endif %}>
+                        <label for="cat_cognitive" class="category-label">
+                            <i class="fas fa-brain fa-2x mb-2 d-block"></i>
+                            <strong>Cognitivo</strong>
+                            <small class="d-block text-muted">Funciones cognitivas</small>
+                        </label>
+                    </div>
+                    <div class="category-option">
+                        <input type="radio" id="cat_neuropsych" name="category" value="neuropsychological"
+                               {% if form.category.value == 'neuropsychological' %}checked{% endif %}>
+                        <label for="cat_neuropsych" class="category-label">
+                            <i class="fas fa-microscope fa-2x mb-2 d-block"></i>
+                            <strong>Neuropsicológico</strong>
+                            <small class="d-block text-muted">Evaluación neuropsicológica</small>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Etiquetas (separadas por comas)</label>
+                    <div class="tag-input" id="tagInput">
+                        <input type="text" class="tag-input-field" placeholder="Agregar etiqueta...">
+                    </div>
+                    <input type="hidden" name="tags" id="tagsHidden" value="{{ form.tags.value|default:'' }}">
+                </div>
+            </div>
+            
+            <!-- Configuración del Test -->
+            <div class="form-section">
+                <h5><i class="fas fa-cogs me-2"></i>Configuración del Test</h5>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.estimated_duration }}
+                            <label for="{{ form.estimated_duration.id_for_label }}">Duración Estimada (minutos)</label>
+                            {% if form.estimated_duration.errors %}
+                                <div class="invalid-feedback d-block">{{ form.estimated_duration.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.question_count }}
+                            <label for="{{ form.question_count.id_for_label }}">Total de Preguntas</label>
+                            {% if form.question_count.errors %}
+                                <div class="invalid-feedback d-block">{{ form.question_count.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.max_score }}
+                            <label for="{{ form.max_score.id_for_label }}">Puntuación Máxima</label>
+                            {% if form.max_score.errors %}
+                                <div class="invalid-feedback d-block">{{ form.max_score.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <label class="form-label">Nivel de Dificultad</label>
+                <div class="difficulty-selector">
+                    <div class="difficulty-option">
+                        <input type="radio" id="diff_easy" name="difficulty" value="easy"
+                               {% if form.difficulty.value == 'easy' %}checked{% endif %}>
+                        <label for="diff_easy" class="difficulty-label">
+                            <i class="fas fa-star text-success me-2"></i>Fácil
+                        </label>
+                    </div>
+                    <div class="difficulty-option">
+                        <input type="radio" id="diff_medium" name="difficulty" value="medium"
+                               {% if form.difficulty.value == 'medium' %}checked{% endif %}>
+                        <label for="diff_medium" class="difficulty-label medium">
+                            <i class="fas fa-star text-warning me-2"></i>Medio
+                        </label>
+                    </div>
+                    <div class="difficulty-option">
+                        <input type="radio" id="diff_hard" name="difficulty" value="hard"
+                               {% if form.difficulty.value == 'hard' %}checked{% endif %}>
+                        <label for="diff_hard" class="difficulty-label hard">
+                            <i class="fas fa-star text-danger me-2"></i>Difícil
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            {{ form.min_age }}
+                            <label for="{{ form.min_age.id_for_label }}">Edad Mínima</label>
+                            {% if form.min_age.errors %}
+                                <div class="invalid-feedback d-block">{{ form.min_age.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            {{ form.max_age }}
+                            <label for="{{ form.max_age.id_for_label }}">Edad Máxima</label>
+                            {% if form.max_age.errors %}
+                                <div class="invalid-feedback d-block">{{ form.max_age.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Instrucciones y Configuración Avanzada -->
+            <div class="form-section">
+                <h5><i class="fas fa-list-ol me-2"></i>Instrucciones</h5>
+                
+                <div class="form-floating mb-3">
+                    {{ form.instructions }}
+                    <label for="{{ form.instructions.id_for_label }}">Instrucciones para el Paciente</label>
+                    {% if form.instructions.errors %}
+                        <div class="invalid-feedback d-block">{{ form.instructions.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.scoring_instructions }}
+                    <label for="{{ form.scoring_instructions.id_for_label }}">Instrucciones de Puntuación</label>
+                    {% if form.scoring_instructions.errors %}
+                        <div class="invalid-feedback d-block">{{ form.scoring_instructions.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                Test Activo (disponible para usar)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            {{ form.requires_supervision }}
+                            <label class="form-check-label" for="{{ form.requires_supervision.id_for_label }}">
+                                Requiere Supervisión Profesional
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Referencias y Documentación -->
+            <div class="form-section">
+                <h5><i class="fas fa-book me-2"></i>Referencias</h5>
+                
+                <div class="form-floating mb-3">
+                    {{ form.references }}
+                    <label for="{{ form.references.id_for_label }}">Referencias Bibliográficas</label>
+                    {% if form.references.errors %}
+                        <div class="invalid-feedback d-block">{{ form.references.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.manual_file.id_for_label }}" class="form-label">
+                        <i class="fas fa-file-pdf me-2"></i>Manual del Test (PDF)
+                    </label>
+                    {{ form.manual_file }}
+                    {% if form.manual_file.errors %}
+                        <div class="invalid-feedback d-block">{{ form.manual_file.errors.0 }}</div>
+                    {% endif %}
+                    {% if form.instance.manual_file %}
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                Archivo actual: <a href="{{ form.instance.manual_file.url }}" target="_blank">{{ form.instance.manual_file.name }}</a>
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botones de Acción -->
+        <div class="form-container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'psychology:test_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-info" onclick="previewTest()">
+                        <i class="fas fa-eye me-2"></i>Vista Previa
+                    </button>
+                    <button type="submit" name="save_draft" class="btn btn-outline-primary">
+                        <i class="fas fa-save me-2"></i>Guardar Borrador
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-2"></i>
+                        {% if form.instance.pk %}Actualizar Test{% else %}Crear Test{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <!-- Vista Previa Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Vista Previa del Test</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="previewContent">
+                    <!-- Contenido de vista previa se carga aquí -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Gestión de etiquetas
+document.addEventListener('DOMContentLoaded', function() {
+    const tagInput = document.getElementById('tagInput');
+    const tagInputField = tagInput.querySelector('.tag-input-field');
+    const tagsHidden = document.getElementById('tagsHidden');
+    let tags = tagsHidden.value ? tagsHidden.value.split(',') : [];
+    
+    // Mostrar etiquetas existentes
+    renderTags();
+    
+    tagInputField.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            addTag(this.value.trim());
+            this.value = '';
+        }
+    });
+    
+    tagInputField.addEventListener('blur', function() {
+        if (this.value.trim()) {
+            addTag(this.value.trim());
+            this.value = '';
+        }
+    });
+    
+    function addTag(tagText) {
+        if (tagText && !tags.includes(tagText)) {
+            tags.push(tagText);
+            renderTags();
+            updateHiddenField();
+        }
+    }
+    
+    function removeTag(tagText) {
+        tags = tags.filter(tag => tag !== tagText);
+        renderTags();
+        updateHiddenField();
+    }
+    
+    function renderTags() {
+        const existingTags = tagInput.querySelectorAll('.tag');
+        existingTags.forEach(tag => tag.remove());
+        
+        tags.forEach(tagText => {
+            const tagElement = document.createElement('div');
+            tagElement.className = 'tag';
+            tagElement.innerHTML = `
+                ${tagText}
+                <span class="remove-tag" onclick="removeTag('${tagText}')">&times;</span>
+            `;
+            tagInput.insertBefore(tagElement, tagInputField);
+        });
+    }
+    
+    function updateHiddenField() {
+        tagsHidden.value = tags.join(',');
+    }
+    
+    // Hacer las funciones globales para onclick
+    window.removeTag = removeTag;
+});
+
+// Vista previa del test
+function previewTest() {
+    const formData = new FormData(document.getElementById('testForm'));
+    const previewData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        category: formData.get('category'),
+        difficulty: formData.get('difficulty'),
+        estimated_duration: formData.get('estimated_duration'),
+        question_count: formData.get('question_count'),
+        instructions: formData.get('instructions')
+    };
+    
+    const previewContent = `
+        <div class="preview-section">
+            <h4>${previewData.name || 'Nombre del Test'}</h4>
+            <p class="text-muted">${previewData.description || 'Sin descripción'}</p>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Categoría:</strong> ${getCategoryDisplay(previewData.category)}
+                </div>
+                <div class="col-md-6">
+                    <strong>Dificultad:</strong> ${getDifficultyDisplay(previewData.difficulty)}
+                </div>
+            </div>
+            
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <strong>Duración:</strong> ${previewData.estimated_duration || '0'} minutos
+                </div>
+                <div class="col-md-6">
+                    <strong>Preguntas:</strong> ${previewData.question_count || '0'}
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <strong>Instrucciones:</strong>
+                <div class="border p-3 mt-2 rounded">
+                    ${previewData.instructions || 'Sin instrucciones definidas'}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('previewContent').innerHTML = previewContent;
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    modal.show();
+}
+
+function getCategoryDisplay(category) {
+    const categories = {
+        'personality': 'Personalidad',
+        'intelligence': 'Inteligencia',
+        'anxiety': 'Ansiedad',
+        'depression': 'Depresión',
+        'cognitive': 'Cognitivo',
+        'neuropsychological': 'Neuropsicológico'
+    };
+    return categories[category] || 'Sin categoría';
+}
+
+function getDifficultyDisplay(difficulty) {
+    const difficulties = {
+        'easy': 'Fácil',
+        'medium': 'Medio',
+        'hard': 'Difícil'
+    };
+    return difficulties[difficulty] || 'Sin definir';
+}
+
+// Validación del formulario
+document.getElementById('testForm').addEventListener('submit', function(e) {
+    const requiredFields = ['name', 'description', 'category'];
+    let isValid = true;
+    
+    requiredFields.forEach(fieldName => {
+        const field = document.querySelector(`[name="${fieldName}"]`);
+        if (!field.value.trim()) {
+            isValid = false;
+            field.classList.add('is-invalid');
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Por favor complete todos los campos requeridos');
+        return false;
+    }
+});
+
+// Auto-guardar borrador cada 5 minutos
+let autoSaveInterval;
+if (document.querySelector('[name="save_draft"]')) {
+    autoSaveInterval = setInterval(function() {
+        const formData = new FormData(document.getElementById('testForm'));
+        // Aquí iría la implementación del auto-guardado
+        console.log('Auto-guardando borrador...');
+    }, 300000); // 5 minutos
+}
+</script>
+{% endblock %}

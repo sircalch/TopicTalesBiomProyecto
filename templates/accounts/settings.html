@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Configuración del Sistema{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-cog me-2 text-primary"></i>Configuración del Sistema
+                </h1>
+            </div>
+
+            <div class="row">
+                <!-- System Settings -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-sliders-h me-2"></i>Configuración General
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="timezone" class="form-label">Zona Horaria</label>
+                                        <select class="form-select" id="timezone">
+                                            <option selected>America/Mexico_City (GMT-6)</option>
+                                            <option>America/New_York (GMT-5)</option>
+                                            <option>America/Los_Angeles (GMT-8)</option>
+                                            <option>Europe/Madrid (GMT+1)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="language" class="form-label">Idioma del Sistema</label>
+                                        <select class="form-select" id="language">
+                                            <option selected>Español</option>
+                                            <option>Inglés</option>
+                                            <option>Francés</option>
+                                            <option>Portugués</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="date_format" class="form-label">Formato de Fecha</label>
+                                        <select class="form-select" id="date_format">
+                                            <option selected>DD/MM/YYYY</option>
+                                            <option>MM/DD/YYYY</option>
+                                            <option>YYYY-MM-DD</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="currency" class="form-label">Moneda</label>
+                                        <select class="form-select" id="currency">
+                                            <option selected>MXN - Peso Mexicano</option>
+                                            <option>USD - Dólar Americano</option>
+                                            <option>EUR - Euro</option>
+                                            <option>COP - Peso Colombiano</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Configuración de Citas</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label for="appointment_duration" class="form-label">Duración por Defecto</label>
+                                            <select class="form-select" id="appointment_duration">
+                                                <option>15 minutos</option>
+                                                <option>30 minutos</option>
+                                                <option selected>45 minutos</option>
+                                                <option>60 minutos</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="working_hours_start" class="form-label">Hora de Inicio</label>
+                                            <input type="time" class="form-control" id="working_hours_start" value="08:00">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="working_hours_end" class="form-label">Hora de Fin</label>
+                                            <input type="time" class="form-control" id="working_hours_end" value="18:00">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Notification Settings -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-bell me-2"></i>Configuración de Notificaciones
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Notificaciones por Email</h6>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="email_appointments" checked>
+                                        <label class="form-check-label" for="email_appointments">
+                                            Recordatorios de citas
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="email_payments" checked>
+                                        <label class="form-check-label" for="email_payments">
+                                            Confirmaciones de pago
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="email_reports">
+                                        <label class="form-check-label" for="email_reports">
+                                            Reportes semanales
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Notificaciones del Sistema</h6>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="system_alerts" checked>
+                                        <label class="form-check-label" for="system_alerts">
+                                            Alertas del sistema
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="maintenance_alerts" checked>
+                                        <label class="form-check-label" for="maintenance_alerts">
+                                            Alertas de mantenimiento
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="security_alerts" checked>
+                                        <label class="form-check-label" for="security_alerts">
+                                            Alertas de seguridad
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-shield-alt me-2"></i>Configuración de Seguridad
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="two_factor" checked>
+                                        <label class="form-check-label" for="two_factor">
+                                            <strong>Autenticación de dos factores</strong><br>
+                                            <small class="text-muted">Añade una capa extra de seguridad</small>
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="session_timeout" checked>
+                                        <label class="form-check-label" for="session_timeout">
+                                            <strong>Tiempo de sesión limitado</strong><br>
+                                            <small class="text-muted">Cierra sesión automáticamente después de inactividad</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="session_duration" class="form-label">Duración de Sesión</label>
+                                        <select class="form-select" id="session_duration">
+                                            <option>30 minutos</option>
+                                            <option>1 hora</option>
+                                            <option selected>2 horas</option>
+                                            <option>4 horas</option>
+                                            <option>8 horas</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password_policy" class="form-label">Política de Contraseñas</label>
+                                        <select class="form-select" id="password_policy">
+                                            <option>Básica (6+ caracteres)</option>
+                                            <option selected>Media (8+ caracteres, números)</option>
+                                            <option>Alta (12+ caracteres, números, símbolos)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Info -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Información del Sistema
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Versión del Sistema</strong><br>
+                                <span class="text-muted">TopicTales Biom v1.0.0</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Última Actualización</strong><br>
+                                <span class="text-muted">15 de Enero, 2025</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Base de Datos</strong><br>
+                                <span class="text-muted">MySQL 8.0</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Almacenamiento Usado</strong><br>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-info" style="width: 35%"></div>
+                                </div>
+                                <small class="text-muted">3.5 GB de 10 GB</small>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Usuarios Conectados</strong><br>
+                                <span class="badge bg-success">{{ active_users|default:1 }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Actions -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-tools me-2"></i>Acciones del Sistema
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-sync me-2"></i>Actualizar Sistema
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-database me-2"></i>Optimizar BD
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-broom me-2"></i>Limpiar Caché
+                                </button>
+                                <hr>
+                                <button type="button" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-power-off me-2"></i>Reiniciar Sistema
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Guardar Configuración
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

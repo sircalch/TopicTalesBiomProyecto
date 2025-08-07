@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin: 20px 0 15px 0;
+    }
+    
+    .section-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #17a2b8;
+        box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+    }
+    
+    .progress-preview {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .satisfaction-stars {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+    
+    .satisfaction-stars .star {
+        color: #ffc107;
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .satisfaction-stars .star:hover,
+    .satisfaction-stars .star.active {
+        color: #ffb400;
+        transform: scale(1.1);
+    }
+    
+    .energy-batteries {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+    }
+    
+    .energy-batteries .battery {
+        color: #28a745;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: all 0.2s ease;
+    }
+    
+    .energy-batteries .battery:hover,
+    .energy-batteries .battery.active {
+        color: #1e7e34;
+        transform: scale(1.1);
+    }
+    
+    .weight-change-display {
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 10px;
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    .weight-loss { background-color: #d4edda; color: #155724; }
+    .weight-gain { background-color: #fff3cd; color: #856404; }
+    .weight-stable { background-color: #e2e3e5; color: #495057; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-info">
+                        <i class="fas fa-stethoscope me-2"></i>{{ title }}
+                    </h1>
+                    <p class="text-muted mb-0">Registre la información de la consulta nutricional</p>
+                </div>
+                <a href="{% url 'nutrition:consultation_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+            <div class="form-container">
+                <form method="post" id="consultationForm">
+                    {% csrf_token %}
+                    {% crispy form %}
+                </form>
+            </div>
+        </div>
+        
+        <!-- Panel de Ayuda -->
+        <div class="col-lg-4">
+            <!-- Vista Previa del Progreso -->
+            <div class="progress-preview">
+                <h5 class="text-info mb-3">
+                    <i class="fas fa-chart-line me-2"></i>Vista Previa del Progreso
+                </h5>
+                
+                <div class="mb-3">
+                    <label class="form-label">Cambio de Peso</label>
+                    <div id="weightChangePreview" class="weight-change-display weight-stable">
+                        Ingrese el peso actual para ver el cambio
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Adherencia a la Dieta</label>
+                    <div class="progress" style="height: 10px;">
+                        <div id="dietProgressBar" class="progress-bar bg-info" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted">
+                        <span id="dietProgressText">0%</span> - Seleccione adherencia
+                    </small>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Adherencia al Ejercicio</label>
+                    <div class="progress" style="height: 10px;">
+                        <div id="exerciseProgressBar" class="progress-bar bg-success" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted">
+                        <span id="exerciseProgressText">0%</span> - Seleccione adherencia
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Guía de Evaluación -->
+            <div class="progress-preview">
+                <h5 class="text-info mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Guía de Evaluación
+                </h5>
+                
+                <div class="mb-3">
+                    <h6 class="text-primary">Adherencia a la Dieta:</h6>
+                    <ul class="small">
+                        <li><strong>90-100%:</strong> Excelente seguimiento</li>
+                        <li><strong>70-89%:</strong> Buen seguimiento</li>
+                        <li><strong>50-69%:</strong> Seguimiento regular</li>
+                        <li><strong>0-49%:</strong> Necesita apoyo</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-success">Adherencia al Ejercicio:</h6>
+                    <ul class="small">
+                        <li><strong>80-100%:</strong> Muy activo</li>
+                        <li><strong>60-79%:</strong> Moderadamente activo</li>
+                        <li><strong>40-59%:</strong> Poco activo</li>
+                        <li><strong>0-39%:</strong> Sedentario</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-warning">Satisfacción del Paciente:</h6>
+                    <div class="small">
+                        <div>⭐⭐⭐⭐⭐ Muy Satisfecho</div>
+                        <div>⭐⭐⭐⭐ Satisfecho</div>
+                        <div>⭐⭐⭐ Neutral</div>
+                        <div>⭐⭐ Insatisfecho</div>
+                        <div>⭐ Muy Insatisfecho</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h6 class="text-danger">Nivel de Energía:</h6>
+                    <div class="small">
+                        <div>🔋🔋🔋🔋🔋 Muy Alto</div>
+                        <div>🔋🔋🔋🔋 Alto</div>
+                        <div>🔋🔋🔋 Normal</div>
+                        <div>🔋🔋 Bajo</div>
+                        <div>🔋 Muy Bajo</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recordatorios -->
+            <div class="progress-preview">
+                <h5 class="text-info mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Recordatorios
+                </h5>
+                <div class="small">
+                    <div class="alert alert-warning py-2 mb-2">
+                        <strong>Importante:</strong> Documente cualquier efecto adverso o preocupación del paciente.
+                    </div>
+                    <div class="alert alert-info py-2 mb-2">
+                        <strong>Tip:</strong> Programe la próxima cita antes de finalizar la consulta.
+                    </div>
+                    <div class="alert alert-success py-2">
+                        <strong>Seguimiento:</strong> Revise el cumplimiento de objetivos de la consulta anterior.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Referencias a campos del formulario
+    const currentWeightField = document.querySelector('input[name="current_weight"]');
+    const dietAdherenceField = document.querySelector('input[name="diet_adherence"]');
+    const exerciseAdherenceField = document.querySelector('input[name="exercise_adherence"]');
+    const patientField = document.querySelector('select[name="patient"]');
+    const assessmentField = document.querySelector('select[name="assessment"]');
+    
+    // Actualizar vista previa del cambio de peso
+    function updateWeightChange() {
+        const currentWeight = parseFloat(currentWeightField?.value || 0);
+        const preview = document.getElementById('weightChangePreview');
+        
+        if (currentWeight > 0 && assessmentField?.value) {
+            // Aquí normalmente haríamos una llamada AJAX para obtener el peso anterior
+            // Por ahora, simulamos un peso anterior
+            const previousWeight = 70; // Esto vendría de la evaluación anterior
+            const change = currentWeight - previousWeight;
+            
+            preview.className = 'weight-change-display ';
+            if (change > 0) {
+                preview.className += 'weight-gain';
+                preview.textContent = `+${change.toFixed(1)} kg (Ganancia)`;
+            } else if (change < 0) {
+                preview.className += 'weight-loss';
+                preview.textContent = `${change.toFixed(1)} kg (Pérdida)`;
+            } else {
+                preview.className += 'weight-stable';
+                preview.textContent = 'Sin cambio de peso';
+            }
+        } else {
+            preview.className = 'weight-change-display weight-stable';
+            preview.textContent = 'Ingrese el peso actual para ver el cambio';
+        }
+    }
+    
+    // Actualizar barras de progreso
+    function updateProgressBars() {
+        const dietValue = parseInt(dietAdherenceField?.value || 0);
+        const exerciseValue = parseInt(exerciseAdherenceField?.value || 0);
+        
+        // Adherencia a la dieta
+        const dietBar = document.getElementById('dietProgressBar');
+        const dietText = document.getElementById('dietProgressText');
+        dietBar.style.width = dietValue + '%';
+        dietText.textContent = dietValue + '%';
+        
+        // Cambiar color según el valor
+        dietBar.className = 'progress-bar ';
+        if (dietValue >= 90) dietBar.className += 'bg-success';
+        else if (dietValue >= 70) dietBar.className += 'bg-info';
+        else if (dietValue >= 50) dietBar.className += 'bg-warning';
+        else dietBar.className += 'bg-danger';
+        
+        // Adherencia al ejercicio
+        const exerciseBar = document.getElementById('exerciseProgressBar');
+        const exerciseText = document.getElementById('exerciseProgressText');
+        exerciseBar.style.width = exerciseValue + '%';
+        exerciseText.textContent = exerciseValue + '%';
+        
+        // Cambiar color según el valor
+        exerciseBar.className = 'progress-bar ';
+        if (exerciseValue >= 80) exerciseBar.className += 'bg-success';
+        else if (exerciseValue >= 60) exerciseBar.className += 'bg-info';
+        else if (exerciseValue >= 40) exerciseBar.className += 'bg-warning';
+        else exerciseBar.className += 'bg-danger';
+    }
+    
+    // Event listeners
+    if (currentWeightField) {
+        currentWeightField.addEventListener('input', updateWeightChange);
+    }
+    
+    if (dietAdherenceField) {
+        dietAdherenceField.addEventListener('input', updateProgressBars);
+    }
+    
+    if (exerciseAdherenceField) {
+        exerciseAdherenceField.addEventListener('input', updateProgressBars);
+    }
+    
+    if (assessmentField) {
+        assessmentField.addEventListener('change', updateWeightChange);
+    }
+    
+    // Inicializar valores
+    updateWeightChange();
+    updateProgressBars();
+});
+</script>
+{% endblock %}

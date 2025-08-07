@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planes Dietéticos - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plan-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+        border-left: 4px solid #667eea;
+    }
+    
+    .plan-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .plan-card.active {
+        border-left-color: #28a745;
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+    
+    .plan-card.inactive {
+        border-left-color: #6c757d;
+        background: rgba(248, 249, 250, 0.7);
+    }
+    
+    .plan-type-badge {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .calories-display {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        color: #495057;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    
+    .macros-bar {
+        height: 8px;
+        border-radius: 4px;
+        background: #e9ecef;
+        overflow: hidden;
+        margin: 8px 0;
+    }
+    
+    .macro-segment {
+        height: 100%;
+        display: inline-block;
+    }
+    
+    .protein { background: #28a745; }
+    .carbs { background: #ffc107; }
+    .fat { background: #dc3545; }
+    
+    .filter-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .patient-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-primary">
+                        <i class="fas fa-utensils me-2"></i>Planes Dietéticos
+                    </h1>
+                    <p class="text-muted mb-0">Gestión de planes nutricionales personalizados</p>
+                </div>
+                <a href="{% url 'nutrition:diet_plan_create' %}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus me-2"></i>Nuevo Plan Dietético
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row">
+        <div class="col-12">
+            <div class="filter-box">
+                <form method="get" class="row align-items-end">
+                    <div class="col-md-4">
+                        <label for="plan_type" class="form-label">Tipo de Plan</label>
+                        <select name="plan_type" id="plan_type" class="form-control">
+                            <option value="">Todos los tipos</option>
+                            {% for choice in plan_types %}
+                            <option value="{{ choice.0 }}" {% if request.GET.plan_type == choice.0 %}selected{% endif %}>
+                                {{ choice.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="is_active" class="form-label">Estado</label>
+                        <select name="is_active" id="is_active" class="form-control">
+                            <option value="">Todos los estados</option>
+                            <option value="true" {% if request.GET.is_active == 'true' %}selected{% endif %}>Activos</option>
+                            <option value="false" {% if request.GET.is_active == 'false' %}selected{% endif %}>Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i>Filtrar
+                        </button>
+                        {% if request.GET.plan_type or request.GET.is_active %}
+                        <a href="{% url 'nutrition:diet_plan_list' %}" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-times me-1"></i>Limpiar
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Planes -->
+    <div class="row">
+        {% if page_obj %}
+            {% for plan in page_obj %}
+            <div class="col-xl-6 mb-4">
+                <div class="plan-card {% if plan.is_active %}active{% else %}inactive{% endif %}">
+                    <!-- Header del Plan -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-2">{{ plan.name }}</h5>
+                            <div class="patient-info">
+                                <div class="patient-avatar">
+                                    {{ plan.assessment.patient.first_name.0 }}{{ plan.assessment.patient.last_name.0 }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ plan.assessment.patient.get_full_name }}</h6>
+                                    <small class="text-muted">{{ plan.assessment.patient.identification_number }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="plan-type-badge 
+                                {% if plan.plan_type == 'weight_loss' %}bg-danger text-white
+                                {% elif plan.plan_type == 'weight_gain' %}bg-success text-white
+                                {% elif plan.plan_type == 'maintenance' %}bg-info text-white
+                                {% elif plan.plan_type == 'muscle_gain' %}bg-warning text-dark
+                                {% else %}bg-secondary text-white{% endif %}">
+                                {{ plan.get_plan_type_display }}
+                            </span>
+                            {% if plan.is_active %}
+                            <div class="mt-2">
+                                <span class="badge bg-success">Activo</span>
+                            </div>
+                            {% else %}
+                            <div class="mt-2">
+                                <span class="badge bg-secondary">Inactivo</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información Nutricional -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <div class="calories-display">
+                                    <i class="fas fa-fire me-1"></i>{{ plan.target_calories }} kcal
+                                </div>
+                                <small class="text-muted">Objetivo Calórico</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h5 class="text-success mb-1">{{ plan.fiber_grams }}g</h5>
+                                <small class="text-muted">Fibra Diaria</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Distribución de Macronutrientes -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between text-small mb-1">
+                            <span>Macronutrientes:</span>
+                            <span>P: {{ plan.get_protein_percentage }}% | C: {{ plan.get_carbs_percentage }}% | G: {{ plan.get_fat_percentage }}%</span>
+                        </div>
+                        <div class="macros-bar">
+                            <div class="macro-segment protein" style="width: {{ plan.get_protein_percentage }}%"></div>
+                            <div class="macro-segment carbs" style="width: {{ plan.get_carbs_percentage }}%"></div>
+                            <div class="macro-segment fat" style="width: {{ plan.get_fat_percentage }}%"></div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-success"><strong>{{ plan.protein_grams }}g</strong><br>Proteínas</small>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-warning"><strong>{{ plan.carbs_grams }}g</strong><br>Carbohidratos</small>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-danger"><strong>{{ plan.fat_grams }}g</strong><br>Grasas</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Distribución de Comidas -->
+                    <div class="mb-3">
+                        <small class="text-muted mb-2 d-block">Distribución Calórica por Comida:</small>
+                        <div class="row text-center">
+                            <div class="col">
+                                <div class="small">
+                                    <strong>{{ plan.breakfast_calories }}</strong><br>
+                                    <span class="text-muted">Desayuno</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="small">
+                                    <strong>{{ plan.lunch_calories }}</strong><br>
+                                    <span class="text-muted">Comida</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="small">
+                                    <strong>{{ plan.dinner_calories }}</strong><br>
+                                    <span class="text-muted">Cena</span>
+                                </div>
+                            </div>
+                            {% if plan.morning_snack_calories %}
+                            <div class="col">
+                                <div class="small">
+                                    <strong>{{ plan.morning_snack_calories }}</strong><br>
+                                    <span class="text-muted">Col. AM</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if plan.afternoon_snack_calories %}
+                            <div class="col">
+                                <div class="small">
+                                    <strong>{{ plan.afternoon_snack_calories }}</strong><br>
+                                    <span class="text-muted">Col. PM</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Fechas y Acciones -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-muted small">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ plan.start_date|date:"d/m/Y" }}
+                            {% if plan.end_date %}
+                            - {{ plan.end_date|date:"d/m/Y" }}
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="{% url 'nutrition:diet_plan_detail' plan.pk %}" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'nutrition:meal_plan_create' plan.pk %}" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-plus"></i> Menú
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-utensils fa-5x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No hay planes dietéticos</h3>
+                    <p class="text-muted mb-4">Comienza creando el primer plan dietético para un paciente.</p>
+                    <a href="{% url 'nutrition:diet_plan_create' %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus me-2"></i>Crear Primer Plan
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="Navegación de planes">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.plan_type %}&plan_type={{ request.GET.plan_type }}{% endif %}{% if request.GET.is_active %}&is_active={{ request.GET.is_active }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.plan_type %}&plan_type={{ request.GET.plan_type }}{% endif %}{% if request.GET.is_active %}&is_active={{ request.GET.is_active }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.plan_type %}&plan_type={{ request.GET.plan_type }}{% endif %}{% if request.GET.is_active %}&is_active={{ request.GET.is_active }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.plan_type %}&plan_type={{ request.GET.plan_type }}{% endif %}{% if request.GET.is_active %}&is_active={{ request.GET.is_active }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.plan_type %}&plan_type={{ request.GET.plan_type }}{% endif %}{% if request.GET.is_active %}&is_active={{ request.GET.is_active }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

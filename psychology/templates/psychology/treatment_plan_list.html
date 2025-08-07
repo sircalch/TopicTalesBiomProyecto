@@ -1,0 +1,720 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planes de Tratamiento - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .treatment-plan-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+        border-left: 4px solid #6f42c1;
+        transition: all 0.3s ease;
+    }
+    
+    .treatment-plan-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .plan-header {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .plan-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.5rem;
+    }
+    
+    .filter-section {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .plan-status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-active { background-color: #d4edda; color: #155724; }
+    .status-completed { background-color: #cce5ff; color: #004085; }
+    .status-paused { background-color: #fff3cd; color: #856404; }
+    .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    
+    .progress-bar-container {
+        background: #e9ecef;
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #6f42c1 0%, #e83e8c 100%);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    
+    .patient-avatar {
+        width: 40px;
+        height: 40px;
+        background: #6f42c1;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-top: 4px solid #6f42c1;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #6f42c1;
+        margin-bottom: 5px;
+    }
+    
+    .objective-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        border-left: 3px solid #28a745;
+    }
+    
+    .objective-completed {
+        border-left-color: #6c757d;
+        opacity: 0.7;
+        text-decoration: line-through;
+    }
+    
+    .priority-high { border-left-color: #dc3545 !important; }
+    .priority-medium { border-left-color: #ffc107 !important; }
+    .priority-low { border-left-color: #28a745 !important; }
+    
+    .timeline-section {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -22px;
+        top: 15px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #6f42c1;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #6f42c1;
+    }
+    
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        left: -16px;
+        top: 27px;
+        width: 2px;
+        height: calc(100% + 5px);
+        background: #dee2e6;
+    }
+    
+    .timeline-item:last-child::after {
+        display: none;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .btn-quick {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        border: 1px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .plan-summary {
+        background: #e8f4fd;
+        border: 1px solid #bee5eb;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="plan-header">
+        <div class="plan-icon">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h1 class="h2 mb-3">Planes de Tratamiento</h1>
+        <p class="mb-0 opacity-90">Gestión integral de planes terapéuticos personalizados</p>
+    </div>
+    
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_plans }}</div>
+            <div class="text-muted">Total de Planes</div>
+            <small class="text-success">
+                <i class="fas fa-arrow-up me-1"></i>{{ active_plans }} activos
+            </small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ completed_plans }}</div>
+            <div class="text-muted">Planes Completados</div>
+            <small class="text-info">{{ completion_rate }}% tasa de éxito</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ avg_duration }}</div>
+            <div class="text-muted">Duración Promedio</div>
+            <small class="text-muted">días de tratamiento</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ total_objectives }}</div>
+            <div class="text-muted">Objetivos Terapéuticos</div>
+            <small class="text-warning">{{ pending_objectives }} pendientes</small>
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filter-section">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h5 class="mb-3">
+                    <i class="fas fa-filter me-2 text-primary"></i>Filtrar Planes
+                </h5>
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Activo</option>
+                            <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completado</option>
+                            <option value="paused" {% if request.GET.status == 'paused' %}selected{% endif %}>Pausado</option>
+                            <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="psychologist" class="form-select">
+                            <option value="">Todos los psicólogos</option>
+                            {% for psychologist in psychologists %}
+                            <option value="{{ psychologist.id }}" 
+                                    {% if request.GET.psychologist == psychologist.id|stringformat:"s" %}selected{% endif %}>
+                                {{ psychologist.get_full_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Buscar paciente..." value="{{ request.GET.search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-search me-1"></i>Filtrar
+                            </button>
+                            <a href="{% url 'psychology:treatment_plan_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'psychology:treatment_plan_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Nuevo Plan de Tratamiento
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lista de Planes de Tratamiento -->
+    <div class="row">
+        {% for plan in treatment_plans %}
+        <div class="col-lg-6 col-xl-4">
+            <div class="treatment-plan-card">
+                <!-- Header del Plan -->
+                <div class="d-flex align-items-center mb-3">
+                    <div class="patient-avatar">
+                        {{ plan.patient.first_name.0 }}{{ plan.patient.last_name.0 }}
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ plan.patient.get_full_name }}</h6>
+                        <small class="text-muted">{{ plan.patient.identification_number }}</small>
+                    </div>
+                    <span class="plan-status status-{{ plan.status }}">
+                        {{ plan.get_status_display }}
+                    </span>
+                </div>
+                
+                <!-- Título del Plan -->
+                <h5 class="card-title mb-3">{{ plan.title }}</h5>
+                
+                <!-- Información Básica -->
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <small class="text-muted d-block">Inicio</small>
+                        <strong>{{ plan.start_date|date:"d/m/Y" }}</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted d-block">Duración</small>
+                        <strong>{{ plan.duration_weeks }} sem</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted d-block">Psicólogo</small>
+                        <strong>{{ plan.psychologist.first_name.0 }}.{{ plan.psychologist.last_name.0 }}.</strong>
+                    </div>
+                </div>
+                
+                <!-- Progreso -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small class="text-muted">Progreso General</small>
+                        <small class="fw-bold">{{ plan.progress_percentage }}%</small>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ plan.progress_percentage }}%"></div>
+                    </div>
+                </div>
+                
+                <!-- Objetivos Principales -->
+                <div class="mb-3">
+                    <h6 class="mb-2">
+                        <i class="fas fa-bullseye me-1 text-primary"></i>Objetivos Principales
+                    </h6>
+                    {% for objective in plan.main_objectives %}
+                    <div class="objective-item {% if objective.is_completed %}objective-completed{% endif %} priority-{{ objective.priority }}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <small class="fw-bold">{{ objective.title }}</small>
+                                {% if objective.target_date %}
+                                <div class="text-muted" style="font-size: 0.75rem;">
+                                    <i class="fas fa-calendar me-1"></i>{{ objective.target_date|date:"d/m/Y" }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if objective.is_completed %}
+                            <i class="fas fa-check-circle text-success"></i>
+                            {% else %}
+                            <i class="far fa-circle text-muted"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-muted text-center py-2">
+                        <small>No hay objetivos definidos</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Resumen del Plan -->
+                {% if plan.description %}
+                <div class="plan-summary">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>Resumen:
+                    </small>
+                    <p class="mb-0 mt-1" style="font-size: 0.85rem;">
+                        {{ plan.description|truncatechars:120 }}
+                    </p>
+                </div>
+                {% endif %}
+                
+                <!-- Acciones Rápidas -->
+                <div class="quick-actions">
+                    <a href="{% url 'psychology:treatment_plan_detail' plan.pk %}" 
+                       class="btn btn-outline-primary btn-quick">
+                        <i class="fas fa-eye me-1"></i>Ver Detalles
+                    </a>
+                    {% if plan.status == 'active' %}
+                    <button class="btn btn-outline-success btn-quick" 
+                            onclick="addSession({{ plan.pk }})">
+                        <i class="fas fa-plus me-1"></i>Sesión
+                    </button>
+                    {% endif %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary btn-quick dropdown-toggle" 
+                                type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'psychology:treatment_plan_edit' plan.pk %}">
+                                    <i class="fas fa-edit me-2"></i>Editar Plan
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="duplicatePlan({{ plan.pk }})">
+                                    <i class="fas fa-copy me-2"></i>Duplicar Plan
+                                </a>
+                            </li>
+                            {% if plan.status == 'active' %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="pausePlan({{ plan.pk }})">
+                                    <i class="fas fa-pause me-2"></i>Pausar Plan
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="completePlan({{ plan.pk }})">
+                                    <i class="fas fa-check me-2"></i>Marcar Completado
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#" onclick="deletePlan({{ plan.pk }})">
+                                    <i class="fas fa-trash me-2"></i>Eliminar
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Información Adicional -->
+                <div class="mt-3 pt-3 border-top">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <small class="text-muted d-block">Sesiones</small>
+                            <strong>{{ plan.completed_sessions }}/{{ plan.total_sessions }}</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">Próxima Cita</small>
+                            {% if plan.next_appointment %}
+                            <strong>{{ plan.next_appointment|date:"d/m" }}</strong>
+                            {% else %}
+                            <strong class="text-muted">-</strong>
+                            {% endif %}
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">Última Act.</small>
+                            <strong>{{ plan.last_updated|date:"d/m/Y" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="treatment-plan-card text-center py-5">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No hay planes de tratamiento</h4>
+                <p class="text-muted mb-4">
+                    {% if request.GET.status or request.GET.psychologist or request.GET.search %}
+                        No se encontraron planes con los filtros aplicados
+                    {% else %}
+                        Comienza creando tu primer plan de tratamiento
+                    {% endif %}
+                </p>
+                {% if not request.GET.status and not request.GET.psychologist and not request.GET.search %}
+                <a href="{% url 'psychology:treatment_plan_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Crear Primer Plan
+                </a>
+                {% else %}
+                <a href="{% url 'psychology:treatment_plan_list' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-times me-2"></i>Limpiar Filtros
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Paginación -->
+    {% if is_paginated %}
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Treatment plans pagination">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal para agregar sesión rápida -->
+<div class="modal fade" id="addSessionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Sesión Rápida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickSessionForm">
+                    <div class="mb-3">
+                        <label for="session_date" class="form-label">Fecha y Hora</label>
+                        <input type="datetime-local" class="form-control" id="session_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="session_type" class="form-label">Tipo de Sesión</label>
+                        <select class="form-select" id="session_type" required>
+                            <option value="">Seleccionar tipo...</option>
+                            <option value="individual">Individual</option>
+                            <option value="group">Grupal</option>
+                            <option value="family">Familiar</option>
+                            <option value="evaluation">Evaluación</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="session_notes" class="form-label">Notas Iniciales</label>
+                        <textarea class="form-control" id="session_notes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuickSession()">
+                    <i class="fas fa-save me-2"></i>Crear Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedPlanId = null;
+
+function addSession(planId) {
+    selectedPlanId = planId;
+    
+    // Establecer fecha y hora actual
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('session_date').value = now.toISOString().slice(0, 16);
+    
+    const modal = new bootstrap.Modal(document.getElementById('addSessionModal'));
+    modal.show();
+}
+
+function saveQuickSession() {
+    const sessionDate = document.getElementById('session_date').value;
+    const sessionType = document.getElementById('session_type').value;
+    const sessionNotes = document.getElementById('session_notes').value;
+    
+    if (!sessionDate || !sessionType) {
+        alert('Por favor complete los campos requeridos');
+        return;
+    }
+    
+    // Crear nueva sesión
+    const data = {
+        plan_id: selectedPlanId,
+        session_date: sessionDate,
+        session_type: sessionType,
+        notes: sessionNotes
+    };
+    
+    fetch('/psychology/api/create-quick-session/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al crear la sesión: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al procesar la solicitud');
+    });
+}
+
+function duplicatePlan(planId) {
+    if (confirm('¿Está seguro de que desea duplicar este plan de tratamiento?')) {
+        fetch(`/psychology/api/duplicate-plan/${planId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al duplicar el plan: ' + data.error);
+            }
+        });
+    }
+}
+
+function pausePlan(planId) {
+    if (confirm('¿Está seguro de que desea pausar este plan de tratamiento?')) {
+        updatePlanStatus(planId, 'paused');
+    }
+}
+
+function completePlan(planId) {
+    if (confirm('¿Marcar este plan como completado?')) {
+        updatePlanStatus(planId, 'completed');
+    }
+}
+
+function deletePlan(planId) {
+    if (confirm('¿Está seguro de que desea eliminar este plan? Esta acción no se puede deshacer.')) {
+        fetch(`/psychology/api/delete-plan/${planId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al eliminar el plan: ' + data.error);
+            }
+        });
+    }
+}
+
+function updatePlanStatus(planId, status) {
+    fetch(`/psychology/api/update-plan-status/${planId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al actualizar el plan: ' + data.error);
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Animaciones de entrada
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.treatment-plan-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('fade-in');
+    });
+});
+</script>
+
+<style>
+.fade-in {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

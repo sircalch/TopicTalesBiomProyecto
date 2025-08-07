@@ -1,0 +1,421 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planes Dietéticos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-utensils me-2 text-warning"></i>Planes Dietéticos
+                </h1>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'nutrition:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                    <button type="button" class="btn btn-warning">
+                        <i class="fas fa-plus me-2"></i>Nuevo Plan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Buscar Paciente</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ request.GET.search }}" placeholder="Nombre del paciente...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos los estados</option>
+                                <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Activo</option>
+                                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completado</option>
+                                <option value="paused" {% if request.GET.status == 'paused' %}selected{% endif %}>Pausado</option>
+                                <option value="discontinued" {% if request.GET.status == 'discontinued' %}selected{% endif %}>Descontinuado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="diet_type" class="form-label">Tipo de Plan</label>
+                            <select class="form-select" id="diet_type" name="diet_type">
+                                <option value="">Todos los tipos</option>
+                                <option value="weight_loss" {% if request.GET.diet_type == 'weight_loss' %}selected{% endif %}>Pérdida de Peso</option>
+                                <option value="weight_gain" {% if request.GET.diet_type == 'weight_gain' %}selected{% endif %}>Aumento de Peso</option>
+                                <option value="maintenance" {% if request.GET.diet_type == 'maintenance' %}selected{% endif %}>Mantenimiento</option>
+                                <option value="therapeutic" {% if request.GET.diet_type == 'therapeutic' %}selected{% endif %}>Terapéutico</option>
+                                <option value="sports" {% if request.GET.diet_type == 'sports' %}selected{% endif %}>Deportivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-search me-2"></i>Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Diet Plan Types -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line-down fa-2x text-warning mb-3"></i>
+                            <h6 class="card-title">Plan de Pérdida de Peso</h6>
+                            <p class="card-text small">Déficit calórico controlado y balanceado</p>
+                            <button type="button" class="btn btn-warning btn-sm">
+                                <i class="fas fa-plus me-2"></i>Crear Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line-up fa-2x text-success mb-3"></i>
+                            <h6 class="card-title">Plan de Aumento de Peso</h6>
+                            <p class="card-text small">Superávit calórico saludable</p>
+                            <button type="button" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus me-2"></i>Crear Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <i class="fas fa-heartbeat fa-2x text-info mb-3"></i>
+                            <h6 class="card-title">Plan Terapéutico</h6>
+                            <p class="card-text small">Diabetes, hipertensión, dislipidemia</p>
+                            <button type="button" class="btn btn-info btn-sm">
+                                <i class="fas fa-plus me-2"></i>Crear Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diet Plans List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Planes Dietéticos Activos</h5>
+                    <span class="badge bg-secondary">14 planes</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tipo de Plan</th>
+                                    <th>Objetivo</th>
+                                    <th>Calorías/día</th>
+                                    <th>Progreso</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-primary text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Laura Fernández</strong><br>
+                                                <small class="text-muted">PAC005</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Pérdida de Peso</strong><br>
+                                        <small class="text-muted">Plan hipocalórico balanceado</small>
+                                    </td>
+                                    <td>
+                                        <strong>-8 kg</strong><br>
+                                        <small class="text-muted">En 3 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">1,400 kcal</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 60%"></div>
+                                        </div>
+                                        <small class="text-success">-4.8 kg (60%)</small>
+                                    </td>
+                                    <td>
+                                        <small>15 Dic 2024</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Activo</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Menú Semanal">
+                                                <i class="fas fa-calendar-week"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Progreso">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-success text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Miguel Santos</strong><br>
+                                                <small class="text-muted">PAC006</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Plan Deportivo</strong><br>
+                                        <small class="text-muted">Alto rendimiento</small>
+                                    </td>
+                                    <td>
+                                        <strong>Rendimiento</strong><br>
+                                        <small class="text-muted">Mantener masa muscular</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">2,800 kcal</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-info" style="width: 85%"></div>
+                                        </div>
+                                        <small class="text-info">Excelente adherencia</small>
+                                    </td>
+                                    <td>
+                                        <small>20 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Activo</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-running"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Suplementos">
+                                                <i class="fas fa-pills"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Rendimiento">
+                                                <i class="fas fa-trophy"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-danger text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Elena Martínez</strong><br>
+                                                <small class="text-muted">PAC007</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Plan Terapéutico</strong><br>
+                                        <small class="text-muted">Control diabetes tipo 2</small>
+                                    </td>
+                                    <td>
+                                        <strong>Control Glucemia</strong><br>
+                                        <small class="text-muted">HbA1c < 7%</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">1,600 kcal</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-warning" style="width: 45%"></div>
+                                        </div>
+                                        <small class="text-warning">HbA1c: 7.8%</small>
+                                    </td>
+                                    <td>
+                                        <small>10 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">En Ajuste</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" title="Ajustar">
+                                                <i class="fas fa-cogs"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Monitoreo">
+                                                <i class="fas fa-heartbeat"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-warning text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Pedro Jiménez</strong><br>
+                                                <small class="text-muted">PAC008</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Control Dislipidemia</strong><br>
+                                        <small class="text-muted">Bajo en grasas saturadas</small>
+                                    </td>
+                                    <td>
+                                        <strong>Colesterol LDL</strong><br>
+                                        <small class="text-muted">< 100 mg/dL</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">1,800 kcal</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                                        </div>
+                                        <small class="text-success">LDL: 105 mg/dL</small>
+                                    </td>
+                                    <td>
+                                        <small>05 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Activo</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-apple-alt"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Análisis">
+                                                <i class="fas fa-vial"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Seguimiento">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-info text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Rosa Morales</strong><br>
+                                                <small class="text-muted">PAC009</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Aumento de Peso</strong><br>
+                                        <small class="text-muted">Recuperación nutricional</small>
+                                    </td>
+                                    <td>
+                                        <strong>+5 kg</strong><br>
+                                        <small class="text-muted">En 2 meses</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">2,200 kcal</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-info" style="width: 40%"></div>
+                                        </div>
+                                        <small class="text-info">+2 kg (40%)</small>
+                                    </td>
+                                    <td>
+                                        <small>22 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Activo</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-chart-line-up"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Progreso">
+                                                <i class="fas fa-weight"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Ajustar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diet Plan Statistics -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">14</h3>
+                            <small class="text-muted">Planes Activos</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">11</h3>
+                            <small class="text-muted">Con Buena Adherencia</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">3</h3>
+                            <small class="text-muted">Requieren Ajuste</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">1,850</h3>
+                            <small class="text-muted">Kcal Promedio</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

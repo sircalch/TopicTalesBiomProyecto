@@ -40,7 +40,13 @@
                             <div class="col-md-6">
                                 <strong>Médico:</strong><br>
                                 {{ appointment.doctor.get_full_name }}<br>
-                                <small class="text-muted">{{ appointment.doctor.profile.specialty|default:"Medicina General" }}</small>
+                                <small class="text-muted">
+                                    {% if appointment.doctor.profile.specialty %}
+                                        {{ appointment.doctor.profile.specialty }}
+                                    {% else %}
+                                        Medicina General
+                                    {% endif %}
+                                </small>
                             </div>
                         </div>
                         <hr>

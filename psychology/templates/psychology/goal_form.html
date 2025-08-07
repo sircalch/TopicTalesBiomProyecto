@@ -1,0 +1,1469 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Objetivo Psicológico - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        --success-gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        --warning-gradient: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        --danger-gradient: linear-gradient(135deg, #dc3545 0%, #e91e63 100%);
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .form-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 40px 35px;
+        border-radius: 20px;
+        margin-bottom: 35px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+    }
+    
+    .form-header::after {
+        content: '';
+        position: absolute;
+        bottom: -40%;
+        left: -20%;
+        width: 250px;
+        height: 250px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite reverse;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-30px) rotate(15deg); }
+    }
+    
+    .form-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+    
+    .form-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid #e9ecef;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .form-section:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+    
+    .form-section h5 {
+        color: #6f42c1;
+        font-weight: 700;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+    }
+    
+    .form-section h5::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+    }
+    
+    .patient-selector {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .patient-selector:hover {
+        border-color: #6f42c1;
+        box-shadow: 0 4px 15px rgba(111, 66, 193, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .patient-selector.selected {
+        border-color: #6f42c1;
+        background: linear-gradient(135deg, rgba(111, 66, 193, 0.05) 0%, rgba(232, 62, 140, 0.05) 100%);
+        box-shadow: 0 8px 25px rgba(111, 66, 193, 0.15);
+    }
+    
+    .patient-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .patient-avatar {
+        width: 60px;
+        height: 60px;
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.3rem;
+        box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+        flex-shrink: 0;
+    }
+    
+    .patient-details h6 {
+        margin: 0 0 5px 0;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+    
+    .patient-details .patient-meta {
+        color: #6c757d;
+        font-size: 0.9rem;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .search-box {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    
+    .search-box input {
+        border-radius: 50px;
+        border: 2px solid #e9ecef;
+        padding: 15px 55px 15px 25px;
+        transition: all 0.3s ease;
+        background: white;
+        font-size: 1rem;
+    }
+    
+    .search-box input:focus {
+        border-color: #6f42c1;
+        box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.1);
+        background: white;
+    }
+    
+    .search-box .search-icon {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 1.3rem;
+        transition: color 0.3s ease;
+    }
+    
+    .search-box input:focus + .search-icon {
+        color: #6f42c1;
+    }
+    
+    .priority-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .priority-option {
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .priority-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .priority-label {
+        display: block;
+        padding: 15px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .priority-label::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .priority-option:hover .priority-label::before {
+        left: 100%;
+    }
+    
+    .priority-option input[type="radio"]:checked + .priority-label.high {
+        border-color: #dc3545;
+        background: var(--danger-gradient);
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+    
+    .priority-option input[type="radio"]:checked + .priority-label.medium {
+        border-color: #ffc107;
+        background: var(--warning-gradient);
+        color: #212529;
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    }
+    
+    .priority-option input[type="radio"]:checked + .priority-label.low {
+        border-color: #28a745;
+        background: var(--success-gradient);
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .priority-label:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .status-option {
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .status-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .status-label {
+        display: block;
+        padding: 12px 18px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .status-option input[type="radio"]:checked + .status-label {
+        border-color: #6f42c1;
+        background: var(--primary-gradient);
+        color: white;
+        transform: scale(1.02);
+    }
+    
+    .status-label:hover {
+        border-color: #6f42c1;
+        transform: translateY(-1px);
+    }
+    
+    .milestone-builder {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .milestone-item {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #f8f9fa;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .milestone-item:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transform: translateY(-1px);
+    }
+    
+    .milestone-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+    
+    .milestone-title {
+        font-weight: 600;
+        color: #2c3e50;
+        flex-grow: 1;
+    }
+    
+    .remove-milestone-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .remove-milestone-btn:hover {
+        background: #c82333;
+        transform: scale(1.1);
+    }
+    
+    .btn-add-milestone {
+        background: var(--success-gradient);
+        border: none;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .btn-add-milestone:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        color: white;
+    }
+    
+    .form-floating {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .form-floating > .form-control {
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        padding: 20px 15px 8px 15px;
+        height: auto;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .form-floating > .form-control:focus {
+        border-color: #6f42c1;
+        box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.1);
+    }
+    
+    .form-floating > label {
+        padding: 8px 15px;
+        color: #6c757d;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #6f42c1;
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    }
+    
+    .progress-slider-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .progress-slider {
+        margin: 20px 0;
+    }
+    
+    .progress-value-display {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    
+    .form-actions {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e9ecef;
+        position: sticky;
+        bottom: 20px;
+        z-index: 100;
+    }
+    
+    .btn-primary-gradient {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-primary-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-primary-gradient:hover::before {
+        left: 100%;
+    }
+    
+    .btn-primary-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(111, 66, 193, 0.3);
+        color: white;
+    }
+    
+    .preview-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 1px solid #dee2e6;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 25px;
+    }
+    
+    .preview-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .validation-feedback {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 10px;
+        color: #856404;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .validation-feedback.error {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    
+    .validation-feedback.success {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+    
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 25px;
+            margin: 15px;
+        }
+        
+        .form-header {
+            padding: 30px 25px;
+        }
+        
+        .form-section {
+            padding: 20px;
+        }
+        
+        .priority-selector {
+            grid-template-columns: 1fr;
+        }
+        
+        .patient-info {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+        }
+        
+        .patient-meta {
+            justify-content: center;
+        }
+        
+        .form-actions {
+            margin: 0 15px;
+            position: static;
+        }
+    }
+    
+    .animate-slide-in {
+        animation: slideInUp 0.6s ease forwards;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .form-step {
+        opacity: 0;
+        transform: translateX(30px);
+        transition: all 0.4s ease;
+    }
+    
+    .form-step.active {
+        opacity: 1;
+        transform: translateX(0);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="form-header animate-slide-in">
+        <div class="form-icon">
+            <i class="fas fa-bullseye"></i>
+        </div>
+        <h1 class="h1 mb-3 font-weight-bold">
+            {% if form.instance.pk %}Editar Objetivo Psicológico{% else %}Nuevo Objetivo Psicológico{% endif %}
+        </h1>
+        <p class="h5 mb-0 opacity-90">
+            {% if form.instance.pk %}
+                Modifica los detalles del objetivo "{{ form.instance.title }}"
+            {% else %}
+                Crea un objetivo terapéutico personalizado para el paciente
+            {% endif %}
+        </p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" id="goalForm" data-auto-save="true">
+        {% csrf_token %}
+        
+        <!-- Selección de Paciente -->
+        {% if not form.instance.pk %}
+        <div class="form-container form-step" data-step="1">
+            <div class="form-section">
+                <h5>
+                    <i class="fas fa-user-friends"></i>
+                    Seleccionar Paciente
+                </h5>
+                
+                <div class="search-box">
+                    <input type="text" class="form-control" id="patientSearch" 
+                           placeholder="Buscar paciente por nombre, documento o teléfono..." 
+                           autocomplete="off">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                
+                <div id="patientList" class="patient-list">
+                    {% for patient in patients %}
+                    <div class="patient-selector" data-patient-id="{{ patient.id }}">
+                        <div class="patient-info">
+                            <div class="patient-avatar">
+                                {{ patient.first_name.0 }}{{ patient.last_name.0 }}
+                            </div>
+                            <div class="patient-details flex-grow-1">
+                                <h6>{{ patient.get_full_name }}</h6>
+                                <div class="patient-meta">
+                                    <span><i class="fas fa-id-card me-1"></i>{{ patient.identification_number }}</span>
+                                    <span><i class="fas fa-birthday-cake me-1"></i>{{ patient.get_age }} años</span>
+                                    <span><i class="fas fa-phone me-1"></i>{{ patient.phone_number|default:"Sin teléfono" }}</span>
+                                    <span><i class="fas fa-envelope me-1"></i>{{ patient.email|default:"Sin email" }}</span>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="patient" 
+                                       value="{{ patient.id }}" id="patient_{{ patient.id }}">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <input type="hidden" name="patient" id="selectedPatient" required>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Información Básica del Objetivo -->
+        <div class="form-container form-step" data-step="2">
+            <div class="form-section">
+                <h5>
+                    <i class="fas fa-info-circle"></i>
+                    Información Básica
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-floating">
+                            {{ form.title }}
+                            <label for="{{ form.title.id_for_label }}">Título del Objetivo</label>
+                            {% if form.title.errors %}
+                                <div class="validation-feedback error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {{ form.title.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            {{ form.category }}
+                            <label for="{{ form.category.id_for_label }}">Categoría</label>
+                            {% if form.category.errors %}
+                                <div class="validation-feedback error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {{ form.category.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-floating">
+                    {{ form.description }}
+                    <label for="{{ form.description.id_for_label }}">Descripción Detallada</label>
+                    {% if form.description.errors %}
+                        <div class="validation-feedback error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.description.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form.start_date }}
+                            <label for="{{ form.start_date.id_for_label }}">Fecha de Inicio</label>
+                            {% if form.start_date.errors %}
+                                <div class="validation-feedback error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {{ form.start_date.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form.target_date }}
+                            <label for="{{ form.target_date.id_for_label }}">Fecha Objetivo</label>
+                            {% if form.target_date.errors %}
+                                <div class="validation-feedback error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {{ form.target_date.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Prioridad y Estado -->
+            <div class="form-section">
+                <h5>
+                    <i class="fas fa-flag"></i>
+                    Prioridad y Estado
+                </h5>
+                
+                <label class="form-label fw-bold mb-3">Nivel de Prioridad</label>
+                <div class="priority-selector">
+                    <div class="priority-option">
+                        <input type="radio" id="priority_high" name="priority" value="high"
+                               {% if form.priority.value == 'high' %}checked{% endif %}>
+                        <label for="priority_high" class="priority-label high">
+                            <i class="fas fa-exclamation-triangle fa-lg mb-2 d-block"></i>
+                            <strong>Alta Prioridad</strong>
+                            <small class="d-block mt-1">Requiere atención inmediata</small>
+                        </label>
+                    </div>
+                    <div class="priority-option">
+                        <input type="radio" id="priority_medium" name="priority" value="medium"
+                               {% if form.priority.value == 'medium' or not form.priority.value %}checked{% endif %}>
+                        <label for="priority_medium" class="priority-label medium">
+                            <i class="fas fa-minus-circle fa-lg mb-2 d-block"></i>
+                            <strong>Prioridad Media</strong>
+                            <small class="d-block mt-1">Importante pero no urgente</small>
+                        </label>
+                    </div>
+                    <div class="priority-option">
+                        <input type="radio" id="priority_low" name="priority" value="low"
+                               {% if form.priority.value == 'low' %}checked{% endif %}>
+                        <label for="priority_low" class="priority-label low">
+                            <i class="fas fa-check-circle fa-lg mb-2 d-block"></i>
+                            <strong>Baja Prioridad</strong>
+                            <small class="d-block mt-1">Se puede trabajar gradualmente</small>
+                        </label>
+                    </div>
+                </div>
+                
+                <label class="form-label fw-bold mb-3">Estado del Objetivo</label>
+                <div class="status-selector">
+                    <div class="status-option">
+                        <input type="radio" id="status_active" name="status" value="active"
+                               {% if form.status.value == 'active' or not form.status.value %}checked{% endif %}>
+                        <label for="status_active" class="status-label">
+                            <i class="fas fa-play me-2"></i>Activo
+                        </label>
+                    </div>
+                    <div class="status-option">
+                        <input type="radio" id="status_paused" name="status" value="paused"
+                               {% if form.status.value == 'paused' %}checked{% endif %}>
+                        <label for="status_paused" class="status-label">
+                            <i class="fas fa-pause me-2"></i>Pausado
+                        </label>
+                    </div>
+                    <div class="status-option">
+                        <input type="radio" id="status_completed" name="status" value="completed"
+                               {% if form.status.value == 'completed' %}checked{% endif %}>
+                        <label for="status_completed" class="status-label">
+                            <i class="fas fa-check me-2"></i>Completado
+                        </label>
+                    </div>
+                    <div class="status-option">
+                        <input type="radio" id="status_cancelled" name="status" value="cancelled"
+                               {% if form.status.value == 'cancelled' %}checked{% endif %}>
+                        <label for="status_cancelled" class="status-label">
+                            <i class="fas fa-times me-2"></i>Cancelado
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Progreso y Medición -->
+        <div class="form-container form-step" data-step="3">
+            <div class="form-section">
+                <h5>
+                    <i class="fas fa-chart-line"></i>
+                    Progreso y Medición
+                </h5>
+                
+                <div class="progress-slider-container">
+                    <label class="form-label fw-bold mb-3">Progreso Actual</label>
+                    <div class="progress-value-display" id="progressValue">
+                        {{ form.progress_percentage.value|default:"0" }}%
+                    </div>
+                    <input type="range" class="form-range progress-slider" 
+                           name="progress_percentage" id="progress_percentage"
+                           min="0" max="100" value="{{ form.progress_percentage.value|default:'0' }}"
+                           oninput="updateProgressValue(this.value)">
+                    <div class="d-flex justify-content-between text-muted small mt-2">
+                        <span>0% - Sin iniciar</span>
+                        <span>50% - En progreso</span>
+                        <span>100% - Completado</span>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form.measurement_unit }}
+                            <label for="{{ form.measurement_unit.id_for_label }}">Unidad de Medida (Opcional)</label>
+                            {% if form.measurement_unit.errors %}
+                                <div class="validation-feedback error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {{ form.measurement_unit.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form.target_value }}
+                            <label for="{{ form.target_value.id_for_label }}">Valor Objetivo (Opcional)</label>
+                            {% if form.target_value.errors %}
+                                <div class="validation-feedback error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    {{ form.target_value.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estrategias y Notas -->
+        <div class="form-container form-step" data-step="4">
+            <div class="form-section">
+                <h5>
+                    <i class="fas fa-lightbulb"></i>
+                    Estrategias y Recomendaciones
+                </h5>
+                
+                <div class="form-floating">
+                    {{ form.strategies }}
+                    <label for="{{ form.strategies.id_for_label }}">Estrategias a Implementar</label>
+                    {% if form.strategies.errors %}
+                        <div class="validation-feedback error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.strategies.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-floating">
+                    {{ form.success_criteria }}
+                    <label for="{{ form.success_criteria.id_for_label }}">Criterios de Éxito</label>
+                    {% if form.success_criteria.errors %}
+                        <div class="validation-feedback error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.success_criteria.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-floating">
+                    {{ form.notes }}
+                    <label for="{{ form.notes.id_for_label }}">Notas Adicionales</label>
+                    {% if form.notes.errors %}
+                        <div class="validation-feedback error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.notes.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hitos del Objetivo -->
+        <div class="form-container form-step" data-step="5">
+            <div class="form-section">
+                <h5>
+                    <i class="fas fa-flag-checkered"></i>
+                    Hitos y Objetivos Parciales
+                </h5>
+                
+                <div class="milestone-builder">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Definir Hitos del Objetivo</h6>
+                        <button type="button" class="btn-add-milestone" onclick="addMilestone()">
+                            <i class="fas fa-plus"></i>
+                            Agregar Hito
+                        </button>
+                    </div>
+                    
+                    <div id="milestonesContainer">
+                        <!-- Los hitos se agregan dinámicamente aquí -->
+                    </div>
+                    
+                    <div class="text-muted small mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Los hitos te ayudan a dividir el objetivo principal en pasos más pequeños y alcanzables.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vista Previa -->
+        <div class="form-container form-step" data-step="6">
+            <div class="form-section">
+                <h5>
+                    <i class="fas fa-eye"></i>
+                    Vista Previa del Objetivo
+                </h5>
+                
+                <div class="preview-section">
+                    <div class="preview-card" id="goalPreview">
+                        <!-- La vista previa se actualiza dinámicamente -->
+                        <div class="text-muted text-center py-4">
+                            <i class="fas fa-eye fa-2x mb-3"></i>
+                            <p>Complete los campos del formulario para ver la vista previa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botones de Acción -->
+        <div class="form-actions">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'psychology:goal_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-outline-info" onclick="previewGoal()">
+                        <i class="fas fa-eye me-2"></i>Actualizar Vista Previa
+                    </button>
+                    <button type="submit" name="save_draft" class="btn btn-outline-primary">
+                        <i class="fas fa-save me-2"></i>Guardar Borrador
+                    </button>
+                    <button type="submit" class="btn-primary-gradient">
+                        <i class="fas fa-check me-2"></i>
+                        {% if form.instance.pk %}Actualizar Objetivo{% else %}Crear Objetivo{% endif %}
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Indicador de Progreso del Formulario -->
+            <div class="form-progress mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted">Progreso del formulario</small>
+                    <small class="text-muted" id="formProgressText">0% completado</small>
+                </div>
+                <div class="progress" style="height: 4px;">
+                    <div class="progress-bar bg-primary" role="progressbar" 
+                         style="width: 0%" id="formProgressBar"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmSaveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    <i class="fas fa-save text-primary me-2"></i>
+                    Confirmar Guardado
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">¿Está seguro de que desea guardar este objetivo con la información actual?</p>
+                <div class="bg-light p-3 rounded">
+                    <div id="saveConfirmationDetails">
+                        <!-- Detalles del objetivo se mostrarán aquí -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmSaveBtn">
+                    <i class="fas fa-save me-2"></i>Confirmar Guardado
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let milestoneCounter = 0;
+let formData = {};
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    initializeForm();
+    initializePatientSearch();
+    animateFormSteps();
+    updateFormProgress();
+    
+    // Establecer fechas por defecto
+    const today = new Date().toISOString().split('T')[0];
+    if (!document.getElementById('id_start_date').value) {
+        document.getElementById('id_start_date').value = today;
+    }
+    
+    // Auto-actualizar vista previa
+    const formInputs = document.querySelectorAll('#goalForm input, #goalForm textarea, #goalForm select');
+    formInputs.forEach(input => {
+        input.addEventListener('input', debounce(updatePreview, 500));
+        input.addEventListener('change', updateFormProgress);
+    });
+});
+
+// Inicializar formulario
+function initializeForm() {
+    // Aplicar animaciones progresivas a los pasos
+    const steps = document.querySelectorAll('.form-step');
+    steps.forEach((step, index) => {
+        setTimeout(() => {
+            step.classList.add('active');
+        }, index * 200);
+    });
+}
+
+// Búsqueda de pacientes
+function initializePatientSearch() {
+    const searchInput = document.getElementById('patientSearch');
+    const patientSelectors = document.querySelectorAll('.patient-selector');
+    
+    if (!searchInput) return;
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        patientSelectors.forEach(selector => {
+            const patientName = selector.querySelector('h6').textContent.toLowerCase();
+            const patientMeta = selector.querySelector('.patient-meta').textContent.toLowerCase();
+            
+            if (patientName.includes(searchTerm) || patientMeta.includes(searchTerm)) {
+                selector.style.display = 'block';
+                selector.style.animation = 'fadeIn 0.3s ease';
+            } else {
+                selector.style.display = 'none';
+            }
+        });
+    });
+    
+    // Selección de paciente
+    patientSelectors.forEach(selector => {
+        selector.addEventListener('click', function() {
+            // Remover selección previa
+            patientSelectors.forEach(s => s.classList.remove('selected'));
+            
+            // Seleccionar actual
+            this.classList.add('selected');
+            const patientId = this.dataset.patientId;
+            document.getElementById('selectedPatient').value = patientId;
+            
+            // Marcar radio button
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Animación de confirmación
+            this.style.animation = 'pulse 0.6s ease';
+            updateFormProgress();
+        });
+    });
+}
+
+// Actualizar valor de progreso
+function updateProgressValue(value) {
+    document.getElementById('progressValue').textContent = value + '%';
+    
+    // Cambiar color según el progreso
+    const progressDisplay = document.getElementById('progressValue');
+    if (value < 25) {
+        progressDisplay.style.background = 'var(--danger-gradient)';
+    } else if (value < 50) {
+        progressDisplay.style.background = 'var(--warning-gradient)';
+    } else if (value < 75) {
+        progressDisplay.style.background = 'var(--primary-gradient)';
+    } else {
+        progressDisplay.style.background = 'var(--success-gradient)';
+    }
+    
+    updatePreview();
+}
+
+// Agregar hito
+function addMilestone() {
+    milestoneCounter++;
+    const milestoneHtml = `
+        <div class="milestone-item" id="milestone_${milestoneCounter}">
+            <button type="button" class="remove-milestone-btn" onclick="removeMilestone(${milestoneCounter})">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="milestone-header">
+                <div class="milestone-title">Hito #${milestoneCounter}</div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="milestone_title_${milestoneCounter}" 
+                               placeholder="Título del hito" required>
+                        <label>Título del Hito</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" name="milestone_date_${milestoneCounter}">
+                        <label>Fecha Objetivo</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <textarea class="form-control" name="milestone_description_${milestoneCounter}" 
+                          style="height: 80px" placeholder="Descripción del hito"></textarea>
+                <label>Descripción del Hito</label>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="number" class="form-control" name="milestone_target_value_${milestoneCounter}" 
+                               step="0.1" placeholder="Valor objetivo">
+                        <label>Valor Objetivo (Opcional)</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <select class="form-select" name="milestone_priority_${milestoneCounter}">
+                            <option value="low">Baja Prioridad</option>
+                            <option value="medium" selected>Prioridad Media</option>
+                            <option value="high">Alta Prioridad</option>
+                        </select>
+                        <label>Prioridad del Hito</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('milestonesContainer').insertAdjacentHTML('beforeend', milestoneHtml);
+    
+    // Animar entrada del nuevo hito
+    const newMilestone = document.getElementById(`milestone_${milestoneCounter}`);
+    newMilestone.style.animation = 'slideInUp 0.5s ease';
+    
+    updateFormProgress();
+}
+
+// Remover hito
+function removeMilestone(id) {
+    TopicTalesApp.utils.confirm('¿Está seguro de que desea eliminar este hito?', function() {
+        const milestone = document.getElementById(`milestone_${id}`);
+        milestone.style.animation = 'fadeOut 0.3s ease';
+        
+        setTimeout(() => {
+            milestone.remove();
+            updateFormProgress();
+        }, 300);
+    });
+}
+
+// Actualizar vista previa
+function updatePreview() {
+    const title = document.getElementById('id_title').value || 'Título del objetivo';
+    const description = document.getElementById('id_description').value || 'Descripción del objetivo';
+    const priority = document.querySelector('input[name="priority"]:checked')?.value || 'medium';
+    const status = document.querySelector('input[name="status"]:checked')?.value || 'active';
+    const progress = document.getElementById('progress_percentage').value || 0;
+    const startDate = document.getElementById('id_start_date').value || '';
+    const targetDate = document.getElementById('id_target_date').value || '';
+    
+    const priorityLabels = {
+        high: 'Alta Prioridad',
+        medium: 'Prioridad Media', 
+        low: 'Baja Prioridad'
+    };
+    
+    const statusLabels = {
+        active: 'Activo',
+        paused: 'Pausado',
+        completed: 'Completado',
+        cancelled: 'Cancelado'
+    };
+    
+    const previewHtml = `
+        <div class="goal-preview-header d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h5 class="mb-2">${title}</h5>
+                <div class="d-flex gap-3">
+                    <span class="badge bg-primary">${priorityLabels[priority]}</span>
+                    <span class="badge bg-success">${statusLabels[status]}</span>
+                </div>
+            </div>
+            <div class="progress-circle">
+                <div class="h4 mb-0 text-primary">${progress}%</div>
+                <small class="text-muted">Progreso</small>
+            </div>
+        </div>
+        
+        <p class="text-muted mb-3">${description}</p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="preview-meta">
+                    <strong>Fecha de Inicio:</strong>
+                    <div>${startDate ? formatDate(startDate) : 'No definida'}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="preview-meta">
+                    <strong>Fecha Objetivo:</strong>
+                    <div>${targetDate ? formatDate(targetDate) : 'No definida'}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="progress mt-3">
+            <div class="progress-bar bg-primary" style="width: ${progress}%"></div>
+        </div>
+    `;
+    
+    document.getElementById('goalPreview').innerHTML = previewHtml;
+}
+
+// Actualizar progreso del formulario
+function updateFormProgress() {
+    const requiredFields = document.querySelectorAll('#goalForm [required]');
+    const completedFields = Array.from(requiredFields).filter(field => {
+        if (field.type === 'radio') {
+            return document.querySelector(`input[name="${field.name}"]:checked`);
+        }
+        return field.value.trim() !== '';
+    });
+    
+    const progress = Math.round((completedFields.length / requiredFields.length) * 100);
+    
+    document.getElementById('formProgressBar').style.width = progress + '%';
+    document.getElementById('formProgressText').textContent = progress + '% completado';
+    
+    // Cambiar color de la barra según el progreso
+    const progressBar = document.getElementById('formProgressBar');
+    if (progress < 50) {
+        progressBar.className = 'progress-bar bg-danger';
+    } else if (progress < 80) {
+        progressBar.className = 'progress-bar bg-warning';
+    } else {
+        progressBar.className = 'progress-bar bg-success';
+    }
+}
+
+// Vista previa del objetivo
+function previewGoal() {
+    updatePreview();
+    
+    // Scroll suave a la vista previa
+    document.querySelector('[data-step="6"]').scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+    });
+    
+    TopicTalesApp.utils.showToast('Vista previa actualizada', 'success', 2000);
+}
+
+// Animación de pasos del formulario
+function animateFormSteps() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.form-step').forEach(step => {
+        observer.observe(step);
+    });
+}
+
+// Validación del formulario
+document.getElementById('goalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const requiredFields = this.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (field.type === 'radio') {
+            const radioGroup = this.querySelectorAll(`input[name="${field.name}"]`);
+            const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+            if (!isChecked) {
+                isValid = false;
+                showFieldError(field, 'Este campo es obligatorio');
+            }
+        } else if (!field.value.trim()) {
+            isValid = false;
+            showFieldError(field, 'Este campo es obligatorio');
+        } else {
+            hideFieldError(field);
+        }
+    });
+    
+    if (isValid) {
+        showConfirmationModal();
+    } else {
+        TopicTalesApp.utils.showToast('Por favor complete todos los campos requeridos', 'warning');
+        
+        // Scroll al primer campo con error
+        const firstErrorField = this.querySelector('.is-invalid');
+        if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstErrorField.focus();
+        }
+    }
+});
+
+// Mostrar modal de confirmación
+function showConfirmationModal() {
+    const title = document.getElementById('id_title').value;
+    const patient = document.querySelector('.patient-selector.selected h6')?.textContent || 'Paciente seleccionado';
+    const priority = document.querySelector('input[name="priority"]:checked')?.nextElementSibling.querySelector('strong').textContent;
+    
+    const detailsHtml = `
+        <div><strong>Título:</strong> ${title}</div>
+        <div><strong>Paciente:</strong> ${patient}</div>
+        <div><strong>Prioridad:</strong> ${priority}</div>
+        <div><strong>Progreso inicial:</strong> ${document.getElementById('progress_percentage').value}%</div>
+    `;
+    
+    document.getElementById('saveConfirmationDetails').innerHTML = detailsHtml;
+    
+    const modal = new bootstrap.Modal(document.getElementById('confirmSaveModal'));
+    modal.show();
+    
+    document.getElementById('confirmSaveBtn').onclick = function() {
+        modal.hide();
+        submitForm();
+    };
+}
+
+// Enviar formulario
+function submitForm() {
+    TopicTalesApp.utils.showLoading('Guardando objetivo...');
+    
+    // Simular delay para mostrar loading
+    setTimeout(() => {
+        document.getElementById('goalForm').submit();
+    }, 1000);
+}
+
+// Mostrar error de campo
+function showFieldError(field, message) {
+    field.classList.add('is-invalid');
+    
+    let errorDiv = field.parentNode.querySelector('.validation-feedback');
+    if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'validation-feedback error';
+        field.parentNode.appendChild(errorDiv);
+    }
+    
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+}
+
+// Ocultar error de campo
+function hideFieldError(field) {
+    field.classList.remove('is-invalid');
+    const errorDiv = field.parentNode.querySelector('.validation-feedback');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+}
+
+// Formatear fecha
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+// Debounce utility
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Agregar un hito inicial de ejemplo
+setTimeout(() => {
+    if (document.getElementById('milestonesContainer').children.length === 0) {
+        addMilestone();
+    }
+}, 1000);
+</script>
+{% endblock %}

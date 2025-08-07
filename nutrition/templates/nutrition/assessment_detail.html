@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Evaluación Nutricional - {{ assessment.patient.get_full_name }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .patient-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+    
+    .metric-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        height: 100%;
+        border-left: 4px solid #667eea;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .bmi-indicator {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        display: inline-block;
+        margin-top: 10px;
+    }
+    
+    .bmi-normal { background-color: #d4edda; color: #155724; }
+    .bmi-underweight { background-color: #cce5ff; color: #004085; }
+    .bmi-overweight { background-color: #fff3cd; color: #856404; }
+    .bmi-obese { background-color: #f8d7da; color: #721c24; }
+    
+    .section-header {
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .info-row {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+    
+    .related-item {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: transform 0.2s ease;
+    }
+    
+    .related-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header del Paciente -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="patient-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-2">
+                            <i class="fas fa-user-circle me-2"></i>{{ assessment.patient.get_full_name }}
+                        </h1>
+                        <p class="mb-0 opacity-75">
+                            <i class="fas fa-id-card me-2"></i>{{ assessment.patient.identification_number }} |
+                            <i class="fas fa-calendar me-2"></i>Evaluación del {{ assessment.created_at|date:"d/m/Y" }} |
+                            <i class="fas fa-user-md me-2"></i>{{ assessment.nutritionist.get_full_name }}
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <a href="{% url 'nutrition:assessment_edit' assessment.pk %}" class="btn btn-light btn-lg me-2">
+                            <i class="fas fa-edit me-2"></i>Editar
+                        </a>
+                        <a href="{% url 'nutrition:assessment_list' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas Principales -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <i class="fas fa-weight fa-2x text-primary mb-2"></i>
+                <div class="metric-value">{{ assessment.weight }}</div>
+                <small class="text-muted">Peso (kg)</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <i class="fas fa-ruler-vertical fa-2x text-success mb-2"></i>
+                <div class="metric-value">{{ assessment.height }}</div>
+                <small class="text-muted">Altura (cm)</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <i class="fas fa-calculator fa-2x text-warning mb-2"></i>
+                <div class="metric-value">{{ assessment.bmi }}</div>
+                <small class="text-muted">IMC</small>
+                <div>
+                    {% if assessment.get_bmi_category == 'Peso normal' %}
+                        <span class="bmi-indicator bmi-normal">{{ assessment.get_bmi_category }}</span>
+                    {% elif assessment.get_bmi_category == 'Bajo peso' %}
+                        <span class="bmi-indicator bmi-underweight">{{ assessment.get_bmi_category }}</span>
+                    {% elif assessment.get_bmi_category == 'Sobrepeso' %}
+                        <span class="bmi-indicator bmi-overweight">{{ assessment.get_bmi_category }}</span>
+                    {% else %}
+                        <span class="bmi-indicator bmi-obese">{{ assessment.get_bmi_category }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+                <div class="metric-value">{{ assessment.daily_calories }}</div>
+                <small class="text-muted">Calorías/día</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-lg-8">
+            <!-- Medidas Antropométricas -->
+            <div class="detail-card">
+                <div class="section-header">
+                    <h5 class="text-primary mb-0">
+                        <i class="fas fa-ruler-combined me-2"></i>Medidas Antropométricas
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <strong>Peso:</strong> {{ assessment.weight }} kg
+                        </div>
+                        <div class="info-row">
+                            <strong>Altura:</strong> {{ assessment.height }} cm
+                        </div>
+                        {% if assessment.waist_circumference %}
+                        <div class="info-row">
+                            <strong>Circunferencia Cintura:</strong> {{ assessment.waist_circumference }} cm
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {% if assessment.hip_circumference %}
+                        <div class="info-row">
+                            <strong>Circunferencia Cadera:</strong> {{ assessment.hip_circumference }} cm
+                        </div>
+                        {% endif %}
+                        {% if assessment.body_fat_percentage %}
+                        <div class="info-row">
+                            <strong>Grasa Corporal:</strong> {{ assessment.body_fat_percentage }}%
+                        </div>
+                        {% endif %}
+                        {% if assessment.muscle_mass %}
+                        <div class="info-row">
+                            <strong>Masa Muscular:</strong> {{ assessment.muscle_mass }} kg
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if assessment.get_waist_hip_ratio %}
+                <div class="alert alert-info mt-3">
+                    <strong>Relación Cintura-Cadera:</strong> {{ assessment.get_waist_hip_ratio }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Información del Estilo de Vida -->
+            <div class="detail-card">
+                <div class="section-header">
+                    <h5 class="text-primary mb-0">
+                        <i class="fas fa-running me-2"></i>Estilo de Vida y Objetivos
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <strong>Nivel de Actividad:</strong> {{ assessment.get_activity_level_display }}
+                        </div>
+                        <div class="info-row">
+                            <strong>Objetivo Nutricional:</strong> {{ assessment.get_objective_display }}
+                        </div>
+                        <div class="info-row">
+                            <strong>Comidas por Día:</strong> {{ assessment.meals_per_day }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <strong>Consumo de Agua:</strong> {{ assessment.water_intake }} L/día
+                        </div>
+                        {% if assessment.alcohol_consumption %}
+                        <div class="info-row">
+                            <strong>Consumo de Alcohol:</strong> {{ assessment.alcohol_consumption }}
+                        </div>
+                        {% endif %}
+                        <div class="info-row">
+                            <strong>BMR:</strong> {{ assessment.bmr }} kcal
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Antecedentes Médicos -->
+            {% if assessment.allergies or assessment.food_intolerances or assessment.chronic_diseases or assessment.medications %}
+            <div class="detail-card">
+                <div class="section-header">
+                    <h5 class="text-primary mb-0">
+                        <i class="fas fa-notes-medical me-2"></i>Antecedentes Médicos
+                    </h5>
+                </div>
+                {% if assessment.allergies %}
+                <div class="alert alert-warning">
+                    <strong><i class="fas fa-exclamation-triangle me-2"></i>Alergias Alimentarias:</strong>
+                    <p class="mb-0 mt-2">{{ assessment.allergies }}</p>
+                </div>
+                {% endif %}
+                {% if assessment.food_intolerances %}
+                <div class="alert alert-info">
+                    <strong><i class="fas fa-info-circle me-2"></i>Intolerancias Alimentarias:</strong>
+                    <p class="mb-0 mt-2">{{ assessment.food_intolerances }}</p>
+                </div>
+                {% endif %}
+                {% if assessment.chronic_diseases %}
+                <div class="info-row">
+                    <strong>Enfermedades Crónicas:</strong>
+                    <p class="mb-0 mt-1">{{ assessment.chronic_diseases }}</p>
+                </div>
+                {% endif %}
+                {% if assessment.medications %}
+                <div class="info-row">
+                    <strong>Medicamentos Actuales:</strong>
+                    <p class="mb-0 mt-1">{{ assessment.medications }}</p>
+                </div>
+                {% endif %}
+                {% if assessment.supplements %}
+                <div class="info-row">
+                    <strong>Suplementos:</strong>
+                    <p class="mb-0 mt-1">{{ assessment.supplements }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Observaciones -->
+            {% if assessment.notes or assessment.recommendations %}
+            <div class="detail-card">
+                <div class="section-header">
+                    <h5 class="text-primary mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>Observaciones y Recomendaciones
+                    </h5>
+                </div>
+                {% if assessment.notes %}
+                <div class="info-row">
+                    <strong>Notas:</strong>
+                    <p class="mb-0 mt-1">{{ assessment.notes }}</p>
+                </div>
+                {% endif %}
+                {% if assessment.recommendations %}
+                <div class="info-row">
+                    <strong>Recomendaciones:</strong>
+                    <p class="mb-0 mt-1">{{ assessment.recommendations }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Acciones Rápidas -->
+            <div class="detail-card">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'nutrition:diet_plan_create' %}?assessment={{ assessment.pk }}" class="btn btn-success">
+                        <i class="fas fa-utensils me-2"></i>Crear Plan Dietético
+                    </a>
+                    <a href="{% url 'nutrition:consultation_create' %}?patient={{ assessment.patient.pk }}" class="btn btn-info">
+                        <i class="fas fa-stethoscope me-2"></i>Nueva Consulta
+                    </a>
+                    <a href="{% url 'nutrition:goal_create' %}?patient={{ assessment.patient.pk }}" class="btn btn-warning">
+                        <i class="fas fa-bullseye me-2"></i>Crear Meta
+                    </a>
+                </div>
+            </div>
+
+            <!-- Planes Dietéticos -->
+            {% if diet_plans %}
+            <div class="detail-card">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-utensils me-2"></i>Planes Dietéticos ({{ diet_plans.count }})
+                </h5>
+                {% for plan in diet_plans %}
+                <div class="related-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ plan.name }}</h6>
+                            <small class="text-muted">
+                                {{ plan.get_plan_type_display }} - {{ plan.target_calories }} kcal
+                                {% if plan.is_active %}
+                                <span class="badge bg-success ms-2">Activo</span>
+                                {% else %}
+                                <span class="badge bg-secondary ms-2">Inactivo</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                        <a href="{% url 'nutrition:diet_plan_detail' plan.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Consultas de Seguimiento -->
+            {% if consultations %}
+            <div class="detail-card">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-calendar-check me-2"></i>Consultas de Seguimiento ({{ consultations.count }})
+                </h5>
+                {% for consultation in consultations %}
+                <div class="related-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ consultation.get_consultation_type_display }}</h6>
+                            <small class="text-muted">
+                                {{ consultation.consultation_date|date:"d/m/Y" }}
+                                {% if consultation.weight_change %}
+                                - Cambio: {{ consultation.weight_change }}kg
+                                {% endif %}
+                            </small>
+                        </div>
+                        <a href="{% url 'nutrition:consultation_detail' consultation.pk %}" class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Información del Sistema -->
+            <div class="detail-card">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Información del Sistema
+                </h5>
+                <div class="small text-muted">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Creado:</span>
+                        <span>{{ assessment.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Actualizado:</span>
+                        <span>{{ assessment.updated_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Nutricionista:</span>
+                        <span>{{ assessment.nutritionist.get_full_name }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Añadir tooltips a los elementos con título
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

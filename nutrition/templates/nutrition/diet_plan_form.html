@@ -1,0 +1,487 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin: 20px 0 15px 0;
+    }
+    
+    .section-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    .calculator-panel {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .macro-calculator {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .btn-calculate {
+        background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .meal-distribution {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .distribution-slider {
+        margin: 10px 0;
+    }
+    
+    .distribution-result {
+        padding: 8px 12px;
+        background: #e9ecef;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    .macro-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        margin: 5px 0;
+        border-radius: 5px;
+    }
+    
+    .protein-display { background-color: rgba(40, 167, 69, 0.1); }
+    .carbs-display { background-color: rgba(255, 193, 7, 0.1); }
+    .fat-display { background-color: rgba(220, 53, 69, 0.1); }
+    
+    .quick-preset {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .quick-preset:hover {
+        background: #f8f9fa;
+        border-color: #28a745;
+    }
+    
+    .quick-preset.selected {
+        background: #d4edda;
+        border-color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-success">
+                        <i class="fas fa-utensils me-2"></i>{{ title }}
+                    </h1>
+                    <p class="text-muted mb-0">Diseñe un plan nutricional personalizado</p>
+                </div>
+                <a href="{% url 'nutrition:diet_plan_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+            <div class="form-container">
+                <form method="post" id="dietPlanForm">
+                    {% csrf_token %}
+                    {% crispy form %}
+                </form>
+            </div>
+        </div>
+        
+        <!-- Panel de Calculadoras -->
+        <div class="col-lg-4">
+            <!-- Calculadora de Macronutrientes -->
+            <div class="calculator-panel">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-calculator me-2"></i>Calculadora de Macronutrientes
+                </h5>
+                
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="calc_calories" class="form-label">Calorías Totales</label>
+                        <input type="number" class="form-control" id="calc_calories" placeholder="2000" min="0">
+                    </div>
+                </div>
+                
+                <!-- Presets Rápidos -->
+                <div class="mb-3">
+                    <label class="form-label">Presets de Macronutrientes:</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyPreset('balanced', 25, 45, 30)">
+                                <small class="fw-bold">Balanceado</small><br>
+                                <small class="text-muted">P:25% C:45% G:30%</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyPreset('lowcarb', 30, 20, 50)">
+                                <small class="fw-bold">Bajo en Carbs</small><br>
+                                <small class="text-muted">P:30% C:20% G:50%</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyPreset('highprotein', 35, 40, 25)">
+                                <small class="fw-bold">Alto en Proteína</small><br>
+                                <small class="text-muted">P:35% C:40% G:25%</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyPreset('mediterranean', 20, 50, 30)">
+                                <small class="fw-bold">Mediterránea</small><br>
+                                <small class="text-muted">P:20% C:50% G:30%</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Distribución Manual -->
+                <div class="mb-3">
+                    <label for="protein_percent" class="form-label">Proteínas (%)</label>
+                    <input type="range" class="form-range distribution-slider" id="protein_percent" min="10" max="40" value="25" oninput="updateMacros()">
+                    <div id="protein_display" class="distribution-result">25% - 0g</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="carbs_percent" class="form-label">Carbohidratos (%)</label>
+                    <input type="range" class="form-range distribution-slider" id="carbs_percent" min="20" max="60" value="45" oninput="updateMacros()">
+                    <div id="carbs_display" class="distribution-result">45% - 0g</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="fat_percent" class="form-label">Grasas (%)</label>
+                    <input type="range" class="form-range distribution-slider" id="fat_percent" min="15" max="50" value="30" oninput="updateMacros()">
+                    <div id="fat_display" class="distribution-result">30% - 0g</div>
+                </div>
+                
+                <div class="text-center">
+                    <button type="button" class="btn btn-calculate" onclick="applyMacrosToForm()">
+                        <i class="fas fa-arrow-right me-1"></i>Aplicar al Formulario
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Distribución de Comidas -->
+            <div class="calculator-panel">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-clock me-2"></i>Distribución de Comidas
+                </h5>
+                
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="total_meal_calories" class="form-label">Calorías para Distribuir</label>
+                        <input type="number" class="form-control" id="total_meal_calories" placeholder="2000" min="0">
+                    </div>
+                </div>
+                
+                <!-- Presets de Distribución -->
+                <div class="mb-3">
+                    <label class="form-label">Patrones de Distribución:</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyMealDistribution('standard', [25, 10, 35, 10, 20])">
+                                <small class="fw-bold">Estándar</small><br>
+                                <small class="text-muted">25-10-35-10-20%</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyMealDistribution('frequent', [20, 15, 30, 15, 20])">
+                                <small class="fw-bold">Frecuente</small><br>
+                                <small class="text-muted">20-15-30-15-20%</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyMealDistribution('simple', [30, 0, 40, 0, 30])">
+                                <small class="fw-bold">3 Comidas</small><br>
+                                <small class="text-muted">30-0-40-0-30%</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="quick-preset" onclick="applyMealDistribution('athlete', [20, 15, 25, 15, 25])">
+                                <small class="fw-bold">Deportista</small><br>
+                                <small class="text-muted">20-15-25-15-25%</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="meal-distribution">
+                    <div class="macro-display">
+                        <span>Desayuno:</span>
+                        <span id="breakfast_result">0 kcal</span>
+                    </div>
+                    <div class="macro-display">
+                        <span>Col. Matutina:</span>
+                        <span id="morning_snack_result">0 kcal</span>
+                    </div>
+                    <div class="macro-display">
+                        <span>Comida:</span>
+                        <span id="lunch_result">0 kcal</span>
+                    </div>
+                    <div class="macro-display">
+                        <span>Col. Vespertina:</span>
+                        <span id="afternoon_snack_result">0 kcal</span>
+                    </div>
+                    <div class="macro-display">
+                        <span>Cena:</span>
+                        <span id="dinner_result">0 kcal</span>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-calculate" onclick="applyMealsToForm()">
+                        <i class="fas fa-arrow-right me-1"></i>Aplicar Distribución
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Guía de Referencia -->
+            <div class="calculator-panel">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Guía de Referencia
+                </h5>
+                <div class="small">
+                    <div class="mb-2">
+                        <strong>Proteínas:</strong> 4 kcal/g
+                        <div class="text-muted">10-35% del total calórico</div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Carbohidratos:</strong> 4 kcal/g
+                        <div class="text-muted">45-65% del total calórico</div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Grasas:</strong> 9 kcal/g
+                        <div class="text-muted">20-35% del total calórico</div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Fibra:</strong> Recomendada
+                        <div class="text-muted">25-30g por día</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentMealDistribution = [25, 10, 35, 10, 20]; // Porcentajes por defecto
+
+// Auto-sincronizar campos del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const targetCaloriesField = document.querySelector('input[name="target_calories"]');
+    if (targetCaloriesField) {
+        targetCaloriesField.addEventListener('input', function() {
+            document.getElementById('calc_calories').value = this.value;
+            document.getElementById('total_meal_calories').value = this.value;
+            updateMacros();
+            updateMealDistribution();
+        });
+    }
+});
+
+function updateMacros() {
+    const calories = parseFloat(document.getElementById('calc_calories').value) || 0;
+    const proteinPercent = parseInt(document.getElementById('protein_percent').value);
+    const carbsPercent = parseInt(document.getElementById('carbs_percent').value);
+    const fatPercent = parseInt(document.getElementById('fat_percent').value);
+    
+    // Calcular gramos
+    const proteinGrams = Math.round((calories * proteinPercent / 100) / 4);
+    const carbsGrams = Math.round((calories * carbsPercent / 100) / 4);
+    const fatGrams = Math.round((calories * fatPercent / 100) / 9);
+    
+    // Actualizar displays
+    document.getElementById('protein_display').textContent = `${proteinPercent}% - ${proteinGrams}g`;
+    document.getElementById('carbs_display').textContent = `${carbsPercent}% - ${carbsGrams}g`;
+    document.getElementById('fat_display').textContent = `${fatPercent}% - ${fatGrams}g`;
+    
+    // Validar que sume 100%
+    const total = proteinPercent + carbsPercent + fatPercent;
+    if (total !== 100) {
+        // Ajustar automáticamente los porcentajes para que sumen 100%
+        const adjustment = (100 - total) / 3;
+        document.getElementById('protein_percent').value = Math.max(10, Math.min(40, proteinPercent + adjustment));
+        document.getElementById('carbs_percent').value = Math.max(20, Math.min(60, carbsPercent + adjustment));
+        document.getElementById('fat_percent').value = Math.max(15, Math.min(50, fatPercent + adjustment));
+    }
+}
+
+function applyPreset(presetName, protein, carbs, fat) {
+    // Remover selección anterior
+    document.querySelectorAll('.quick-preset').forEach(preset => {
+        preset.classList.remove('selected');
+    });
+    
+    // Seleccionar preset actual
+    event.target.classList.add('selected');
+    
+    // Aplicar valores
+    document.getElementById('protein_percent').value = protein;
+    document.getElementById('carbs_percent').value = carbs;
+    document.getElementById('fat_percent').value = fat;
+    
+    updateMacros();
+}
+
+function applyMacrosToForm() {
+    const calories = parseFloat(document.getElementById('calc_calories').value) || 0;
+    const proteinPercent = parseInt(document.getElementById('protein_percent').value);
+    const carbsPercent = parseInt(document.getElementById('carbs_percent').value);
+    const fatPercent = parseInt(document.getElementById('fat_percent').value);
+    
+    if (calories === 0) {
+        alert('Por favor ingrese las calorías totales primero');
+        return;
+    }
+    
+    // Calcular gramos
+    const proteinGrams = Math.round((calories * proteinPercent / 100) / 4);
+    const carbsGrams = Math.round((calories * carbsPercent / 100) / 4);
+    const fatGrams = Math.round((calories * fatPercent / 100) / 9);
+    
+    // Aplicar al formulario
+    const targetCaloriesField = document.querySelector('input[name="target_calories"]');
+    const proteinField = document.querySelector('input[name="protein_grams"]');
+    const carbsField = document.querySelector('input[name="carbs_grams"]');
+    const fatField = document.querySelector('input[name="fat_grams"]');
+    
+    if (targetCaloriesField) targetCaloriesField.value = calories;
+    if (proteinField) proteinField.value = proteinGrams;
+    if (carbsField) carbsField.value = carbsGrams;
+    if (fatField) fatField.value = fatGrams;
+    
+    alert('¡Macronutrientes aplicados al formulario exitosamente!');
+}
+
+function applyMealDistribution(distributionName, percentages) {
+    // Remover selección anterior
+    document.querySelectorAll('.quick-preset').forEach(preset => {
+        preset.classList.remove('selected');
+    });
+    
+    // Seleccionar preset actual
+    event.target.classList.add('selected');
+    
+    currentMealDistribution = percentages;
+    updateMealDistribution();
+}
+
+function updateMealDistribution() {
+    const totalCalories = parseFloat(document.getElementById('total_meal_calories').value) || 0;
+    
+    const breakfastCals = Math.round(totalCalories * currentMealDistribution[0] / 100);
+    const morningSnackCals = Math.round(totalCalories * currentMealDistribution[1] / 100);
+    const lunchCals = Math.round(totalCalories * currentMealDistribution[2] / 100);
+    const afternoonSnackCals = Math.round(totalCalories * currentMealDistribution[3] / 100);
+    const dinnerCals = Math.round(totalCalories * currentMealDistribution[4] / 100);
+    
+    document.getElementById('breakfast_result').textContent = `${breakfastCals} kcal`;
+    document.getElementById('morning_snack_result').textContent = `${morningSnackCals} kcal`;
+    document.getElementById('lunch_result').textContent = `${lunchCals} kcal`;
+    document.getElementById('afternoon_snack_result').textContent = `${afternoonSnackCals} kcal`;
+    document.getElementById('dinner_result').textContent = `${dinnerCals} kcal`;
+}
+
+function applyMealsToForm() {
+    const totalCalories = parseFloat(document.getElementById('total_meal_calories').value) || 0;
+    
+    if (totalCalories === 0) {
+        alert('Por favor ingrese las calorías totales para distribuir');
+        return;
+    }
+    
+    const breakfastCals = Math.round(totalCalories * currentMealDistribution[0] / 100);
+    const morningSnackCals = Math.round(totalCalories * currentMealDistribution[1] / 100);
+    const lunchCals = Math.round(totalCalories * currentMealDistribution[2] / 100);
+    const afternoonSnackCals = Math.round(totalCalories * currentMealDistribution[3] / 100);
+    const dinnerCals = Math.round(totalCalories * currentMealDistribution[4] / 100);
+    
+    // Aplicar al formulario
+    const breakfastField = document.querySelector('input[name="breakfast_calories"]');
+    const morningSnackField = document.querySelector('input[name="morning_snack_calories"]');
+    const lunchField = document.querySelector('input[name="lunch_calories"]');
+    const afternoonSnackField = document.querySelector('input[name="afternoon_snack_calories"]');
+    const dinnerField = document.querySelector('input[name="dinner_calories"]');
+    
+    if (breakfastField) breakfastField.value = breakfastCals;
+    if (morningSnackField) morningSnackField.value = morningSnackCals;
+    if (lunchField) lunchField.value = lunchCals;
+    if (afternoonSnackField) afternoonSnackField.value = afternoonSnackCals;
+    if (dinnerField) dinnerField.value = dinnerCals;
+    
+    alert('¡Distribución de comidas aplicada al formulario exitosamente!');
+}
+
+// Auto-update cuando cambien las calorías
+document.getElementById('calc_calories').addEventListener('input', updateMacros);
+document.getElementById('total_meal_calories').addEventListener('input', updateMealDistribution);
+</script>
+{% endblock %}

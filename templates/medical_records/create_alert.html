@@ -26,7 +26,7 @@
                         <div class="col-md-8">
                             <strong>Paciente:</strong> {{ patient.get_full_name }}<br>
                             <strong>ID:</strong> {{ patient.patient_id }}<br>
-                            <strong>Edad:</strong> {{ patient.age }} años
+                            <strong>Edad:</strong> {{ patient.get_age }} años
                         </div>
                         <div class="col-md-4 text-end">
                             {% if patient.profile_picture %}

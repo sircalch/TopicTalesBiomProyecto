@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Consulta Nutricional{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-user-md me-2"></i>Nueva Consulta Nutricional</h1>
+                <a href="{% url 'nutrition:consultation_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Consultas
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patient" class="form-label">Paciente</label>
+                                    <select class="form-select" id="patient" name="patient" required>
+                                        <option value="">Seleccionar paciente...</option>
+                                        <!-- Aquí irían los pacientes -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="consultation_date" class="form-label">Fecha de Consulta</label>
+                                    <input type="date" class="form-control" id="consultation_date" name="consultation_date" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="consultation_type" class="form-label">Tipo de Consulta</label>
+                                    <select class="form-select" id="consultation_type" name="consultation_type" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="initial">Consulta Inicial</option>
+                                        <option value="follow_up">Seguimiento</option>
+                                        <option value="control">Control</option>
+                                        <option value="emergency">Urgencia</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="duration" class="form-label">Duración (minutos)</label>
+                                    <input type="number" class="form-control" id="duration" name="duration" 
+                                           placeholder="60" min="15" max="180" value="60">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="current_weight" class="form-label">Peso Actual (kg)</label>
+                                    <input type="number" step="0.1" class="form-control" id="current_weight" name="current_weight" 
+                                           placeholder="70.5" min="20" max="300">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="weight_change" class="form-label">Cambio de Peso (kg)</label>
+                                    <input type="number" step="0.1" class="form-control" id="weight_change" name="weight_change" 
+                                           placeholder="-1.5">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="body_fat_percentage" class="form-label">% Grasa Corporal</label>
+                                    <input type="number" step="0.1" class="form-control" id="body_fat_percentage" name="body_fat_percentage" 
+                                           placeholder="18.5" min="5" max="50">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="muscle_mass" class="form-label">Masa Muscular (kg)</label>
+                                    <input type="number" step="0.1" class="form-control" id="muscle_mass" name="muscle_mass" 
+                                           placeholder="45.2" min="10" max="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="chief_complaint" class="form-label">Motivo de Consulta</label>
+                            <textarea class="form-control" id="chief_complaint" name="chief_complaint" rows="3" 
+                                      placeholder="Razón principal por la cual el paciente acude a consulta..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="dietary_adherence" class="form-label">Adherencia a la Dieta</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-select" id="dietary_adherence" name="dietary_adherence">
+                                        <option value="">Seleccionar nivel...</option>
+                                        <option value="excellent">Excelente (90-100%)</option>
+                                        <option value="good">Buena (70-89%)</option>
+                                        <option value="fair">Regular (50-69%)</option>
+                                        <option value="poor">Pobre (<50%)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Comentarios sobre adherencia..." 
+                                           name="adherence_notes">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="current_symptoms" class="form-label">Síntomas Actuales</label>
+                            <textarea class="form-control" id="current_symptoms" name="current_symptoms" rows="3" 
+                                      placeholder="Síntomas relacionados con la alimentación o estado nutricional..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="dietary_intake_analysis" class="form-label">Análisis de Ingesta Dietética</label>
+                            <textarea class="form-control" id="dietary_intake_analysis" name="dietary_intake_analysis" rows="4" 
+                                      placeholder="Análisis de la alimentación actual del paciente, recordatorio de 24 horas..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="energy_intake" class="form-label">Ingesta Energética Estimada (kcal)</label>
+                                    <input type="number" class="form-control" id="energy_intake" name="energy_intake" 
+                                           placeholder="1800" min="500" max="5000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="water_intake" class="form-label">Consumo de Agua (litros/día)</label>
+                                    <input type="number" step="0.1" class="form-control" id="water_intake" name="water_intake" 
+                                           placeholder="2.5" min="0.5" max="8">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="physical_examination" class="form-label">Examen Físico</label>
+                            <textarea class="form-control" id="physical_examination" name="physical_examination" rows="3" 
+                                      placeholder="Observaciones del examen físico relacionado con el estado nutricional..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="assessment" class="form-label">Evaluación Nutricional</label>
+                            <textarea class="form-control" id="assessment" name="assessment" rows="4" 
+                                      placeholder="Evaluación del estado nutricional y análisis de la situación actual del paciente..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="plan_modifications" class="form-label">Modificaciones al Plan</label>
+                            <textarea class="form-control" id="plan_modifications" name="plan_modifications" rows="4" 
+                                      placeholder="Cambios o ajustes realizados al plan dietético actual..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="recommendations" class="form-label">Recomendaciones</label>
+                            <textarea class="form-control" id="recommendations" name="recommendations" rows="4" 
+                                      placeholder="Recomendaciones específicas para el paciente..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="next_appointment" class="form-label">Próxima Cita</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="date" class="form-control" id="next_appointment" name="next_appointment">
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select" name="follow_up_frequency">
+                                        <option value="">Frecuencia de seguimiento...</option>
+                                        <option value="weekly">Semanal</option>
+                                        <option value="biweekly">Quincenal</option>
+                                        <option value="monthly">Mensual</option>
+                                        <option value="quarterly">Trimestral</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="laboratory_orders" class="form-label">Órdenes de Laboratorio</label>
+                            <textarea class="form-control" id="laboratory_orders" name="laboratory_orders" rows="3" 
+                                      placeholder="Exámenes de laboratorio solicitados..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notas Adicionales</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                      placeholder="Cualquier información adicional relevante..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Consulta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-calculate weight change
+document.addEventListener('DOMContentLoaded', function() {
+    const currentWeightInput = document.getElementById('current_weight');
+    const weightChangeInput = document.getElementById('weight_change');
+    let previousWeight = null;
+    
+    // You would typically get this from the patient's last consultation
+    // For now, we'll store it when the form loads
+    currentWeightInput.addEventListener('focus', function() {
+        if (previousWeight === null) {
+            // Here you would fetch the previous weight from the backend
+            // For demonstration, we'll use a placeholder
+            previousWeight = 72.0; // This should come from the last consultation
+        }
+    });
+    
+    currentWeightInput.addEventListener('input', function() {
+        const currentWeight = parseFloat(currentWeightInput.value);
+        if (currentWeight > 0 && previousWeight !== null) {
+            const change = (currentWeight - previousWeight).toFixed(1);
+            weightChangeInput.value = change;
+        }
+    });
+});
+</script>
+{% endblock %}

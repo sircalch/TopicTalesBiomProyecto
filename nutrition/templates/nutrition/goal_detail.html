@@ -1,0 +1,713 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ goal.title }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .goal-detail-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .goal-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .goal-status {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .status-active { background-color: #d4edda; color: #155724; }
+    .status-completed { background-color: #cce5ff; color: #004085; }
+    .status-paused { background-color: #fff3cd; color: #856404; }
+    .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    
+    .progress-container {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .progress-bar-custom {
+        background: #e9ecef;
+        border-radius: 10px;
+        height: 12px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #28a745;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #28a745;
+        margin-bottom: 5px;
+    }
+    
+    .timeline-section {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -22px;
+        top: 15px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #28a745;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px #28a745;
+    }
+    
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        left: -16px;
+        top: 27px;
+        width: 2px;
+        height: calc(100% + 5px);
+        background: #dee2e6;
+    }
+    
+    .timeline-item:last-child::after {
+        display: none;
+    }
+    
+    .patient-avatar {
+        width: 60px;
+        height: 60px;
+        background: #28a745;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 20px;
+    }
+    
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .milestone-item {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #28a745;
+    }
+    
+    .milestone-completed {
+        border-left-color: #6c757d;
+        opacity: 0.7;
+    }
+    
+    .action-buttons {
+        position: sticky;
+        top: 20px;
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0" style="color: #28a745;">
+                        <i class="fas fa-bullseye me-2"></i>Meta Nutricional
+                    </h1>
+                    <p class="text-muted mb-0">Seguimiento detallado del objetivo nutricional</p>
+                </div>
+                <div class="btn-group">
+                    <a href="{% url 'nutrition:goals_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                    <a href="#" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-2"></i>Actualizar Progreso
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-lg-8">
+            <!-- Header de la Meta -->
+            <div class="goal-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="mb-1">{{ goal.title }}</h4>
+                        <p class="mb-0 opacity-75">{{ goal.description|truncatechars:100 }}</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="goal-status status-{{ goal.status }}">
+                            {{ goal.get_status_display }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progreso General -->
+            <div class="goal-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-chart-line me-2 text-success"></i>Progreso General
+                </h5>
+                
+                <div class="progress-container">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold">Progreso Actual</span>
+                        <span class="fw-bold text-success">{{ goal.progress_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill" style="width: {{ goal.progress_percentage }}%"></div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-4 text-center">
+                            <div class="metric-value">{{ goal.current_value|default:"--" }}</div>
+                            <div class="text-muted">Valor Actual</div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="metric-value">{{ goal.target_value }}</div>
+                            <div class="text-muted">Objetivo</div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="metric-value text-info">{{ goal.remaining_value|default:"--" }}</div>
+                            <div class="text-muted">Restante</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información Detallada -->
+            <div class="goal-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-info-circle me-2 text-success"></i>Detalles de la Meta
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-section">
+                            <div class="info-label">Tipo de Meta</div>
+                            <div>{{ goal.get_goal_type_display }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-section">
+                            <div class="info-label">Prioridad</div>
+                            <div>
+                                {% if goal.priority == 'high' %}
+                                    <span class="badge bg-danger">Alta</span>
+                                {% elif goal.priority == 'medium' %}
+                                    <span class="badge bg-warning">Media</span>
+                                {% else %}
+                                    <span class="badge bg-success">Baja</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-section">
+                            <div class="info-label">Fecha de Inicio</div>
+                            <div>
+                                <i class="fas fa-calendar text-success me-2"></i>
+                                {{ goal.start_date|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-section">
+                            <div class="info-label">Fecha Objetivo</div>
+                            <div>
+                                <i class="fas fa-calendar-check text-success me-2"></i>
+                                {{ goal.target_date|date:"d/m/Y" }}
+                                {% if goal.days_remaining %}
+                                    <small class="text-muted">({{ goal.days_remaining }} días restantes)</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if goal.description %}
+                <div class="info-section">
+                    <div class="info-label">Descripción Completa</div>
+                    <div>{{ goal.description|linebreaks }}</div>
+                </div>
+                {% endif %}
+                
+                {% if goal.measurement_unit %}
+                <div class="info-section">
+                    <div class="info-label">Unidad de Medida</div>
+                    <div>{{ goal.measurement_unit }}</div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Estrategias y Recomendaciones -->
+            {% if goal.strategies or goal.recommendations %}
+            <div class="goal-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-lightbulb me-2 text-success"></i>Estrategias y Recomendaciones
+                </h5>
+                
+                {% if goal.strategies %}
+                <div class="info-section">
+                    <div class="info-label">Estrategias</div>
+                    <div>{{ goal.strategies|linebreaks }}</div>
+                </div>
+                {% endif %}
+                
+                {% if goal.recommendations %}
+                <div class="info-section">
+                    <div class="info-label">Recomendaciones</div>
+                    <div>{{ goal.recommendations|linebreaks }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Historial de Progreso -->
+            {% if progress_history %}
+            <div class="goal-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-history me-2 text-success"></i>Historial de Progreso
+                </h5>
+                
+                <div class="timeline-section">
+                    {% for entry in progress_history %}
+                    <div class="timeline-item">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <strong>{{ entry.date|date:"d/m/Y" }}</strong>
+                            <span class="badge bg-success">{{ entry.value }} {{ goal.measurement_unit|default:"" }}</span>
+                        </div>
+                        {% if entry.notes %}
+                        <div class="text-muted">{{ entry.notes }}</div>
+                        {% endif %}
+                        {% if entry.created_by %}
+                        <small class="text-muted">
+                            <i class="fas fa-user me-1"></i>{{ entry.created_by.get_full_name }}
+                        </small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Hitos y Objetivos Parciales -->
+            {% if goal.milestones.all %}
+            <div class="goal-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-flag-checkered me-2 text-success"></i>Hitos y Objetivos Parciales
+                </h5>
+                
+                {% for milestone in goal.milestones.all %}
+                <div class="milestone-item {% if milestone.is_completed %}milestone-completed{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ milestone.title }}</strong>
+                            <div class="small text-muted mt-1">
+                                <i class="fas fa-calendar me-1"></i>{{ milestone.target_date|date:"d/m/Y" }}
+                                {% if milestone.target_value %}
+                                    <span class="ms-3">
+                                        <i class="fas fa-bullseye me-1"></i>{{ milestone.target_value }} {{ goal.measurement_unit|default:"" }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            {% if milestone.description %}
+                            <div class="small mt-2">{{ milestone.description }}</div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if milestone.is_completed %}
+                                <i class="fas fa-check-circle text-success fa-lg"></i>
+                            {% else %}
+                                <i class="far fa-circle text-muted fa-lg"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Información del Paciente -->
+            <div class="goal-detail-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-user me-2 text-success"></i>Información del Paciente
+                </h6>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <div class="patient-avatar">
+                        {{ goal.patient.first_name.0 }}{{ goal.patient.last_name.0 }}
+                    </div>
+                    <div>
+                        <h6 class="mb-1">{{ goal.patient.get_full_name }}</h6>
+                        <small class="text-muted">{{ goal.patient.identification_number }}</small>
+                    </div>
+                </div>
+                
+                <div class="small">
+                    <div class="mb-2">
+                        <strong>Edad:</strong> {{ goal.patient.get_age }} años
+                    </div>
+                    <div class="mb-2">
+                        <strong>Teléfono:</strong> {{ goal.patient.phone_number|default:"No registrado" }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Email:</strong> {{ goal.patient.email|default:"No registrado" }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Métricas Rápidas -->
+            <div class="row mb-4">
+                <div class="col-6">
+                    <div class="metric-card">
+                        <div class="metric-value">{{ goal.days_active|default:"0" }}</div>
+                        <div class="text-muted small">Días Activo</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="metric-card">
+                        <div class="metric-value">{{ goal.updates_count|default:"0" }}</div>
+                        <div class="text-muted small">Actualizaciones</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Acciones Rápidas -->
+            <div class="action-buttons">
+                <h6 class="mb-3">
+                    <i class="fas fa-tools me-2 text-success"></i>Acciones Rápidas
+                </h6>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success btn-sm" onclick="updateProgress()">
+                        <i class="fas fa-plus me-2"></i>Actualizar Progreso
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="addMilestone()">
+                        <i class="fas fa-flag me-2"></i>Agregar Hito
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="viewChart()">
+                        <i class="fas fa-chart-line me-2"></i>Ver Gráfico
+                    </button>
+                    <hr>
+                    <button class="btn btn-outline-warning btn-sm" onclick="pauseGoal()">
+                        <i class="fas fa-pause me-2"></i>Pausar Meta
+                    </button>
+                    {% if goal.status == 'active' %}
+                    <button class="btn btn-outline-primary btn-sm" onclick="completeGoal()">
+                        <i class="fas fa-check me-2"></i>Marcar Completada
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Metas Relacionadas -->
+            {% if related_goals %}
+            <div class="goal-detail-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-link me-2 text-success"></i>Metas Relacionadas
+                </h6>
+                
+                {% for related_goal in related_goals %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <div class="fw-bold small">{{ related_goal.title|truncatechars:30 }}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">
+                            {{ related_goal.get_status_display }} - {{ related_goal.progress_percentage }}%
+                        </div>
+                    </div>
+                    <a href="{% url 'nutrition:goal_detail' related_goal.pk %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Actualizar Progreso -->
+<div class="modal fade" id="updateProgressModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Actualizar Progreso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="progressForm">
+                    <div class="mb-3">
+                        <label for="progress_value" class="form-label">Valor Actual</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="progress_value" 
+                                   value="{{ goal.current_value|default:'' }}" step="0.1" required>
+                            <span class="input-group-text">{{ goal.measurement_unit|default:"" }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="progress_date" class="form-label">Fecha</label>
+                        <input type="date" class="form-control" id="progress_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="progress_notes" class="form-label">Notas</label>
+                        <textarea class="form-control" id="progress_notes" rows="3" 
+                                  placeholder="Observaciones sobre el progreso..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="saveProgress()">
+                    <i class="fas fa-save me-2"></i>Guardar Progreso
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateProgress() {
+    // Establecer fecha actual
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('progress_date').value = today;
+    
+    const modal = new bootstrap.Modal(document.getElementById('updateProgressModal'));
+    modal.show();
+}
+
+function saveProgress() {
+    const value = document.getElementById('progress_value').value;
+    const date = document.getElementById('progress_date').value;
+    const notes = document.getElementById('progress_notes').value;
+    
+    if (!value || !date) {
+        alert('Por favor complete los campos requeridos');
+        return;
+    }
+    
+    const data = {
+        goal_id: {{ goal.id }},
+        value: parseFloat(value),
+        date: date,
+        notes: notes
+    };
+    
+    fetch('/nutrition/api/update-goal-progress/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al actualizar progreso: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al procesar la solicitud');
+    });
+}
+
+function addMilestone() {
+    // Implementar funcionalidad para agregar hito
+    const title = prompt('Título del hito:');
+    if (title) {
+        const targetDate = prompt('Fecha objetivo (YYYY-MM-DD):');
+        if (targetDate) {
+            // Aquí iría la lógica para crear el hito
+            console.log('Creando hito:', title, targetDate);
+        }
+    }
+}
+
+function viewChart() {
+    // Generar gráfico de progreso de la meta
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Gráfico de Progreso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="progressChart" width="400" height="200"></canvas>
+                    <div class="mt-3">
+                        <p><strong>Resumen del Progreso:</strong></p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <div class="h4 text-success">{{ goal.current_value|default:0 }}</div>
+                                    <small class="text-muted">Valor Actual</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <div class="h4 text-primary">{{ goal.target_value }}</div>
+                                    <small class="text-muted">Meta Objetivo</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <div class="h4 text-info">{{ goal.get_progress_percentage }}%</div>
+                                    <small class="text-muted">Progreso</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+    
+    // Limpiar el modal cuando se cierre
+    modal.addEventListener('hidden.bs.modal', function() {
+        document.body.removeChild(modal);
+    });
+}
+
+function pauseGoal() {
+    if (confirm('¿Está seguro de que desea pausar esta meta?')) {
+        updateGoalStatus('paused');
+    }
+}
+
+function completeGoal() {
+    if (confirm('¿Marcar esta meta como completada?')) {
+        updateGoalStatus('completed');
+    }
+}
+
+function updateGoalStatus(status) {
+    fetch(`/nutrition/api/update-goal-status/{{ goal.id }}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al actualizar el estado: ' + data.error);
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Animación de la barra de progreso
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.querySelector('.progress-fill');
+    if (progressBar) {
+        const targetWidth = progressBar.style.width;
+        progressBar.style.width = '0%';
+        setTimeout(() => {
+            progressBar.style.width = targetWidth;
+        }, 500);
+    }
+});
+</script>
+{% endblock %}

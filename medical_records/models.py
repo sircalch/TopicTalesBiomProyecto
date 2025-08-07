@@ -360,3 +360,92 @@ class MedicalAlert(models.Model):
         verbose_name = "Alerta Médica"
         verbose_name_plural = "Alertas Médicas"
         ordering = ['-created_at']
+
+
+class MedicalRecordTemplate(models.Model):
+    """
+    Templates for medical records to standardize data collection
+    """
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='medical_templates')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_templates')
+    
+    # Template Information
+    name = models.CharField(max_length=200, verbose_name="Nombre de la Plantilla")
+    description = models.TextField(blank=True, verbose_name="Descripción")
+    category = models.CharField(max_length=100, choices=[
+        ('general', 'General'),
+        ('pediatria', 'Pediatría'),
+        ('ginecologia', 'Ginecología'),
+        ('cardiologia', 'Cardiología'),
+        ('neurologia', 'Neurología'),
+        ('dermatologia', 'Dermatología'),
+        ('traumatologia', 'Traumatología'),
+        ('psiquiatria', 'Psiquiatría'),
+        ('oftalmologia', 'Oftalmología'),
+        ('otorrinolaringologia', 'Otorrinolaringología'),
+        ('otra', 'Otra')
+    ], default='general', verbose_name="Categoría")
+    
+    # Template Configuration - JSON field to store field configurations
+    fields_config = models.JSONField(default=dict, verbose_name="Configuración de Campos", help_text="JSON con la configuración de campos incluidos")
+    
+    # Template Sections
+    include_basic_info = models.BooleanField(default=True, verbose_name="Incluir Información Básica")
+    include_vital_signs = models.BooleanField(default=True, verbose_name="Incluir Signos Vitales")
+    include_allergies = models.BooleanField(default=True, verbose_name="Incluir Alergias")
+    include_medications = models.BooleanField(default=True, verbose_name="Incluir Medicamentos")
+    include_family_history = models.BooleanField(default=True, verbose_name="Incluir Historial Familiar")
+    include_social_history = models.BooleanField(default=True, verbose_name="Incluir Historial Social")
+    include_emergency_contact = models.BooleanField(default=True, verbose_name="Incluir Contacto de Emergencia")
+    
+    # Custom Fields (JSON format)
+    custom_fields = models.JSONField(default=list, verbose_name="Campos Personalizados", help_text="Lista de campos personalizados adicionales")
+    
+    # Status
+    is_active = models.BooleanField(default=True, verbose_name="Activa")
+    is_public = models.BooleanField(default=False, verbose_name="Pública", help_text="Disponible para todas las organizaciones")
+    
+    # Usage Statistics
+    usage_count = models.IntegerField(default=0, verbose_name="Veces Utilizada")
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def get_field_list(self):
+        """Return a list of included fields"""
+        fields = []
+        if self.include_basic_info:
+            fields.extend(['Tipo de Sangre', 'Información Básica'])
+        if self.include_vital_signs:
+            fields.append('Signos Vitales')
+        if self.include_allergies:
+            fields.append('Alergias')
+        if self.include_medications:
+            fields.append('Medicamentos Actuales')
+        if self.include_family_history:
+            fields.append('Historial Familiar')
+        if self.include_social_history:
+            fields.append('Historial Social')
+        if self.include_emergency_contact:
+            fields.append('Contacto de Emergencia')
+        
+        # Add custom fields
+        for field in self.custom_fields:
+            fields.append(field.get('name', 'Campo Personalizado'))
+            
+        return fields
+    
+    def increment_usage(self):
+        """Increment usage counter"""
+        self.usage_count += 1
+        self.save(update_fields=['usage_count'])
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_category_display()})"
+    
+    class Meta:
+        verbose_name = "Plantilla de Expediente"
+        verbose_name_plural = "Plantillas de Expedientes"
+        ordering = ['-created_at']
+        unique_together = ['organization', 'name']

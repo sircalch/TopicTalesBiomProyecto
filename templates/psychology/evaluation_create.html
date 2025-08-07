@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Evaluación Psicológica{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-brain me-2"></i>Nueva Evaluación Psicológica</h1>
+                <a href="{% url 'psychology:evaluation_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Evaluaciones
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patient" class="form-label">Paciente</label>
+                                    <select class="form-select" id="patient" name="patient" required>
+                                        <option value="">Seleccionar paciente...</option>
+                                        <!-- Aquí irían los pacientes -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="evaluation_date" class="form-label">Fecha de Evaluación</label>
+                                    <input type="date" class="form-control" id="evaluation_date" name="evaluation_date" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="evaluation_type" class="form-label">Tipo de Evaluación</label>
+                            <select class="form-select" id="evaluation_type" name="evaluation_type" required>
+                                <option value="">Seleccionar tipo...</option>
+                                <option value="initial">Evaluación Inicial</option>
+                                <option value="follow_up">Seguimiento</option>
+                                <option value="discharge">Alta</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notas de la Evaluación</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="6" placeholder="Observaciones y conclusiones de la evaluación..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Evaluación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

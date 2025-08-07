@@ -71,15 +71,56 @@ def sidebar_modules(request):
                 grouped_modules[category] = []
             grouped_modules[category].append(module_data)
         
+        # Add sidebar-specific context variables
+        from patients.models import Patient
+        from appointments.models import Appointment
+        from .models import Notification
+        from django.utils import timezone
+        
+        today = timezone.now().date()
+        
+        # Get real notification counts
+        unread_notifications = Notification.objects.filter(
+            user=request.user,
+            is_read=False,
+            is_dismissed=False
+        ).count()
+        
+        unread_messages = Notification.objects.filter(
+            user=request.user,
+            notification_type='message',
+            is_read=False,
+            is_dismissed=False
+        ).count()
+        
+        sidebar_context = {
+            'total_patients': Patient.objects.filter(organization=organization, is_active=True).count(),
+            'todays_appointments': Appointment.objects.filter(
+                organization=organization,
+                start_datetime__date=today
+            ).count(),
+            'pending_notifications': unread_notifications,
+            'unread_messages': unread_messages,
+        }
+        
         return {
             'sidebar_modules': grouped_modules,
             'user_subscription': subscription,
-            'organization': organization
+            'organization': organization,
+            **sidebar_context
         }
         
     except Exception as e:
         # Log error in production
-        return {'sidebar_modules': [], 'user_subscription': None}
+        print(f"Sidebar context processor error: {e}")
+        return {
+            'sidebar_modules': [], 
+            'user_subscription': None,
+            'total_patients': 0,
+            'todays_appointments': 0,
+            'pending_notifications': 0,
+            'unread_messages': 0,
+        }
 
 
 def subscription_features(request):
@@ -122,4 +163,84 @@ def subscription_features(request):
         return {'subscription_features': features}
         
     except Exception as e:
-        return {'subscription_features': {}}
+        print(f"Subscription features context processor error: {e}")
+        return {
+            'subscription_features': {
+                'max_patients': 100,
+                'current_patients': 0,
+                'plan_display': 'Básico'
+            }
+        }
+
+
+def language_context(request):
+    """Add language context for templates"""
+    # Get language from session or default to Spanish
+    current_language = request.session.get('django_language', 'es')
+    
+    # Define translations (using underscore keys for template compatibility)
+    translations = {
+        'es': {
+            'dashboard': 'Panel de Control',
+            'patients': 'Pacientes',
+            'appointments': 'Citas',
+            'medical_records': 'Expedientes Médicos',
+            'specialties': 'Especialidades',
+            'equipment': 'Equipos',
+            'reports': 'Reportes',
+            'billing': 'Facturación',
+            'settings': 'Configuración',
+            'my_profile': 'Mi Perfil',
+            'logout': 'Cerrar Sesión',
+            'welcome': 'Bienvenido',
+            'new_patient': 'Nuevo Paciente',
+            'new_appointment': 'Nueva Cita',
+            'view_calendar': 'Ver Calendario',
+            'view_patients': 'Ver Pacientes',
+            'refresh': 'Actualizar',
+            'patient_management': 'Gestión de Pacientes',
+            'export': 'Exportar',
+            'excel': 'Excel',
+            'pdf': 'PDF',
+            'csv': 'CSV',
+            'select_language': 'Seleccionar idioma',
+            'patient_management_description': 'Administra y consulta la información de todos los pacientes registrados en el sistema.',
+            'medical_practice_summary': 'Aquí tienes un resumen de tu práctica médica para hoy',
+        },
+        'en': {
+            'dashboard': 'Dashboard',
+            'patients': 'Patients',
+            'appointments': 'Appointments',
+            'medical_records': 'Medical Records',
+            'specialties': 'Specialties',
+            'equipment': 'Equipment',
+            'reports': 'Reports',
+            'billing': 'Billing',
+            'settings': 'Settings',
+            'my_profile': 'My Profile',
+            'logout': 'Logout',
+            'welcome': 'Welcome',
+            'new_patient': 'New Patient',
+            'new_appointment': 'New Appointment',
+            'view_calendar': 'View Calendar',
+            'view_patients': 'View Patients',
+            'refresh': 'Refresh',
+            'patient_management': 'Patient Management',
+            'export': 'Export',
+            'excel': 'Excel',
+            'pdf': 'PDF',
+            'csv': 'CSV',
+            'select_language': 'Select Language',
+            'patient_management_description': 'Manage and consult information for all patients registered in the system.',
+            'medical_practice_summary': 'Here you have a summary of your medical practice for today',
+        }
+    }
+    
+    return {
+        'current_language': current_language,
+        'translations': translations.get(current_language, translations['es']),
+        'available_languages': [
+            {'code': 'es', 'name': 'Español'},
+            {'code': 'en', 'name': 'English'}
+        ]
+    }

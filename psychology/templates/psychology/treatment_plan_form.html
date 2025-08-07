@@ -1,0 +1,819 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Plan de Tratamiento - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .form-section {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 25px;
+        background: #f8f9fa;
+    }
+    
+    .form-section h5 {
+        color: #6f42c1;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .patient-selector {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .patient-selector.selected {
+        border-color: #6f42c1;
+        background: #f8f9fa;
+    }
+    
+    .patient-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .patient-avatar {
+        width: 50px;
+        height: 50px;
+        background: #6f42c1;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+    
+    .objective-builder {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: white;
+    }
+    
+    .objective-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: #f8f9fa;
+        position: relative;
+    }
+    
+    .objective-header {
+        display: flex;
+        justify-content-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .priority-selector {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .priority-option {
+        flex: 1;
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .priority-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .priority-label {
+        display: block;
+        padding: 8px 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .priority-option input[type="radio"]:checked + .priority-label.high {
+        border-color: #dc3545;
+        background: #dc3545;
+        color: white;
+    }
+    
+    .priority-option input[type="radio"]:checked + .priority-label.medium {
+        border-color: #ffc107;
+        background: #ffc107;
+        color: #212529;
+    }
+    
+    .priority-option input[type="radio"]:checked + .priority-label.low {
+        border-color: #28a745;
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn-add-objective {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-add-objective:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+    
+    .intervention-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .intervention-card {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .intervention-card:hover {
+        border-color: #6f42c1;
+        transform: translateY(-2px);
+    }
+    
+    .intervention-card.selected {
+        border-color: #6f42c1;
+        background: #6f42c1;
+        color: white;
+    }
+    
+    .intervention-card input[type="checkbox"] {
+        display: none;
+    }
+    
+    .duration-slider {
+        margin: 20px 0;
+    }
+    
+    .slider-value {
+        background: #6f42c1;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+    
+    .timeline-builder {
+        background: #e8f4fd;
+        border: 1px solid #bee5eb;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    
+    .milestone-item {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #6f42c1;
+    }
+    
+    .form-floating label {
+        color: #6c757d;
+    }
+    
+    .form-floating > .form-control:focus ~ label {
+        color: #6f42c1;
+    }
+    
+    .remove-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="form-header">
+        <h1 class="h2 mb-3">
+            <i class="fas fa-clipboard-list me-3"></i>
+            {% if form.instance.pk %}Editar Plan de Tratamiento{% else %}Nuevo Plan de Tratamiento{% endif %}
+        </h1>
+        <p class="mb-0 opacity-90">
+            {% if form.instance.pk %}
+                Modifica los detalles del plan "{{ form.instance.title }}"
+            {% else %}
+                Crea un plan de tratamiento personalizado para el paciente
+            {% endif %}
+        </p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" id="treatmentPlanForm">
+        {% csrf_token %}
+        
+        <!-- Selección de Paciente -->
+        {% if not form.instance.pk %}
+        <div class="form-container">
+            <div class="form-section">
+                <h5><i class="fas fa-user me-2"></i>Seleccionar Paciente</h5>
+                
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="patientSearch" 
+                           placeholder="Buscar paciente por nombre o documento...">
+                </div>
+                
+                <div id="patientList">
+                    {% for patient in patients %}
+                    <div class="patient-selector" data-patient-id="{{ patient.id }}">
+                        <div class="patient-info">
+                            <div class="patient-avatar">
+                                {{ patient.first_name.0 }}{{ patient.last_name.0 }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ patient.get_full_name }}</h6>
+                                <div class="small text-muted">
+                                    <span class="me-3">{{ patient.identification_number }}</span>
+                                    <span class="me-3">{{ patient.get_age }} años</span>
+                                    <span>{{ patient.phone_number|default:"Sin teléfono" }}</span>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="patient" 
+                                       value="{{ patient.id }}" id="patient_{{ patient.id }}">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <input type="hidden" name="patient" id="selectedPatient" required>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Información Básica del Plan -->
+        <div class="form-container">
+            <div class="form-section">
+                <h5><i class="fas fa-info-circle me-2"></i>Información Básica</h5>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-floating mb-3">
+                            {{ form.title }}
+                            <label for="{{ form.title.id_for_label }}">Título del Plan de Tratamiento</label>
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.status }}
+                            <label for="{{ form.status.id_for_label }}">Estado</label>
+                            {% if form.status.errors %}
+                                <div class="invalid-feedback d-block">{{ form.status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.description }}
+                    <label for="{{ form.description.id_for_label }}">Descripción del Plan</label>
+                    {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.start_date }}
+                            <label for="{{ form.start_date.id_for_label }}">Fecha de Inicio</label>
+                            {% if form.start_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.start_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.duration_weeks }}
+                            <label for="{{ form.duration_weeks.id_for_label }}">Duración (semanas)</label>
+                            {% if form.duration_weeks.errors %}
+                                <div class="invalid-feedback d-block">{{ form.duration_weeks.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            {{ form.sessions_per_week }}
+                            <label for="{{ form.sessions_per_week.id_for_label }}">Sesiones por Semana</label>
+                            {% if form.sessions_per_week.errors %}
+                                <div class="invalid-feedback d-block">{{ form.sessions_per_week.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Diagnóstico y Evaluación -->
+            <div class="form-section">
+                <h5><i class="fas fa-stethoscope me-2"></i>Diagnóstico y Evaluación</h5>
+                
+                <div class="form-floating mb-3">
+                    {{ form.primary_diagnosis }}
+                    <label for="{{ form.primary_diagnosis.id_for_label }}">Diagnóstico Principal</label>
+                    {% if form.primary_diagnosis.errors %}
+                        <div class="invalid-feedback d-block">{{ form.primary_diagnosis.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.secondary_diagnoses }}
+                    <label for="{{ form.secondary_diagnoses.id_for_label }}">Diagnósticos Secundarios</label>
+                    {% if form.secondary_diagnoses.errors %}
+                        <div class="invalid-feedback d-block">{{ form.secondary_diagnoses.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.initial_assessment }}
+                    <label for="{{ form.initial_assessment.id_for_label }}">Evaluación Inicial</label>
+                    {% if form.initial_assessment.errors %}
+                        <div class="invalid-feedback d-block">{{ form.initial_assessment.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Objetivos Terapéuticos -->
+        <div class="form-container">
+            <div class="form-section">
+                <h5><i class="fas fa-bullseye me-2"></i>Objetivos Terapéuticos</h5>
+                
+                <div class="objective-builder">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Objetivos del Tratamiento</h6>
+                        <button type="button" class="btn-add-objective" onclick="addObjective()">
+                            <i class="fas fa-plus me-2"></i>Agregar Objetivo
+                        </button>
+                    </div>
+                    
+                    <div id="objectivesContainer">
+                        <!-- Los objetivos se agregan dinámicamente aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Intervenciones y Técnicas -->
+        <div class="form-container">
+            <div class="form-section">
+                <h5><i class="fas fa-tools me-2"></i>Intervenciones y Técnicas</h5>
+                
+                <div class="form-floating mb-3">
+                    {{ form.therapeutic_approach }}
+                    <label for="{{ form.therapeutic_approach.id_for_label }}">Enfoque Terapéutico Principal</label>
+                    {% if form.therapeutic_approach.errors %}
+                        <div class="invalid-feedback d-block">{{ form.therapeutic_approach.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <label class="form-label">Técnicas e Intervenciones a Utilizar</label>
+                <div class="intervention-selector">
+                    <div class="intervention-card">
+                        <input type="checkbox" name="interventions" value="cbt" id="int_cbt">
+                        <label for="int_cbt">
+                            <i class="fas fa-brain fa-2x mb-2 d-block"></i>
+                            <strong>Terapia Cognitivo-Conductual</strong>
+                        </label>
+                    </div>
+                    <div class="intervention-card">
+                        <input type="checkbox" name="interventions" value="humanistic" id="int_humanistic">
+                        <label for="int_humanistic">
+                            <i class="fas fa-heart fa-2x mb-2 d-block"></i>
+                            <strong>Terapia Humanística</strong>
+                        </label>
+                    </div>
+                    <div class="intervention-card">
+                        <input type="checkbox" name="interventions" value="psychodynamic" id="int_psychodynamic">
+                        <label for="int_psychodynamic">
+                            <i class="fas fa-search fa-2x mb-2 d-block"></i>
+                            <strong>Terapia Psicodinámica</strong>
+                        </label>
+                    </div>
+                    <div class="intervention-card">
+                        <input type="checkbox" name="interventions" value="gestalt" id="int_gestalt">
+                        <label for="int_gestalt">
+                            <i class="fas fa-circle fa-2x mb-2 d-block"></i>
+                            <strong>Terapia Gestalt</strong>
+                        </label>
+                    </div>
+                    <div class="intervention-card">
+                        <input type="checkbox" name="interventions" value="mindfulness" id="int_mindfulness">
+                        <label for="int_mindfulness">
+                            <i class="fas fa-leaf fa-2x mb-2 d-block"></i>
+                            <strong>Mindfulness</strong>
+                        </label>
+                    </div>
+                    <div class="intervention-card">
+                        <input type="checkbox" name="interventions" value="family" id="int_family">
+                        <label for="int_family">
+                            <i class="fas fa-users fa-2x mb-2 d-block"></i>
+                            <strong>Terapia Familiar</strong>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.specific_techniques }}
+                    <label for="{{ form.specific_techniques.id_for_label }}">Técnicas Específicas</label>
+                    {% if form.specific_techniques.errors %}
+                        <div class="invalid-feedback d-block">{{ form.specific_techniques.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cronograma y Hitos -->
+        <div class="form-container">
+            <div class="form-section">
+                <h5><i class="fas fa-calendar-alt me-2"></i>Cronograma y Hitos</h5>
+                
+                <div class="timeline-builder">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Hitos del Tratamiento</h6>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addMilestone()">
+                            <i class="fas fa-plus me-2"></i>Agregar Hito
+                        </button>
+                    </div>
+                    
+                    <div id="milestonesContainer">
+                        <!-- Los hitos se agregan dinámicamente aquí -->
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            {{ form.review_frequency }}
+                            <label for="{{ form.review_frequency.id_for_label }}">Frecuencia de Revisión</label>
+                            {% if form.review_frequency.errors %}
+                                <div class="invalid-feedback d-block">{{ form.review_frequency.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            {{ form.expected_end_date }}
+                            <label for="{{ form.expected_end_date.id_for_label }}">Fecha Esperada de Finalización</label>
+                            {% if form.expected_end_date.errors %}
+                                <div class="invalid-feedback d-block">{{ form.expected_end_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Criterios de Éxito y Evaluación -->
+        <div class="form-container">
+            <div class="form-section">
+                <h5><i class="fas fa-chart-line me-2"></i>Criterios de Éxito</h5>
+                
+                <div class="form-floating mb-3">
+                    {{ form.success_criteria }}
+                    <label for="{{ form.success_criteria.id_for_label }}">Criterios de Éxito</label>
+                    {% if form.success_criteria.errors %}
+                        <div class="invalid-feedback d-block">{{ form.success_criteria.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.evaluation_methods }}
+                    <label for="{{ form.evaluation_methods.id_for_label }}">Métodos de Evaluación</label>
+                    {% if form.evaluation_methods.errors %}
+                        <div class="invalid-feedback d-block">{{ form.evaluation_methods.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-floating mb-3">
+                    {{ form.discharge_criteria }}
+                    <label for="{{ form.discharge_criteria.id_for_label }}">Criterios de Alta</label>
+                    {% if form.discharge_criteria.errors %}
+                        <div class="invalid-feedback d-block">{{ form.discharge_criteria.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botones de Acción -->
+        <div class="form-container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'psychology:treatment_plan_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-info" onclick="previewPlan()">
+                        <i class="fas fa-eye me-2"></i>Vista Previa
+                    </button>
+                    <button type="submit" name="save_draft" class="btn btn-outline-primary">
+                        <i class="fas fa-save me-2"></i>Guardar Borrador
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-2"></i>
+                        {% if form.instance.pk %}Actualizar Plan{% else %}Crear Plan{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let objectiveCounter = 0;
+let milestoneCounter = 0;
+
+// Selección de paciente
+document.addEventListener('DOMContentLoaded', function() {
+    const patientSelectors = document.querySelectorAll('.patient-selector');
+    const patientSearch = document.getElementById('patientSearch');
+    
+    patientSelectors.forEach(selector => {
+        selector.addEventListener('click', function() {
+            // Remover selección previa
+            patientSelectors.forEach(s => s.classList.remove('selected'));
+            
+            // Seleccionar actual
+            this.classList.add('selected');
+            const patientId = this.dataset.patientId;
+            document.getElementById('selectedPatient').value = patientId;
+            
+            // Marcar radio button
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+        });
+    });
+    
+    // Búsqueda de pacientes
+    if (patientSearch) {
+        patientSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            patientSelectors.forEach(selector => {
+                const patientName = selector.querySelector('h6').textContent.toLowerCase();
+                const patientDoc = selector.querySelector('.text-muted span').textContent.toLowerCase();
+                
+                if (patientName.includes(searchTerm) || patientDoc.includes(searchTerm)) {
+                    selector.style.display = 'block';
+                } else {
+                    selector.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Selección de intervenciones
+    const interventionCards = document.querySelectorAll('.intervention-card');
+    interventionCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                this.classList.add('selected');
+            } else {
+                this.classList.remove('selected');
+            }
+        });
+    });
+});
+
+// Agregar objetivo
+function addObjective() {
+    objectiveCounter++;
+    const objectiveHtml = `
+        <div class="objective-item" id="objective_${objectiveCounter}">
+            <button type="button" class="remove-btn" onclick="removeObjective(${objectiveCounter})">×</button>
+            
+            <div class="objective-header">
+                <h6 class="mb-0">Objetivo #${objectiveCounter}</h6>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="objective_title_${objectiveCounter}" 
+                       placeholder="Título del objetivo" required>
+                <label>Título del Objetivo</label>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <textarea class="form-control" name="objective_description_${objectiveCounter}" 
+                          style="height: 80px" placeholder="Descripción detallada"></textarea>
+                <label>Descripción</label>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Prioridad</label>
+                    <div class="priority-selector">
+                        <div class="priority-option">
+                            <input type="radio" name="objective_priority_${objectiveCounter}" 
+                                   value="high" id="obj_${objectiveCounter}_high">
+                            <label for="obj_${objectiveCounter}_high" class="priority-label high">Alta</label>
+                        </div>
+                        <div class="priority-option">
+                            <input type="radio" name="objective_priority_${objectiveCounter}" 
+                                   value="medium" id="obj_${objectiveCounter}_medium" checked>
+                            <label for="obj_${objectiveCounter}_medium" class="priority-label medium">Media</label>
+                        </div>
+                        <div class="priority-option">
+                            <input type="radio" name="objective_priority_${objectiveCounter}" 
+                                   value="low" id="obj_${objectiveCounter}_low">
+                            <label for="obj_${objectiveCounter}_low" class="priority-label low">Baja</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="date" class="form-control" name="objective_target_date_${objectiveCounter}">
+                        <label>Fecha Objetivo</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('objectivesContainer').insertAdjacentHTML('beforeend', objectiveHtml);
+}
+
+function removeObjective(id) {
+    document.getElementById(`objective_${id}`).remove();
+}
+
+// Agregar hito
+function addMilestone() {
+    milestoneCounter++;
+    const milestoneHtml = `
+        <div class="milestone-item" id="milestone_${milestoneCounter}">
+            <button type="button" class="remove-btn" onclick="removeMilestone(${milestoneCounter})">×</button>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" name="milestone_date_${milestoneCounter}" required>
+                        <label>Fecha</label>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="milestone_title_${milestoneCounter}" 
+                               placeholder="Título del hito" required>
+                        <label>Hito/Evaluación</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-floating">
+                <textarea class="form-control" name="milestone_description_${milestoneCounter}" 
+                          style="height: 60px" placeholder="Descripción del hito"></textarea>
+                <label>Descripción</label>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('milestonesContainer').insertAdjacentHTML('beforeend', milestoneHtml);
+}
+
+function removeMilestone(id) {
+    document.getElementById(`milestone_${id}`).remove();
+}
+
+// Vista previa del plan
+function previewPlan() {
+    // Generar vista previa del plan de tratamiento
+    const formData = new FormData(document.getElementById('treatment-plan-form'));
+    const patientName = formData.get('patient_name') || 'Paciente';
+    const diagnosis = formData.get('diagnosis') || 'Sin diagnóstico especificado';
+    const objectives = formData.get('objectives') || 'Sin objetivos especificados';
+    const interventions = formData.get('interventions') || 'Sin intervenciones especificadas';
+    
+    const previewContent = `
+        <div class="preview-content">
+            <h4>Plan de Tratamiento - ${patientName}</h4>
+            <div class="mb-3">
+                <strong>Diagnóstico:</strong><br>
+                ${diagnosis}
+            </div>
+            <div class="mb-3">
+                <strong>Objetivos:</strong><br>
+                ${objectives}
+            </div>
+            <div class="mb-3">
+                <strong>Intervenciones:</strong><br>
+                ${interventions}
+            </div>
+        </div>
+    `;
+    
+    // Mostrar en modal o ventana nueva
+    const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
+    newWindow.document.write(`
+        <html>
+            <head>
+                <title>Vista Previa - Plan de Tratamiento</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            </head>
+            <body class="p-4">
+                ${previewContent}
+                <button class="btn btn-secondary mt-3" onclick="window.close()">Cerrar</button>
+            </body>
+        </html>
+    `);
+}
+
+// Validación del formulario
+document.getElementById('treatmentPlanForm').addEventListener('submit', function(e) {
+    const requiredFields = ['title', 'description', 'start_date'];
+    let isValid = true;
+    
+    requiredFields.forEach(fieldName => {
+        const field = document.querySelector(`[name="${fieldName}"]`);
+        if (!field.value.trim()) {
+            isValid = false;
+            field.classList.add('is-invalid');
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    // Validar que haya al menos un objetivo
+    const objectives = document.querySelectorAll('#objectivesContainer .objective-item');
+    if (objectives.length === 0) {
+        alert('Debe agregar al menos un objetivo terapéutico');
+        isValid = false;
+    }
+    
+    if (!isValid) {
+        e.preventDefault();
+        alert('Por favor complete todos los campos requeridos');
+        return false;
+    }
+});
+
+// Agregar un objetivo inicial
+addObjective();
+addMilestone();
+</script>
+{% endblock %}

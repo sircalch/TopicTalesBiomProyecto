@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nuevo Plan de Tratamiento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-map me-2"></i>Nuevo Plan de Tratamiento</h1>
+                <a href="{% url 'psychology:treatment_plan_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Planes
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="patient" class="form-label">Paciente</label>
+                                    <select class="form-select" id="patient" name="patient" required>
+                                        <option value="">Seleccionar paciente...</option>
+                                        <!-- Aquí irían los pacientes -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="start_date" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre del Plan</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   placeholder="Ej: Tratamiento para Trastorno de Ansiedad" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" 
+                                      placeholder="Descripción general del plan de tratamiento y sus objetivos..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="treatment_type" class="form-label">Tipo de Tratamiento</label>
+                                    <select class="form-select" id="treatment_type" name="treatment_type" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="cognitive_behavioral">Terapia Cognitivo-Conductual</option>
+                                        <option value="psychodynamic">Terapia Psicodinámica</option>
+                                        <option value="humanistic">Terapia Humanística</option>
+                                        <option value="family_systemic">Terapia Familiar Sistémica</option>
+                                        <option value="gestalt">Terapia Gestalt</option>
+                                        <option value="acceptance_commitment">Terapia de Aceptación y Compromiso</option>
+                                        <option value="dialectical_behavioral">Terapia Dialéctico-Conductual</option>
+                                        <option value="other">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="estimated_duration" class="form-label">Duración Estimada (semanas)</label>
+                                    <input type="number" class="form-control" id="estimated_duration" name="estimated_duration" 
+                                           placeholder="12" min="1" max="104">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="session_frequency" class="form-label">Frecuencia de Sesiones</label>
+                                    <select class="form-select" id="session_frequency" name="session_frequency">
+                                        <option value="">Seleccionar frecuencia...</option>
+                                        <option value="weekly">Semanal</option>
+                                        <option value="biweekly">Quincenal</option>
+                                        <option value="monthly">Mensual</option>
+                                        <option value="as_needed">Según necesidad</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label">Prioridad</label>
+                                    <select class="form-select" id="priority" name="priority">
+                                        <option value="medium">Media</option>
+                                        <option value="high">Alta</option>
+                                        <option value="low">Baja</option>
+                                        <option value="urgent">Urgente</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="main_diagnosis" class="form-label">Diagnóstico Principal</label>
+                            <textarea class="form-control" id="main_diagnosis" name="main_diagnosis" rows="3" 
+                                      placeholder="Diagnóstico principal según criterios diagnósticos..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="objectives" class="form-label">Objetivos del Tratamiento</label>
+                            <textarea class="form-control" id="objectives" name="objectives" rows="5" 
+                                      placeholder="Objetivos específicos y medibles del plan de tratamiento..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="intervention_strategies" class="form-label">Estrategias de Intervención</label>
+                            <textarea class="form-control" id="intervention_strategies" name="intervention_strategies" rows="5" 
+                                      placeholder="Técnicas y estrategias terapéuticas a utilizar..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="success_criteria" class="form-label">Criterios de Éxito</label>
+                            <textarea class="form-control" id="success_criteria" name="success_criteria" rows="3" 
+                                      placeholder="Indicadores que determinarán el éxito del tratamiento..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notas Adicionales</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                      placeholder="Cualquier información adicional relevante..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Crear Plan de Tratamiento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

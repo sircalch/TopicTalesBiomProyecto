@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <a href="{% url 'equipment:create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Equipo
+                    </a>
+                    <a href="{% url 'equipment:export' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-download"></i> Exportar
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="search" class="form-label">Buscar</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ request.GET.search }}" placeholder="Nombre, código o marca">
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.category.label_tag }}
+                            {{ form.category }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.status.label_tag }}
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.location.label_tag }}
+                            {{ form.location }}
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" name="maintenance_due" 
+                                       id="maintenance_due" {% if request.GET.maintenance_due %}checked{% endif %}>
+                                <label class="form-check-label" for="maintenance_due">
+                                    Mantenimiento Vencido
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary mt-4">
+                                <i class="fas fa-search"></i> Filtrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista de Equipos -->
+            <div class="card">
+                <div class="card-body">
+                    {% if equipment_list %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}order=asset_tag{% if request.GET.order == 'asset_tag' %}&desc=1{% endif %}">
+                                                Código
+                                                {% if request.GET.order == 'asset_tag' %}
+                                                    <i class="fas fa-sort-{% if request.GET.desc %}down{% else %}up{% endif %}"></i>
+                                                {% endif %}
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}order=name{% if request.GET.order == 'name' %}&desc=1{% endif %}">
+                                                Equipo
+                                                {% if request.GET.order == 'name' %}
+                                                    <i class="fas fa-sort-{% if request.GET.desc %}down{% else %}up{% endif %}"></i>
+                                                {% endif %}
+                                            </a>
+                                        </th>
+                                        <th>Categoría</th>
+                                        <th>Ubicación</th>
+                                        <th>Estado</th>
+                                        <th>Próximo Mantenimiento</th>
+                                        <th>Valor</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for equipment in equipment_list %}
+                                    <tr>
+                                        <td>
+                                            <code>{{ equipment.asset_tag }}</code>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold">
+                                                <a href="{% url 'equipment:detail' equipment.pk %}">
+                                                    {{ equipment.name }}
+                                                </a>
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ equipment.brand }} {{ equipment.model }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ equipment.category.name }}</span>
+                                        </td>
+                                        <td>
+                                            {% if equipment.location %}
+                                                <div>{{ equipment.location.name }}</div>
+                                                <small class="text-muted">{{ equipment.location.room_number }}</small>
+                                            {% else %}
+                                                <span class="text-muted">Sin asignar</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if equipment.status == 'operational' %}success{% elif equipment.status == 'maintenance' %}warning{% elif equipment.status == 'out_of_service' %}danger{% else %}secondary{% endif %}">
+                                                {{ equipment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if equipment.next_maintenance_date %}
+                                                <div>{{ equipment.next_maintenance_date|date:"d/m/Y" }}</div>
+                                                {% if equipment.is_maintenance_overdue %}
+                                                    <small class="text-danger">Vencido ({{ equipment.days_overdue }} días)</small>
+                                                {% elif equipment.days_until_maintenance <= 7 %}
+                                                    <small class="text-warning">{{ equipment.days_until_maintenance }} días</small>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="text-muted">No programado</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if equipment.purchase_price %}
+                                                ${{ equipment.purchase_price|floatformat:2 }}
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'equipment:detail' equipment.pk %}" class="btn btn-outline-primary" title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'equipment:edit' equipment.pk %}" class="btn btn-outline-secondary" title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'equipment:maintenance_record' equipment.pk %}" class="btn btn-outline-warning" title="Mantenimiento">
+                                                    <i class="fas fa-tools"></i>
+                                                </a>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Más opciones">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item" href="{% url 'equipment:usage_log' equipment.pk %}">Registro de Uso</a></li>
+                                                        <li><a class="dropdown-item" href="{% url 'equipment:calibration' equipment.pk %}">Calibración</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item" href="{% url 'equipment:qr_code' equipment.pk %}">Código QR</a></li>
+                                                        <li><a class="dropdown-item" href="{% url 'equipment:duplicate' equipment.pk %}">Duplicar</a></li>
+                                                        {% if equipment.status == 'operational' %}
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item text-warning" href="{% url 'equipment:set_maintenance' equipment.pk %}">Enviar a Mantenimiento</a></li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        {% if equipment_list.has_other_pages %}
+                        <nav aria-label="Paginación de equipos">
+                            <ul class="pagination justify-content-center">
+                                {% if equipment_list.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Primera</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ equipment_list.previous_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        Página {{ equipment_list.number }} de {{ equipment_list.paginator.num_pages }}
+                                    </span>
+                                </li>
+
+                                {% if equipment_list.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ equipment_list.next_page_number }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Siguiente</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ equipment_list.paginator.num_pages }}{% if request.GET %}&{{ request.GET.urlencode }}{% endif %}">Última</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+
+                        <!-- Resumen de la página actual -->
+                        <div class="text-center text-muted mt-3">
+                            Mostrando {{ equipment_list|length }} de {{ equipment_list.paginator.count }} equipos
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-laptop-medical fa-3x text-muted mb-3"></i>
+                            <h5>No se encontraron equipos</h5>
+                            <p class="text-muted">
+                                {% if request.GET %}
+                                    Intenta ajustar los filtros de búsqueda
+                                {% else %}
+                                    Comienza agregando tu primer equipo médico
+                                {% endif %}
+                            </p>
+                            {% if not request.GET %}
+                                <a href="{% url 'equipment:create' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Agregar Equipo
+                                </a>
+                            {% else %}
+                                <a href="{% url 'equipment:list' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-times"></i> Limpiar Filtros
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Acciones en lote -->
+            {% if equipment_list %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6>Acciones en Lote</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'equipment:bulk_actions' %}">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label for="bulk_action" class="form-label">Acción</label>
+                                <select class="form-select" id="bulk_action" name="action">
+                                    <option value="">Seleccionar acción...</option>
+                                    <option value="export_selected">Exportar Seleccionados</option>
+                                    <option value="schedule_maintenance">Programar Mantenimiento</option>
+                                    <option value="change_location">Cambiar Ubicación</option>
+                                    <option value="update_status">Actualizar Estado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">
+                                    Selecciona equipos marcando las casillas de verificación y elige una acción para aplicar a todos los seleccionados.
+                                </small>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-primary w-100" disabled id="bulk-action-btn">
+                                    Aplicar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejo de selección múltiple
+    const selectAllCheckbox = document.getElementById('select-all');
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+    const bulkActionBtn = document.getElementById('bulk-action-btn');
+    const bulkActionSelect = document.getElementById('bulk_action');
+    
+    function updateBulkActionButton() {
+        const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+        const hasAction = bulkActionSelect.value !== '';
+        bulkActionBtn.disabled = checkedBoxes.length === 0 || !hasAction;
+    }
+    
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateBulkActionButton();
+        });
+    }
+    
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkActionButton);
+    });
+    
+    if (bulkActionSelect) {
+        bulkActionSelect.addEventListener('change', updateBulkActionButton);
+    }
+});
+</script>
+{% endblock %}

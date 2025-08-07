@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Historial Clínico - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item active">Historial Clínico</li>
+{% endblock %}
+
+{% block content %}
+<div class="clinical-history-container fade-in">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h2 class="mb-2">
+                <i class="bi bi-clock-history text-primary me-2"></i>
+                Historial Clínico
+            </h2>
+            <p class="text-muted mb-0">
+                Resumen general del historial médico y estadísticas de consultas.
+            </p>
+        </div>
+        <div class="col-lg-4 text-end">
+            <a href="{% url 'medical_records:all_consultations' %}" class="btn btn-primary">
+                <i class="bi bi-list-ul me-2"></i>Ver Todas las Consultas
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Total Expedientes</h6>
+                            <h3 class="mb-0">{{ total_records }}</h3>
+                        </div>
+                        <div class="opacity-75">
+                            <i class="bi bi-file-medical-fill" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-gradient-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Total Consultas</h6>
+                            <h3 class="mb-0">{{ total_consultations }}</h3>
+                        </div>
+                        <div class="opacity-75">
+                            <i class="bi bi-chat-dots-fill" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-gradient-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Este Mes</h6>
+                            <h3 class="mb-0">{{ consultations_this_month }}</h3>
+                        </div>
+                        <div class="opacity-75">
+                            <i class="bi bi-calendar-month-fill" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-gradient-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Médicos Activos</h6>
+                            <h3 class="mb-0">{{ active_doctors|length }}</h3>
+                        </div>
+                        <div class="opacity-75">
+                            <i class="bi bi-person-badge-fill" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Consultations -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="bi bi-clock-history me-2"></i>
+                            Consultas Recientes
+                        </h6>
+                        <a href="{% url 'medical_records:all_consultations' %}" class="btn btn-sm btn-outline-primary">
+                            Ver Todas
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_consultations %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Paciente</th>
+                                    <th>Médico</th>
+                                    <th>Tipo</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consultation in recent_consultations %}
+                                <tr>
+                                    <td>
+                                        <div class="small">
+                                            <div class="fw-medium">{{ consultation.consultation_date|date:"d M Y" }}</div>
+                                            <div class="text-muted">{{ consultation.consultation_date|time:"H:i" }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{% if consultation.patient.profile_picture %}{{ consultation.patient.profile_picture.url }}{% else %}https://via.placeholder.com/32x32/007bff/ffffff?text={{ consultation.patient.first_name|first|upper }}{% endif %}" 
+                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">{{ consultation.patient.get_full_name }}</div>
+                                                <small class="text-muted">{{ consultation.patient.patient_id }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            <div class="fw-medium">{{ consultation.doctor.get_full_name }}</div>
+                                            <div class="text-muted">{{ consultation.doctor.profile.specialty|default:"Médico General" }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ consultation.get_consultation_type_display }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            {{ consultation.diagnosis_primary|truncatechars:50|default:"Sin diagnóstico" }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'medical_records:consultation_detail' consultation.id %}" 
+                                           class="btn btn-sm btn-outline-primary" title="Ver Detalle">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-clock-history" style="font-size: 3rem; color: #6c757d;"></i>
+                        <h6 class="text-muted mt-3">No hay consultas registradas</h6>
+                        <p class="text-muted">Las consultas aparecerán aquí una vez que se registren.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Panel -->
+        <div class="col-lg-4">
+            <!-- Most Active Doctors -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>
+                        Médicos Más Activos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if active_doctors %}
+                    <div class="list-group list-group-flush">
+                        {% for doctor in active_doctors %}
+                        <div class="list-group-item border-0 px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-medium">{{ doctor.doctor__first_name }} {{ doctor.doctor__last_name }}</div>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ doctor.consultation_count }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Sin datos disponibles</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Common Diagnoses -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-clipboard-heart me-2"></i>
+                        Diagnósticos Más Comunes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if common_diagnoses %}
+                    <div class="list-group list-group-flush">
+                        {% for diagnosis in common_diagnoses %}
+                        <div class="list-group-item border-0 px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="small">
+                                    <div class="fw-medium">{{ diagnosis.diagnosis_primary|truncatechars:40 }}</div>
+                                </div>
+                                <span class="badge bg-success rounded-pill">{{ diagnosis.count }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">Sin datos disponibles</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-lightning-charge me-2"></i>
+                        Acciones Rápidas
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'medical_records:create_record' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-file-plus me-2"></i>Nuevo Expediente
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'medical_records:search' %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-search me-2"></i>Buscar Expedientes
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'medical_records:templates' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-file-text me-2"></i>Plantillas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'reports:index' %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-graph-up me-2"></i>Reportes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Auto-refresh statistics every 5 minutes
+    setInterval(function() {
+        // You could implement AJAX refresh here if needed
+        console.log('Auto-refresh: Clinical history statistics could be updated here');
+    }, 300000); // 5 minutes
+});
+</script>
+{% endblock %}

@@ -1,0 +1,632 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plantillas de Expedientes - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item active">Plantillas</li>
+{% endblock %}
+
+{% block content %}
+<div class="templates-container fade-in">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h2 class="mb-2">
+                <i class="bi bi-file-text text-primary me-2"></i>
+                Plantillas de Expedientes Médicos
+            </h2>
+            <p class="text-muted mb-0">
+                Utilice plantillas predefinidas para agilizar la creación de expedientes médicos según la especialidad.
+            </p>
+        </div>
+        <div class="col-lg-4 text-end">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                <i class="bi bi-plus-lg me-2"></i>Nueva Plantilla
+            </button>
+        </div>
+    </div>
+
+    <!-- Templates Grid -->
+    <div class="row">
+        {% for template in templates %}
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="card h-100 template-card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1 fw-bold">{{ template.name }}</h6>
+                            <span class="badge bg-secondary">{{ template.category }}</span>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="previewTemplate({{ template.id }})"><i class="bi bi-eye me-2"></i>Vista Previa</a></li>
+                                {% if template.organization == request.user.profile.organization %}
+                                <li><a class="dropdown-item" href="#" onclick="editTemplate({{ template.id }})"><i class="bi bi-pencil me-2"></i>Editar</a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="#" onclick="duplicateTemplate({{ template.id }})"><i class="bi bi-files me-2"></i>Duplicar</a></li>
+                                {% if template.organization == request.user.profile.organization %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteTemplate({{ template.id }}, '{{ template.name }}')"><i class="bi bi-trash me-2"></i>Eliminar</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">{{ template.description }}</p>
+                    
+                    <h6 class="mb-2">Campos Incluidos:</h6>
+                    <div class="mb-3">
+                        {% for field in template.get_field_list %}
+                        <span class="badge bg-light text-dark me-1 mb-1">{{ field }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="small text-muted">
+                        <div><i class="bi bi-calendar me-1"></i>Creada: {{ template.created_at|date:"d M Y" }}</div>
+                        <div><i class="bi bi-bar-chart me-1"></i>Usada: {{ template.usage_count }} veces</div>
+                        {% if template.is_public %}
+                        <div><i class="bi bi-globe me-1"></i>Plantilla pública</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm flex-fill" onclick="useTemplate({{ template.id }})">
+                            <i class="bi bi-check-lg me-1"></i>Usar Plantilla
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" title="Vista Previa" onclick="previewTemplate({{ template.id }})">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-file-text" style="font-size: 4rem; color: #6c757d;"></i>
+                <h5 class="text-muted mt-3">No hay plantillas disponibles</h5>
+                <p class="text-muted">Cree su primera plantilla para comenzar.</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                    <i class="bi bi-plus-lg me-1"></i>Crear Primera Plantilla
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Template Categories -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-grid me-2"></i>
+                        Plantillas por Categoría
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6 class="text-primary">
+                                <i class="bi bi-heart me-1"></i>General
+                            </h6>
+                            <ul class="list-unstyled small">
+                                <li><i class="bi bi-dot"></i> Consulta General</li>
+                                <li><i class="bi bi-dot"></i> Examen Físico Completo</li>
+                                <li><i class="bi bi-dot"></i> Historia Clínica Básica</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-success">
+                                <i class="bi bi-person-heart me-1"></i>Pediatría
+                            </h6>
+                            <ul class="list-unstyled small">
+                                <li><i class="bi bi-dot"></i> Control Pediátrico</li>
+                                <li><i class="bi bi-dot"></i> Vacunación</li>
+                                <li><i class="bi bi-dot"></i> Desarrollo Infantil</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-info">
+                                <i class="bi bi-gender-female me-1"></i>Ginecología
+                            </h6>
+                            <ul class="list-unstyled small">
+                                <li><i class="bi bi-dot"></i> Control Prenatal</li>
+                                <li><i class="bi bi-dot"></i> Consulta Ginecológica</li>
+                                <li><i class="bi bi-dot"></i> Planificación Familiar</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-warning">
+                                <i class="bi bi-heart-pulse me-1"></i>Cardiología
+                            </h6>
+                            <ul class="list-unstyled small">
+                                <li><i class="bi bi-dot"></i> Evaluación Cardiológica</li>
+                                <li><i class="bi bi-dot"></i> Control de Hipertensión</li>
+                                <li><i class="bi bi-dot"></i> Riesgo Cardiovascular</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Template Modal -->
+<div class="modal fade" id="createTemplateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-lg me-2"></i>Crear Nueva Plantilla
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="templateForm">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Nombre de la Plantilla *</label>
+                            <input type="text" class="form-control" name="name" placeholder="Ej: Consulta Cardiológica" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Categoría *</label>
+                            <select class="form-select" name="category" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="general">General</option>
+                                <option value="pediatria">Pediatría</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="cardiologia">Cardiología</option>
+                                <option value="neurologia">Neurología</option>
+                                <option value="dermatologia">Dermatología</option>
+                                <option value="traumatologia">Traumatología</option>
+                                <option value="psiquiatria">Psiquiatría</option>
+                                <option value="oftalmologia">Oftalmología</option>
+                                <option value="otorrinolaringologia">Otorrinolaringología</option>
+                                <option value="otra">Otra</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" name="description" rows="2" placeholder="Breve descripción de la plantilla"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Secciones a Incluir</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_basic_info" id="include_basic_info" checked>
+                                    <label class="form-check-label" for="include_basic_info">Información Básica</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_vital_signs" id="include_vital_signs">
+                                    <label class="form-check-label" for="include_vital_signs">Signos Vitales</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_allergies" id="include_allergies" checked>
+                                    <label class="form-check-label" for="include_allergies">Alergias</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_medications" id="include_medications">
+                                    <label class="form-check-label" for="include_medications">Medicamentos Actuales</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_family_history" id="include_family_history">
+                                    <label class="form-check-label" for="include_family_history">Historial Familiar</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_social_history" id="include_social_history">
+                                    <label class="form-check-label" for="include_social_history">Historial Social</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_emergency_contact" id="include_emergency_contact">
+                                    <label class="form-check-label" for="include_emergency_contact">Contacto de Emergencia</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="is_public" id="is_public">
+                                    <label class="form-check-label" for="is_public">Plantilla Pública</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveTemplate()">
+                    <i class="bi bi-check-lg me-1"></i>Crear Plantilla
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-eye me-2"></i>Vista Previa de Plantilla
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContent">
+                    <!-- Content loaded via AJAX -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Template Modal -->
+<div class="modal fade" id="editTemplateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil me-2"></i>Editar Plantilla
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTemplateForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="editTemplateId" name="template_id">
+                    
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Nombre de la Plantilla *</label>
+                            <input type="text" class="form-control" id="edit_name" name="name" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Categoría *</label>
+                            <select class="form-select" id="edit_category" name="category" required>
+                                <option value="general">General</option>
+                                <option value="pediatria">Pediatría</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="cardiologia">Cardiología</option>
+                                <option value="neurologia">Neurología</option>
+                                <option value="dermatologia">Dermatología</option>
+                                <option value="otra">Otra</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Secciones a Incluir</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_include_basic_info" name="include_basic_info">
+                                    <label class="form-check-label" for="edit_include_basic_info">Información Básica</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_include_vital_signs" name="include_vital_signs">
+                                    <label class="form-check-label" for="edit_include_vital_signs">Signos Vitales</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_include_allergies" name="include_allergies">
+                                    <label class="form-check-label" for="edit_include_allergies">Alergias</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_include_medications" name="include_medications">
+                                    <label class="form-check-label" for="edit_include_medications">Medicamentos</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_include_family_history" name="include_family_history">
+                                    <label class="form-check-label" for="edit_include_family_history">Historial Familiar</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_include_social_history" name="include_social_history">
+                                    <label class="form-check-label" for="edit_include_social_history">Historial Social</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_include_emergency_contact" name="include_emergency_contact">
+                                    <label class="form-check-label" for="edit_include_emergency_contact">Contacto de Emergencia</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_is_public" name="is_public">
+                                    <label class="form-check-label" for="edit_is_public">Plantilla Pública</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="updateTemplate()">
+                    <i class="bi bi-check-lg me-1"></i>Actualizar Plantilla
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function useTemplate(templateId) {
+    // Redirect to use template
+    window.location.href = "{% url 'medical_records:use_template' 0 %}".replace('0', templateId);
+}
+
+function previewTemplate(templateId) {
+    // Show loading
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    document.getElementById('previewContent').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Cargando vista previa...</p></div>';
+    modal.show();
+    
+    // Fetch template details
+    fetch("{% url 'medical_records:template_detail' 0 %}".replace('0', templateId))
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayTemplatePreview(data.template);
+            } else {
+                document.getElementById('previewContent').innerHTML = '<div class="alert alert-danger">Error: ' + data.error + '</div>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('previewContent').innerHTML = '<div class="alert alert-danger">Error al cargar la vista previa</div>';
+        });
+}
+
+function displayTemplatePreview(template) {
+    const sectionsHtml = Object.entries(template.sections)
+        .filter(([key, value]) => value)
+        .map(([key, value]) => {
+            const labels = {
+                'basic_info': 'Información Básica',
+                'vital_signs': 'Signos Vitales',
+                'allergies': 'Alergias',
+                'medications': 'Medicamentos',
+                'family_history': 'Historial Familiar',
+                'social_history': 'Historial Social',
+                'emergency_contact': 'Contacto de Emergencia'
+            };
+            return `<span class="badge bg-primary me-1 mb-1">${labels[key] || key}</span>`;
+        }).join('');
+    
+    const customFieldsHtml = template.custom_fields && template.custom_fields.length > 0 
+        ? template.custom_fields.map(field => `<span class="badge bg-success me-1 mb-1">${field.name}</span>`).join('')
+        : '';
+    
+    const html = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6><i class="bi bi-info-circle me-2"></i>Información General</h6>
+                <table class="table table-borderless table-sm">
+                    <tr><td><strong>Nombre:</strong></td><td>${template.name}</td></tr>
+                    <tr><td><strong>Categoría:</strong></td><td>${template.category}</td></tr>
+                    <tr><td><strong>Descripción:</strong></td><td>${template.description || 'Sin descripción'}</td></tr>
+                    <tr><td><strong>Creada por:</strong></td><td>${template.created_by}</td></tr>
+                    <tr><td><strong>Fecha:</strong></td><td>${template.created_at}</td></tr>
+                    <tr><td><strong>Usos:</strong></td><td>${template.usage_count} veces</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6><i class="bi bi-list-check me-2"></i>Secciones Incluidas</h6>
+                <div class="mb-3">${sectionsHtml}</div>
+                ${template.custom_fields && template.custom_fields.length > 0 ? 
+                    '<h6><i class="bi bi-plus-circle me-2"></i>Campos Personalizados</h6><div class="mb-3">' + customFieldsHtml + '</div>' : ''}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('previewContent').innerHTML = html;
+}
+
+function editTemplate(templateId) {
+    // Show edit modal with template data
+    const modal = new bootstrap.Modal(document.getElementById('editTemplateModal'));
+    
+    // Load template data
+    fetch("{% url 'medical_records:edit_template' 0 %}".replace('0', templateId))
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                populateEditForm(data.template);
+                document.getElementById('editTemplateId').value = templateId;
+                modal.show();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error al cargar los datos de la plantilla');
+        });
+}
+
+function populateEditForm(template) {
+    document.getElementById('edit_name').value = template.name;
+    document.getElementById('edit_description').value = template.description;
+    document.getElementById('edit_category').value = template.category;
+    document.getElementById('edit_include_basic_info').checked = template.include_basic_info;
+    document.getElementById('edit_include_vital_signs').checked = template.include_vital_signs;
+    document.getElementById('edit_include_allergies').checked = template.include_allergies;
+    document.getElementById('edit_include_medications').checked = template.include_medications;
+    document.getElementById('edit_include_family_history').checked = template.include_family_history;
+    document.getElementById('edit_include_social_history').checked = template.include_social_history;
+    document.getElementById('edit_include_emergency_contact').checked = template.include_emergency_contact;
+    document.getElementById('edit_is_public').checked = template.is_public;
+}
+
+function duplicateTemplate(templateId) {
+    if (confirm('¿Está seguro que desea duplicar esta plantilla?')) {
+        fetch("{% url 'medical_records:duplicate_template' 0 %}".replace('0', templateId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error al duplicar la plantilla');
+        });
+    }
+}
+
+function deleteTemplate(templateId, templateName) {
+    if (confirm(`¿Está seguro que desea eliminar la plantilla "${templateName}"? Esta acción no se puede deshacer.`)) {
+        fetch("{% url 'medical_records:delete_template' 0 %}".replace('0', templateId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error al eliminar la plantilla');
+        });
+    }
+}
+
+function saveTemplate() {
+    const form = document.getElementById('templateForm');
+    const formData = new FormData(form);
+    
+    // Validate required fields
+    if (!formData.get('name') || !formData.get('category')) {
+        alert('Por favor complete los campos requeridos');
+        return;
+    }
+    
+    // Submit form
+    fetch("{% url 'medical_records:create_template' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createTemplateModal'));
+            modal.hide();
+            form.reset();
+            location.reload();
+        } else {
+            if (data.errors) {
+                let errorMsg = 'Errores encontrados:\n';
+                for (const [field, error] of Object.entries(data.errors)) {
+                    errorMsg += `- ${error}\n`;
+                }
+                alert(errorMsg);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        }
+    })
+    .catch(error => {
+        alert('Error al crear la plantilla');
+    });
+}
+
+function updateTemplate() {
+    const templateId = document.getElementById('editTemplateId').value;
+    const form = document.getElementById('editTemplateForm');
+    const formData = new FormData(form);
+    
+    fetch("{% url 'medical_records:edit_template' 0 %}".replace('0', templateId), {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editTemplateModal'));
+            modal.hide();
+            location.reload();
+        } else {
+            if (data.errors) {
+                let errorMsg = 'Errores encontrados:\n';
+                for (const [field, error] of Object.entries(data.errors)) {
+                    errorMsg += `- ${error}\n`;
+                }
+                alert(errorMsg);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        }
+    })
+    .catch(error => {
+        alert('Error al actualizar la plantilla');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to template cards
+    const templateCards = document.querySelectorAll('.template-card');
+    templateCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+        });
+    });
+});
+</script>
+
+<style>
+.template-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.template-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}

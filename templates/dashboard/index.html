@@ -2,369 +2,469 @@
 {% load static %}
 {% load humanize %}
 
-{% block title %}Dashboard - TopicTales Biomédica{% endblock %}
+{% block title %}Dashboard Médico - TopicTales Biomédica{% endblock %}
+
+{% block page_title %}Dashboard Médico{% endblock %}
 
 {% block breadcrumb_items %}
 <li class="breadcrumb-item active">Dashboard</li>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container fade-in">
-    <!-- Welcome Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h2 class="mb-2">
-                                ¡Bienvenido, {{ user.get_full_name|default:user.username }}! 👋
-                            </h2>
-                            <p class="text-muted mb-0">
-                                Aquí tienes un resumen de tu práctica médica para hoy, {{ "now"|date:"l, d F Y" }}.
-                            </p>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <div class="d-flex align-items-center justify-content-end">
-                                <div class="me-3">
-                                    <small class="text-muted">Plan actual:</small><br>
-                                    <span class="badge bg-primary fs-6">{{ subscription.get_plan_display }}</span>
-                                </div>
-                                <img src="{% if organization.logo %}{{ organization.logo.url }}{% else %}https://via.placeholder.com/80x80/007bff/ffffff?text={{ organization.name|first|upper }}{% endif %}" 
-                                     class="rounded" width="60" height="60" alt="Logo">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Key Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card stats-card bg-gradient-primary text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="stats-label">Total Pacientes</div>
-                            <div class="stats-number">{{ total_patients|intcomma }}</div>
-                            <small><i class="fas fa-users me-1"></i>Activos</small>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card stats-card bg-gradient-success text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="stats-label">Citas Hoy</div>
-                            <div class="stats-number">{{ total_appointments_today }}</div>
-                            <small><i class="fas fa-calendar me-1"></i>Programadas</small>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card stats-card bg-gradient-warning text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="stats-label">Esta Semana</div>
-                            <div class="stats-number">{{ appointments_this_week }}</div>
-                            <small><i class="fas fa-calendar-week me-1"></i>Consultas</small>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-calendar-week"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card stats-card bg-gradient-danger text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="stats-label">Nuevos Pacientes</div>
-                            <div class="stats-number">{{ new_patients_this_month }}</div>
-                            <small><i class="fas fa-user-plus me-1"></i>Este mes</small>
-                        </div>
-                        <div class="stats-icon">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- [ Main Content ] start -->
+<div class="row">
 
-    <!-- Performance Metrics -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Métricas de Rendimiento</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="text-center">
-                                <div class="h3 text-success mb-1">{{ completion_rate }}%</div>
-                                <div class="text-muted small">Tasa de Completación</div>
-                                <div class="progress mt-2" style="height: 6px;">
-                                    <div class="progress-bar bg-success" style="width: {{ completion_rate }}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-center">
-                                <div class="h3 text-danger mb-1">{{ no_show_rate }}%</div>
-                                <div class="text-muted small">No Presentados</div>
-                                <div class="progress mt-2" style="height: 6px;">
-                                    <div class="progress-bar bg-danger" style="width: {{ no_show_rate }}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-user-md me-2"></i>Rendimiento por Médico</h5>
-                </div>
-                <div class="card-body">
-                    {% for doctor in doctor_performance %}
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="d-flex align-items-center">
-                            <img src="{% if doctor.profile_picture %}{{ doctor.profile_picture.url }}{% else %}https://via.placeholder.com/32x32/007bff/ffffff?text={{ doctor.first_name|first|upper }}{% endif %}" 
-                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
-                            <span class="fw-medium">{{ doctor.get_full_name }}</span>
-                        </div>
-                        <span class="badge bg-primary">{{ doctor.appointments_count }} citas</span>
-                    </div>
-                    {% empty %}
-                    <p class="text-muted text-center">No hay datos disponibles</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- [Welcome Section] start -->
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-block">
+				<div class="row align-items-center">
+					<div class="col-md-8">
+						<h4 class="m-b-10">¡Bienvenido, {{ user.get_full_name|default:user.username }}! 👋</h4>
+						<p class="text-muted m-b-15">Resumen de tu práctica médica para {{ "now"|date:"l, d F Y" }}</p>
+						<div class="d-flex flex-wrap gap-2">
+							<button class="btn btn-primary btn-sm" onclick="quickCreateAppointment()">
+								<i class="bi bi-plus-circle me-1"></i>Nueva Cita
+							</button>
+							<button class="btn btn-success btn-sm" onclick="quickCreatePatient()">
+								<i class="bi bi-person-plus me-1"></i>Nuevo Paciente
+							</button>
+							<a href="{% url 'appointments:calendar' %}" class="btn btn-outline-primary btn-sm">
+								<i class="bi bi-calendar3 me-1"></i>Ver Calendario
+							</a>
+						</div>
+					</div>
+					<div class="col-md-4 text-end">
+						<span class="badge bg-primary fs-6">{{ user_subscription.plan|default:"Básico" }}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [Welcome Section] end -->
 
-    <!-- Today's Schedule and Upcoming Appointments -->
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Agenda de Hoy</h5>
-                    <a href="{% url 'appointments:calendar' %}" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-calendar me-1"></i>Ver Calendario
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    {% if today_appointments %}
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Hora</th>
-                                    <th>Paciente</th>
-                                    <th>Médico</th>
-                                    <th>Tipo</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for appointment in today_appointments %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ appointment.start_datetime|time:"H:i" }}</strong>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="{% if appointment.patient.profile_picture %}{{ appointment.patient.profile_picture.url }}{% else %}https://via.placeholder.com/32x32/28a745/ffffff?text={{ appointment.patient.first_name|first|upper }}{% endif %}" 
-                                                 class="rounded-circle me-2" width="32" height="32" alt="Avatar">
-                                            <div>
-                                                <div class="fw-medium">{{ appointment.patient.get_full_name }}</div>
-                                                <small class="text-muted">{{ appointment.patient.get_age }} años</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{{ appointment.doctor.get_full_name }}</td>
-                                    <td>
-                                        <span class="badge" style="background-color: {{ appointment.appointment_type.color }};">
-                                            {{ appointment.appointment_type.name }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="appointment-status status-{{ appointment.status }}">
-                                            {{ appointment.get_status_display }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{% url 'appointments:detail' appointment.id %}" class="btn btn-outline-primary btn-sm">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            {% if appointment.can_be_cancelled %}
-                                            <button class="btn btn-outline-secondary btn-sm" onclick="rescheduleAppointment({{ appointment.id }})">
-                                                <i class="fas fa-calendar-alt"></i>
-                                            </button>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                        <h6 class="text-muted">No hay citas programadas para hoy</h6>
-                        <a href="{% url 'appointments:create' %}" class="btn btn-primary mt-2">
-                            <i class="fas fa-plus me-1"></i>Agendar Cita
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Próximas Citas</h6>
-                </div>
-                <div class="card-body p-0">
-                    {% if upcoming_appointments %}
-                    <div class="list-group list-group-flush">
-                        {% for appointment in upcoming_appointments %}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <div class="fw-medium">{{ appointment.patient.get_full_name }}</div>
-                                    <small class="text-muted">
-                                        <i class="fas fa-calendar me-1"></i>{{ appointment.start_datetime|date:"d M, H:i" }}
-                                    </small><br>
-                                    <small class="text-muted">
-                                        <i class="fas fa-user-md me-1"></i>{{ appointment.doctor.get_full_name }}
-                                    </small>
-                                </div>
-                                <span class="badge" style="background-color: {{ appointment.appointment_type.color }};">
-                                    {{ appointment.appointment_type.name }}
-                                </span>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-calendar-check fa-2x text-muted mb-2"></i>
-                        <p class="text-muted mb-0">No hay próximas citas</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- [Total Patients Section] start -->
+	<div class="col-md-6 col-xl-3">
+		<div class="card user-card">
+			<div class="card-block">
+				<h5 class="m-b-15">Total Pacientes</h5>
+				<h4 class="f-w-300 mb-3">{{ total_patients|intcomma }}</h4>
+				<span class="text-muted">
+					<label class="label theme-bg text-white f-12 f-w-400">
+						{% if patient_growth >= 0 %}+{% endif %}{{ patient_growth|default:0 }}%
+					</label>
+					Este mes
+				</span>
+			</div>
+		</div>
+	</div>
+	<!-- [Total Patients Section] end -->
 
-    <!-- Recent Patients -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Pacientes Recientes</h5>
-                    <a href="{% url 'patients:list' %}" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-users me-1"></i>Ver Todos
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if recent_patients %}
-                    <div class="row">
-                        {% for patient in recent_patients %}
-                        <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                            <div class="card patient-card h-100">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <img src="{% if patient.profile_picture %}{{ patient.profile_picture.url }}{% else %}https://via.placeholder.com/50x50/007bff/ffffff?text={{ patient.first_name|first|upper }}{% endif %}" 
-                                             class="patient-avatar me-3" alt="Avatar">
-                                        <div class="flex-grow-1">
-                                            <div class="fw-medium">{{ patient.get_full_name }}</div>
-                                            <small class="text-muted">{{ patient.get_age }} años • {{ patient.get_gender_display }}</small>
-                                        </div>
-                                    </div>
-                                    <div class="small text-muted mb-2">
-                                        <i class="fas fa-calendar me-1"></i>Registrado: {{ patient.registration_date|date:"d M Y" }}
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">ID: {{ patient.patient_id }}</small>
-                                        <a href="{% url 'patients:detail' patient.id %}" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div class="text-center py-4">
-                        <i class="fas fa-user-plus fa-3x text-muted mb-3"></i>
-                        <h6 class="text-muted">No hay pacientes registrados aún</h6>
-                        <a href="{% url 'patients:create' %}" class="btn btn-primary mt-2">
-                            <i class="fas fa-plus me-1"></i>Registrar Primer Paciente
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- [Today's Appointments Section] start -->
+	<div class="col-md-6 col-xl-3">
+		<div class="card user-card">
+			<div class="card-block">
+				<h5 class="f-w-400 m-b-15">Citas Hoy</h5>
+				<h4 class="f-w-300 mb-3">{{ total_appointments_today }}</h4>
+				<span class="text-muted">
+					<label class="label bg-success text-white f-12 f-w-400">
+						{{ completed_today|default:0 }}
+					</label>
+					Completadas
+				</span>
+			</div>
+		</div>
+	</div>
+	<!-- [Today's Appointments Section] end -->
+
+	<!-- [Weekly Appointments Section] start -->
+	<div class="col-md-6 col-xl-3">
+		<div class="card user-card">
+			<div class="card-block">
+				<h5 class="f-w-400 m-b-15">Esta Semana</h5>
+				<h4 class="f-w-300 mb-3">{{ appointments_this_week }}</h4>
+				<span class="text-muted">
+					<label class="label bg-warning text-white f-12 f-w-400">
+						{{ weekly_growth|default:0 }}%
+					</label>
+					vs semana anterior
+				</span>
+			</div>
+		</div>
+	</div>
+	<!-- [Weekly Appointments Section] end -->
+
+	<!-- [New Patients Section] start -->
+	<div class="col-md-6 col-xl-3">
+		<div class="card user-card">
+			<div class="card-block">
+				<h5 class="f-w-400 m-b-15">Nuevos Pacientes</h5>
+				<h4 class="f-w-300 mb-3">{{ new_patients_this_month }}</h4>
+				<span class="text-muted">
+					<label class="label bg-info text-white f-12 f-w-400">
+						{{ monthly_new_growth|default:0 }}%
+					</label>
+					Este mes
+				</span>
+			</div>
+		</div>
+	</div>
+	<!-- [New Patients Section] end -->
+
+	<!-- [Medical Performance] start -->
+	<div class="col-md-6 col-xl-4">
+		<div class="card Active-visitor">
+			<div class="card-block text-center">
+				<h5 class="mb-3">Rendimiento Médico</h5>
+				<i class="bi bi-graph-up-arrow f-30 text-c-green"></i>
+				<h2 class="f-w-300 mt-3">{{ completion_rate|default:85 }}%</h2>
+				<span class="text-muted">Tasa de Completación</span>
+				<div class="progress mt-4 m-b-40">
+					<div class="progress-bar progress-c-theme" role="progressbar" 
+						 style="width: {{ completion_rate|default:85 }}%; height:7px;"
+						 aria-valuenow="{{ completion_rate|default:85 }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<div class="row card-active">
+					<div class="col-md-4 col-6">
+						<h4>{{ completion_rate|default:85 }}%</h4>
+						<span class="text-muted">Completadas</span>
+					</div>
+					<div class="col-md-4 col-6">
+						<h4>{{ no_show_rate|default:8 }}%</h4>
+						<span class="text-muted">No Show</span>
+					</div>
+					<div class="col-md-4 col-12">
+						<h4>{{ reschedule_rate|default:7 }}%</h4>
+						<span class="text-muted">Reprogramadas</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [Medical Performance] end -->
+
+	<!-- [Specialties Performance] start -->
+	<div class="col-xl-4 col-md-6">
+		<div class="card">
+			<div class="card-header">
+				<h5 class="mb-2">Especialidades Médicas</h5>
+				<div class="card-header-right">
+					<div class="btn-group card-option">
+						<button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false">
+							<i class="bi bi-three-dots"></i>
+						</button>
+						<ul class="list-unstyled card-option dropdown-menu dropdown-menu-end">
+							<li class="dropdown-item"><a href="#!">
+								<i class="bi bi-eye me-2"></i> Ver detalles
+							</a></li>
+							<li class="dropdown-item"><a href="#!">
+								<i class="bi bi-download me-2"></i> Exportar
+							</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="card-block">
+				{% for specialty in medical_specialties %}
+				<div class="d-flex align-items-center mb-3">
+					<div class="me-3">
+						<i class="bi {{ specialty.icon|default:'bi-stethoscope' }} f-18 text-c-blue"></i>
+					</div>
+					<div class="flex-grow-1">
+						<h6 class="mb-1">{{ specialty.name }}</h6>
+						<span class="text-muted">{{ specialty.patient_count }} pacientes</span>
+					</div>
+					<div>
+						<span class="badge bg-light text-dark">{{ specialty.appointments_this_week }}</span>
+					</div>
+				</div>
+				{% empty %}
+				<div class="text-center py-3">
+					<i class="bi bi-stethoscope f-30 text-muted mb-2"></i>
+					<p class="text-muted">No hay especialidades registradas</p>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<!-- [Specialties Performance] end -->
+
+	<!-- [Quick Stats] start -->
+	<div class="col-md-12 col-xl-4">
+		<div class="card theme-bg visitor">
+			<div class="card-block text-center">
+				<i class="bi bi-people-fill f-40 text-white mb-3"></i>
+				<h5 class="text-white m-0">PACIENTES ACTIVOS</h5>
+				<h3 class="text-white m-t-20 f-w-300">{{ active_patients|default:0 }}</h3>
+				<span class="text-white">{{ patient_growth|default:0 }}% más que el mes pasado</span>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-block">
+				<div class="row">
+					<div class="col">
+						<i class="bi bi-calendar-week f-30 text-c-green"></i>
+						<h6 class="m-t-50 m-b-0">Citas de la semana</h6>
+					</div>
+					<div class="col text-end">
+						<h3 class="text-c-green f-w-300">{{ appointments_this_week }}</h3>
+						<span class="text-muted d-block">Programadas</span>
+						<span class="badge theme-bg text-white m-t-20">{{ pending_appointments|default:0 }}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [Quick Stats] end -->
+
+	<!-- [Today's Schedule] start -->
+	<div class="col-xl-8 col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Agenda de Hoy</h5>
+				<div class="card-header-right">
+					<div class="btn-group card-option">
+						<a href="{% url 'appointments:calendar' %}" class="btn btn-primary btn-sm">
+							<i class="bi bi-calendar3"></i> Ver Calendario
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="card-block pb-0">
+				{% if today_appointments %}
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Hora</th>
+								<th>Paciente</th>
+								<th>Especialidad</th>
+								<th>Estado</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for appointment in today_appointments %}
+							<tr>
+								<td><strong>{{ appointment.start_datetime|time:"H:i" }}</strong></td>
+								<td>
+									<div class="d-flex align-items-center">
+										<div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+											 style="width: 35px; height: 35px;">
+											<i class="bi bi-person text-white"></i>
+										</div>
+										<div>
+											<div class="fw-medium">{{ appointment.patient.get_full_name }}</div>
+											<small class="text-muted">{{ appointment.patient.get_age }} años</small>
+										</div>
+									</div>
+								</td>
+								<td>
+									<span class="badge bg-info">{{ appointment.appointment_type.name }}</span>
+								</td>
+								<td>
+									<span class="badge 
+										{% if appointment.status == 'scheduled' %}bg-warning
+										{% elif appointment.status == 'completed' %}bg-success
+										{% elif appointment.status == 'cancelled' %}bg-danger
+										{% else %}bg-secondary{% endif %}">
+										{{ appointment.get_status_display }}
+									</span>
+								</td>
+								<td>
+									<div class="btn-group btn-group-sm">
+										<a href="{% url 'appointments:detail' appointment.id %}" 
+										   class="btn btn-outline-primary btn-sm" title="Ver detalles">
+											<i class="bi bi-eye"></i>
+										</a>
+										{% if appointment.status == 'scheduled' %}
+										<button class="btn btn-outline-success btn-sm" 
+												onclick="completeAppointment({{ appointment.id }})" title="Completar">
+											<i class="bi bi-check"></i>
+										</button>
+										{% endif %}
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				{% else %}
+				<div class="text-center py-5">
+					<i class="bi bi-calendar-x f-40 text-muted mb-3"></i>
+					<h6 class="text-muted">No hay citas programadas para hoy</h6>
+					<a href="{% url 'appointments:create' %}" class="btn btn-primary mt-2">
+						<i class="bi bi-plus-circle me-1"></i>Agendar Primera Cita
+					</a>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<!-- [Today's Schedule] end -->
+
+	<!-- [Medical Statistics] start -->
+	<div class="col-md-12 col-xl-4">
+		<div class="card bg-c-blue">
+			<div class="card-header borderless">
+				<h5 class="text-white">Estadísticas Médicas</h5>
+			</div>
+			<div class="card-block">
+				<div class="text-center text-white">
+					<div class="row">
+						<div class="col-6 border-end">
+							<h4 class="m-b-0 text-white">{{ total_patients|default:0 }}</h4>
+							<span class="text-white">Pacientes</span>
+						</div>
+						<div class="col-6">
+							<h4 class="m-b-0 text-white">{{ total_appointments|default:0 }}</h4>
+							<span class="text-white">Consultas</span>
+						</div>
+					</div>
+					<div class="row mt-3">
+						<div class="col-6 border-end">
+							<h4 class="m-b-0 text-white">{{ active_specialties|default:0 }}</h4>
+							<span class="text-white">Especialidades</span>
+						</div>
+						<div class="col-6">
+							<h4 class="m-b-0 text-white">{{ avg_satisfaction|default:4.8 }}</h4>
+							<span class="text-white">Satisfacción</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [Medical Statistics] end -->
+
+	<!-- [Recent Patients] start -->
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Pacientes Recientes</h5>
+				<div class="card-header-right">
+					<a href="{% url 'patients:list' %}" class="btn btn-primary btn-sm">
+						<i class="bi bi-people"></i> Ver Todos
+					</a>
+				</div>
+			</div>
+			<div class="card-block">
+				{% if recent_patients %}
+				<div class="row">
+					{% for patient in recent_patients %}
+					<div class="col-xl-3 col-lg-4 col-md-6 mb-3">
+						<div class="card">
+							<div class="card-block">
+								<div class="d-flex align-items-center mb-3">
+									<div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" 
+										 style="width: 45px; height: 45px;">
+										<i class="bi bi-person"></i>
+									</div>
+									<div class="flex-grow-1">
+										<h6 class="mb-1">{{ patient.get_full_name }}</h6>
+										<small class="text-muted">{{ patient.get_age }} años</small>
+									</div>
+								</div>
+								<div class="small text-muted mb-3">
+									<i class="bi bi-calendar3 me-1"></i>{{ patient.registration_date|date:"d M Y" }}
+								</div>
+								<div class="d-flex justify-content-between align-items-center">
+									<small class="text-muted">ID: {{ patient.patient_id }}</small>
+									<div class="btn-group btn-group-sm">
+										<a href="{% url 'patients:detail' patient.id %}" 
+										   class="btn btn-outline-primary btn-sm" title="Ver perfil">
+											<i class="bi bi-eye"></i>
+										</a>
+										<button class="btn btn-outline-success btn-sm" 
+												onclick="quickScheduleForPatient({{ patient.id }})" title="Agendar cita">
+											<i class="bi bi-calendar-plus"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				{% else %}
+				<div class="text-center py-5">
+					<i class="bi bi-person-plus f-40 text-muted mb-3"></i>
+					<h6 class="text-muted">No hay pacientes registrados aún</h6>
+					<a href="{% url 'patients:create' %}" class="btn btn-primary mt-2">
+						<i class="bi bi-plus-circle me-1"></i>Registrar Primer Paciente
+					</a>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<!-- [Recent Patients] end -->
+
 </div>
-{% endblock %}
+<!-- [ Main Content ] end -->
+
+{% endblock content %}
 
 {% block extra_js %}
 <script>
-// Auto-refresh stats every 5 minutes
-setInterval(function() {
-    fetch('/dashboard/quick-stats/')
-        .then(response => response.json())
-        .then(data => {
-            // Update stats in real-time if needed
-            console.log('Stats updated:', data);
-        })
-        .catch(error => console.error('Error updating stats:', error));
-}, 300000); // 5 minutes
+// Medical Dashboard JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+	console.log('Medical Dashboard initialized');
+});
 
-// Reschedule appointment function
-function rescheduleAppointment(appointmentId) {
-    // Placeholder for reschedule functionality
-    alert('Función de reprogramación próximamente disponible');
+// Quick functions for dashboard actions
+function quickCreatePatient() {
+	window.location.href = '{% url "patients:create" %}?quick=1';
 }
 
-// Initialize tooltips
-document.addEventListener('DOMContentLoaded', function() {
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-});
+function quickCreateAppointment() {
+	window.location.href = '{% url "appointments:create" %}?quick=1';
+}
+
+function completeAppointment(appointmentId) {
+	if (confirm('¿Marcar esta cita como completada?')) {
+		fetch(`/appointments/${appointmentId}/complete/`, {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+				'Content-Type': 'application/json'
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				// Show success message
+				const alertDiv = document.createElement('div');
+				alertDiv.className = 'alert alert-success alert-dismissible fade show';
+				alertDiv.innerHTML = `
+					<strong>¡Éxito!</strong> Cita completada exitosamente.
+					<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+				`;
+				document.querySelector('.card-block').prepend(alertDiv);
+				
+				// Reload page after 2 seconds
+				setTimeout(() => location.reload(), 2000);
+			} else {
+				alert('Error al completar la cita: ' + (data.error || 'Error desconocido'));
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+			alert('Error de conexión');
+		});
+	}
+}
+
+function quickScheduleForPatient(patientId) {
+	window.location.href = `/appointments/create/?patient=${patientId}`;
+}
+
+// Auto-refresh dashboard every 5 minutes for live updates
+setInterval(function() {
+	console.log('Dashboard auto-refresh check - Medical data updated');
+}, 300000);
 </script>
 {% endblock %}

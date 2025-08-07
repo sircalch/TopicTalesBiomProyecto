@@ -41,6 +41,56 @@
     font-size: 0.9rem;
     opacity: 0.9;
 }
+
+/* Calendar view improvements */
+.fc-timegrid-slot-minor {
+    border-top: 1px dotted #ddd;
+}
+
+.fc-timegrid-slot-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.fc-col-header {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.fc-day-today {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.fc-event {
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.fc-event:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+.fc-timegrid-event {
+    margin: 1px 2px;
+}
+
+.fc-button-group .fc-button {
+    font-weight: 500;
+}
+
+.fc-toolbar-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Business hours styling */
+.fc-non-business {
+    background-color: rgba(0,0,0,0.03);
+}
 </style>
 {% endblock %}
 
@@ -52,14 +102,17 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-calendar-alt me-2"></i>Calendario de Citas
+                        <i class="bi bi-calendar-event me-2"></i>Calendario de Citas
                     </h5>
                     <div class="btn-group" role="group">
                         <a href="{% url 'appointments:create' %}" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i>Nueva Cita
+                            <i class="bi bi-plus-lg me-1"></i>Nueva Cita
                         </a>
+                        <button type="button" class="btn btn-success" id="quick-appointment-btn">
+                            <i class="bi bi-lightning me-1"></i>Cita Rápida
+                        </button>
                         <a href="{% url 'appointments:list' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-list me-1"></i>Ver Lista
+                            <i class="bi bi-list-ul me-1"></i>Ver Lista
                         </a>
                     </div>
                 </div>
@@ -125,10 +178,10 @@
                             </div>
                             <div class="col-md-3 d-flex align-items-end">
                                 <button type="button" class="btn btn-outline-primary me-2" id="apply-filters">
-                                    <i class="fas fa-filter me-1"></i>Filtrar
+                                    <i class="bi bi-funnel me-1"></i>Filtrar
                                 </button>
                                 <button type="button" class="btn btn-outline-secondary" id="clear-filters">
-                                    <i class="fas fa-times me-1"></i>Limpiar
+                                    <i class="bi bi-x-lg me-1"></i>Limpiar
                                 </button>
                             </div>
                         </div>
@@ -172,6 +225,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="quick-appointment-form">
+                {% csrf_token %}
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Paciente *</label>
@@ -193,8 +247,8 @@
                         <input type="text" name="reason" class="form-control" placeholder="Motivo de la consulta" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Fecha y Hora</label>
-                        <input type="text" id="selected-datetime" class="form-control" readonly>
+                        <label class="form-label">Fecha y Hora *</label>
+                        <input type="datetime-local" name="appointment_datetime" id="selected-datetime" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -216,7 +270,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedDate = null;
     let selectedDoctor = null;
     
-    // Initialize FullCalendar
+    console.log('Initializing FullCalendar...');
+    
+    // Initialize FullCalendar v6 with correct syntax
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'es',
@@ -225,30 +281,54 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
+        views: {
+            timeGridWeek: {
+                slotMinTime: '06:00:00',
+                slotMaxTime: '22:00:00',
+                slotDuration: '00:30:00'
+            },
+            timeGridDay: {
+                slotMinTime: '06:00:00',
+                slotMaxTime: '22:00:00',
+                slotDuration: '00:30:00'
+            }
+        },
         buttonText: {
             today: 'Hoy',
-            month: 'Mes',
+            month: 'Mes', 
             week: 'Semana',
             day: 'Día'
         },
         height: 'auto',
         selectable: true,
-        selectMirror: true,
+        editable: true,
         dayMaxEvents: true,
-        weekends: true,
+        nowIndicator: true,
+        
+        businessHours: {
+            startTime: '08:00',
+            endTime: '18:00',
+            daysOfWeek: [1, 2, 3, 4, 5]
+        },
         
         // Event sources
         events: {
             url: '{% url "appointments:calendar_events" %}',
             method: 'GET',
             extraParams: function() {
-                return {
+                const params = {
                     doctor_id: document.getElementById('doctor-filter').value,
                     appointment_type_id: document.getElementById('type-filter').value,
                     status: document.getElementById('status-filter').value
                 };
+                console.log('Loading calendar events with params:', params);
+                return params;
             },
-            failure: function() {
+            success: function(events) {
+                console.log('Calendar events loaded successfully:', events.length, 'events');
+            },
+            failure: function(error) {
+                console.error('Error loading calendar events:', error);
                 alert('Error al cargar las citas del calendario');
             }
         },
@@ -276,18 +356,51 @@ document.addEventListener('DOMContentLoaded', function() {
         
         eventResize: function(info) {
             updateAppointmentTime(info.event.id, info.event.start, info.event.end);
+        },
+        
+        // Debug view changes
+        datesSet: function(info) {
+            console.log('View changed to:', info.view.type);
+            console.log('Date range:', info.start, 'to', info.end);
         }
     });
     
-    calendar.render();
+    // Render calendar with error handling
+    try {
+        calendar.render();
+        console.log('FullCalendar rendered successfully');
+        console.log('Current view:', calendar.view.type);
+        
+        // Add manual button click handlers as backup
+        setTimeout(() => {
+            const buttons = document.querySelectorAll('.fc-button');
+            console.log('FullCalendar buttons found:', buttons.length);
+            buttons.forEach((btn, index) => {
+                console.log(`Button ${index}:`, btn.textContent, btn.className);
+                
+                // Add click event listener for debugging
+                btn.addEventListener('click', function() {
+                    console.log('Button clicked:', btn.textContent);
+                    setTimeout(() => {
+                        console.log('New view after click:', calendar.view.type);
+                    }, 100);
+                });
+            });
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error rendering FullCalendar:', error);
+    }
     
     // Filter handlers
     document.getElementById('apply-filters').addEventListener('click', function() {
+        console.log('Applying filters...');
         calendar.refetchEvents();
         updateStats();
     });
     
     document.getElementById('clear-filters').addEventListener('click', function() {
+        console.log('Clearing filters...');
         document.getElementById('filter-form').reset();
         calendar.refetchEvents();
         updateStats();
@@ -296,23 +409,115 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-apply filters when changed
     ['doctor-filter', 'type-filter', 'status-filter'].forEach(function(id) {
         document.getElementById(id).addEventListener('change', function() {
+            console.log(`Filter ${id} changed, refreshing events...`);
             calendar.refetchEvents();
         });
     });
     
     // Show appointment details
     function showAppointmentDetails(appointmentId) {
-        fetch(`/appointments/${appointmentId}/`)
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const content = doc.querySelector('.appointment-details-content');
-                
-                if (content) {
-                    document.getElementById('appointment-details').innerHTML = content.innerHTML;
+        fetch(`{% url "appointments:appointment_details_ajax" appointment_id=0 %}`.replace('0', appointmentId))
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    const appointment = result.appointment;
+                    const detailsHtml = `
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card border-0">
+                                    <div class="card-body p-0">
+                                        <h6 class="text-primary mb-3">
+                                            <i class="bi bi-person-circle me-2"></i>Información del Paciente
+                                        </h6>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Paciente:</strong></div>
+                                            <div class="col-sm-8">${appointment.patient_name}</div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>ID Paciente:</strong></div>
+                                            <div class="col-sm-8">${appointment.patient_id}</div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Teléfono:</strong></div>
+                                            <div class="col-sm-8">${appointment.patient_phone || 'No especificado'}</div>
+                                        </div>
+                                        
+                                        <hr class="my-3">
+                                        
+                                        <h6 class="text-success mb-3">
+                                            <i class="bi bi-calendar-event me-2"></i>Detalles de la Cita
+                                        </h6>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Médico:</strong></div>
+                                            <div class="col-sm-8">${appointment.doctor_name}</div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Tipo:</strong></div>
+                                            <div class="col-sm-8">${appointment.appointment_type}</div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Fecha y Hora:</strong></div>
+                                            <div class="col-sm-8">${appointment.start_datetime}</div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Duración:</strong></div>
+                                            <div class="col-sm-8">${appointment.duration} minutos</div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Motivo:</strong></div>
+                                            <div class="col-sm-8">${appointment.reason}</div>
+                                        </div>
+                                        ${appointment.notes ? `
+                                        <div class="row mb-3">
+                                            <div class="col-sm-4"><strong>Notas:</strong></div>
+                                            <div class="col-sm-8">${appointment.notes}</div>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="text-info mb-3">
+                                            <i class="bi bi-info-circle me-2"></i>Estado
+                                        </h6>
+                                        <div class="mb-3">
+                                            <span class="badge bg-${appointment.status_class} fs-6">${appointment.status}</span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <small class="text-muted">Prioridad:</small><br>
+                                            <strong>${appointment.priority}</strong>
+                                        </div>
+                                        ${appointment.amount_charged ? `
+                                        <div class="mb-3">
+                                            <small class="text-muted">Costo:</small><br>
+                                            <strong>$${appointment.amount_charged}</strong>
+                                        </div>
+                                        ` : ''}
+                                        ${appointment.payment_method ? `
+                                        <div class="mb-3">
+                                            <small class="text-muted">Método de pago:</small><br>
+                                            <strong>${appointment.payment_method}</strong>
+                                        </div>
+                                        ` : ''}
+                                        ${appointment.has_consultation_note ? `
+                                        <div class="alert alert-success py-2">
+                                            <i class="bi bi-file-medical me-2"></i>
+                                            <small>Tiene nota de consulta</small>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('appointment-details').innerHTML = detailsHtml;
                     document.getElementById('view-appointment').href = `/appointments/${appointmentId}/`;
                     new bootstrap.Modal(document.getElementById('appointmentModal')).show();
+                } else {
+                    alert('Error al cargar los detalles de la cita');
                 }
             })
             .catch(error => {
@@ -322,12 +527,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Open quick appointment modal
-    function openQuickAppointmentModal(date, doctorId) {
+    function openQuickAppointmentModal(date = null, doctorId = null) {
         const modal = new bootstrap.Modal(document.getElementById('quickAppointmentModal'));
         const datetimeInput = document.getElementById('selected-datetime');
         
-        // Set selected datetime
-        datetimeInput.value = date.toLocaleString('es-MX');
+        // Set selected datetime or current time
+        let targetDate;
+        if (date) {
+            targetDate = date;
+        } else {
+            const now = new Date();
+            now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15); // Round to next 15 min
+            targetDate = now;
+        }
+        
+        selectedDate = targetDate;
+        
+        // Format for datetime-local input (YYYY-MM-DDTHH:mm)
+        const year = targetDate.getFullYear();
+        const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+        const day = String(targetDate.getDate()).padStart(2, '0');
+        const hours = String(targetDate.getHours()).padStart(2, '0');
+        const minutes = String(targetDate.getMinutes()).padStart(2, '0');
+        
+        datetimeInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        // Set selected doctor
+        if (doctorId) {
+            selectedDoctor = doctorId;
+        } else {
+            selectedDoctor = document.getElementById('doctor-filter').value;
+        }
         
         // Load patients
         loadPatients();
@@ -335,22 +565,61 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.show();
     }
     
+    // Quick appointment button handler
+    document.getElementById('quick-appointment-btn').addEventListener('click', function() {
+        openQuickAppointmentModal();
+    });
+    
+    // Debug function to check all appointments
+    window.debugAppointments = function() {
+        fetch('{% url "appointments:calendar_events" %}')
+            .then(response => response.json())
+            .then(events => {
+                console.log('All appointments in database:', events);
+                events.forEach(event => {
+                    console.log(`- ${event.title} at ${event.start}`);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching appointments:', error);
+            });
+    };
+    
     // Load patients for quick appointment
     function loadPatients() {
-        // This would typically be an AJAX call to get patients
-        // For now, we'll populate with a placeholder
         const patientSelect = document.querySelector('#quickAppointmentModal select[name="patient"]');
         patientSelect.innerHTML = '<option value="">Cargando pacientes...</option>';
         
-        // Simulate loading patients (replace with actual AJAX call)
-        setTimeout(() => {
-            patientSelect.innerHTML = `
-                <option value="">Seleccionar paciente...</option>
-                <option value="1">Juan Pérez García</option>
-                <option value="2">María López Martínez</option>
-                <option value="3">Carlos Rodríguez Sánchez</option>
-            `;
-        }, 500);
+        // Get patients via AJAX
+        fetch('/patients/api/list/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.patients) {
+                    let options = '<option value="">Seleccionar paciente...</option>';
+                    data.patients.forEach(patient => {
+                        options += `<option value="${patient.id}">${patient.full_name}</option>`;
+                    });
+                    patientSelect.innerHTML = options;
+                } else {
+                    // Fallback to manual options if API doesn't exist
+                    patientSelect.innerHTML = `
+                        <option value="">Seleccionar paciente...</option>
+                        {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.get_full_name }}</option>
+                        {% endfor %}
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading patients:', error);
+                // Fallback to manual options
+                patientSelect.innerHTML = `
+                    <option value="">Seleccionar paciente...</option>
+                    {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.get_full_name }}</option>
+                    {% endfor %}
+                `;
+            });
     }
     
     // Handle quick appointment form submission
@@ -358,13 +627,51 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const formData = new FormData(this);
+        const patientId = formData.get('patient');
+        const appointmentTypeId = formData.get('appointment_type');
+        const reason = formData.get('reason');
+        const appointmentDatetime = formData.get('appointment_datetime');
+        
+        // Validate required fields
+        if (!patientId) {
+            alert('Por favor selecciona un paciente');
+            return;
+        }
+        if (!selectedDoctor) {
+            alert('Por favor selecciona un médico primero');
+            return;
+        }
+        if (!appointmentTypeId) {
+            alert('Por favor selecciona un tipo de cita');
+            return;
+        }
+        if (!reason.trim()) {
+            alert('Por favor ingresa el motivo de la consulta');
+            return;
+        }
+        if (!appointmentDatetime) {
+            alert('Por favor selecciona una fecha y hora');
+            return;
+        }
+        
+        // Parse the datetime from the input
+        selectedDate = new Date(appointmentDatetime);
+        
         const data = {
-            patient_id: formData.get('patient'),
+            patient_id: patientId,
             doctor_id: selectedDoctor,
-            appointment_type_id: formData.get('appointment_type'),
+            appointment_type_id: appointmentTypeId,
             start_datetime: selectedDate.toISOString(),
-            reason: formData.get('reason')
+            reason: reason.trim()
         };
+        
+        console.log('Sending appointment data:', data);
+        
+        // Disable submit button during request
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creando...';
         
         fetch('{% url "appointments:quick_appointment" %}', {
             method: 'POST',
@@ -374,45 +681,90 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
         .then(result => {
+            console.log('Response data:', result);
             if (result.success) {
+                console.log('Quick appointment created successfully, refreshing calendar...');
+                
+                // Close modal and reset form
                 bootstrap.Modal.getInstance(document.getElementById('quickAppointmentModal')).hide();
+                document.getElementById('quick-appointment-form').reset();
+                selectedDate = null;
+                selectedDoctor = null;
+                
+                // Refresh calendar events - different method for v5
                 calendar.refetchEvents();
-                calendar.unselect();
-                alert('Cita creada exitosamente');
+                
+                // Also try alternative refresh methods
+                setTimeout(() => {
+                    console.log('Secondary refresh attempt...');
+                    calendar.refetchEvents();
+                }, 500);
+                
+                // Additional verification - check if appointment was created
+                setTimeout(() => {
+                    console.log('Verifying appointment creation...');
+                    fetch(`{% url "appointments:appointment_details_ajax" appointment_id=0 %}`.replace('0', result.appointment_id))
+                        .then(response => response.json())
+                        .then(verifyResult => {
+                            if (verifyResult.success) {
+                                console.log('Appointment verified in database:', verifyResult.appointment);
+                            } else {
+                                console.error('Appointment not found in database after creation');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error verifying appointment:', error);
+                        });
+                }, 1000);
+                
+                showNotification('Cita creada exitosamente', 'success');
             } else {
-                alert('Error: ' + result.message);
+                alert('Error al crear la cita: ' + (result.message || 'Error desconocido'));
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Error al crear la cita');
+            console.error('Error creating appointment:', error);
+            alert('Error de conexión al crear la cita');
+        })
+        .finally(() => {
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         });
     });
     
     // Update appointment time (drag & drop)
     function updateAppointmentTime(appointmentId, newStart, newEnd) {
-        fetch(`/appointments/${appointmentId}/edit/`, {
+        fetch('{% url "appointments:update_appointment_time" %}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
+                appointment_id: appointmentId,
                 start_datetime: newStart.toISOString(),
                 end_datetime: newEnd ? newEnd.toISOString() : null
             })
         })
         .then(response => response.json())
         .then(result => {
-            if (!result.success) {
+            if (result.success) {
+                // Show success notification
+                showNotification('Cita movida exitosamente', 'success');
+            } else {
                 alert('Error al actualizar la cita: ' + result.message);
                 calendar.refetchEvents(); // Revert changes
             }
         })
         .catch(error => {
             console.error('Error:', error);
+            alert('Error de conexión al actualizar la cita');
             calendar.refetchEvents(); // Revert changes
         });
     }
@@ -428,6 +780,69 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial stats load
     updateStats();
+    
+    // Utility functions
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+    
+    // Add confirmation for drag & drop
+    let draggedEvent = null;
+    
+    calendar.on('eventDragStart', function(info) {
+        draggedEvent = info.event;
+    });
+    
+    calendar.on('eventDrop', function(info) {
+        const confirmed = confirm(`¿Deseas mover la cita de ${draggedEvent.title} a ${info.event.start.toLocaleString('es-MX')}?`);
+        if (!confirmed) {
+            info.revert();
+        }
+    });
+    
+    calendar.on('eventResizeStart', function(info) {
+        draggedEvent = info.event;
+    });
+    
+    calendar.on('eventResize', function(info) {
+        const startTime = info.event.start.toLocaleString('es-MX');
+        const endTime = info.event.end.toLocaleString('es-MX');
+        const confirmed = confirm(`¿Deseas cambiar la duración de la cita de ${draggedEvent.title} de ${startTime} a ${endTime}?`);
+        if (!confirmed) {
+            info.revert();
+        }
+    });
 });
 </script>
 {% endblock %}

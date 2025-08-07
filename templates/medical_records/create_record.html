@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Expediente Médico - TopicTales Biomédica{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'medical_records:index' %}">Expedientes</a></li>
+<li class="breadcrumb-item active">Crear Expediente</li>
+{% endblock %}
+
+{% block content %}
+<div class="create-medical-record-container fade-in">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-2">
+                <i class="bi bi-file-medical-fill text-primary me-2"></i>
+                Crear Nuevo Expediente Médico
+            </h2>
+            <p class="text-muted">
+                Complete la información médica básica del paciente para crear su expediente.
+            </p>
+        </div>
+    </div>
+
+    <!-- Patient Selection and Form -->
+    <div class="card">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="bi bi-person-fill me-2"></i>
+                Información del Expediente Médico
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Patient Selection -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <label for="{{ form.patient.id_for_label }}" class="form-label required">
+                            <i class="bi bi-person-fill me-1"></i>Paciente
+                        </label>
+                        {{ form.patient }}
+                        {% if form.patient.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.patient.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Seleccione el paciente para el cual desea crear el expediente médico.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Basic Medical Information -->
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">
+                            <i class="bi bi-heart-pulse me-2"></i>Información Médica Básica
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.blood_type.id_for_label }}" class="form-label">
+                                    <i class="bi bi-droplet-fill me-1"></i>Tipo de Sangre
+                                </label>
+                                {{ form.blood_type }}
+                                {% if form.blood_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.blood_type.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.allergies.id_for_label }}" class="form-label">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Alergias
+                                </label>
+                                {{ form.allergies }}
+                                {% if form.allergies.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.allergies.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.chronic_conditions.id_for_label }}" class="form-label">
+                                    <i class="bi bi-clipboard-heart me-1"></i>Condiciones Crónicas
+                                </label>
+                                {{ form.chronic_conditions }}
+                                {% if form.chronic_conditions.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.chronic_conditions.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.current_medications.id_for_label }}" class="form-label">
+                                    <i class="bi bi-capsule me-1"></i>Medicamentos Actuales
+                                </label>
+                                {{ form.current_medications }}
+                                {% if form.current_medications.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.current_medications.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.family_history.id_for_label }}" class="form-label">
+                                    <i class="bi bi-people me-1"></i>Antecedentes Familiares
+                                </label>
+                                {{ form.family_history }}
+                                {% if form.family_history.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.family_history.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social History -->
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">
+                            <i class="bi bi-person-heart me-2"></i>Historial Social
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.smoking_status.id_for_label }}" class="form-label">
+                                    <i class="bi bi-ban me-1"></i>Estado Fumador
+                                </label>
+                                {{ form.smoking_status }}
+                                {% if form.smoking_status.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.smoking_status.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.alcohol_consumption.id_for_label }}" class="form-label">
+                                    <i class="bi bi-cup-straw me-1"></i>Consumo de Alcohol
+                                </label>
+                                {{ form.alcohol_consumption }}
+                                {% if form.alcohol_consumption.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.alcohol_consumption.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.exercise_frequency.id_for_label }}" class="form-label">
+                                    <i class="bi bi-heart-pulse me-1"></i>Frecuencia de Ejercicio
+                                </label>
+                                {{ form.exercise_frequency }}
+                                {% if form.exercise_frequency.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.exercise_frequency.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">
+                            <i class="bi bi-telephone-fill me-2"></i>Contacto de Emergencia
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.emergency_contact_name.id_for_label }}" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Nombre Completo
+                                </label>
+                                {{ form.emergency_contact_name }}
+                                {% if form.emergency_contact_name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.emergency_contact_name.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.emergency_contact_phone.id_for_label }}" class="form-label">
+                                    <i class="bi bi-telephone me-1"></i>Teléfono
+                                </label>
+                                {{ form.emergency_contact_phone }}
+                                {% if form.emergency_contact_phone.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.emergency_contact_phone.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.emergency_contact_relationship.id_for_label }}" class="form-label">
+                                    <i class="bi bi-heart me-1"></i>Relación
+                                </label>
+                                {{ form.emergency_contact_relationship }}
+                                {% if form.emergency_contact_relationship.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.emergency_contact_relationship.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'medical_records:index' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Crear Expediente Médico
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Available Patients Info -->
+    {% if available_patients %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Pacientes Disponibles ({{ available_patients.count }})
+            </h6>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-2">
+                Los siguientes pacientes no tienen expediente médico asignado:
+            </p>
+            <div class="row">
+                {% for patient in available_patients %}
+                <div class="col-md-3 mb-2">
+                    <div class="border rounded p-2 bg-light">
+                        <small class="fw-medium">{{ patient.get_full_name }}</small><br>
+                        <small class="text-muted">{{ patient.patient_id }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add required field styling
+    document.querySelectorAll('label.required').forEach(label => {
+        if (!label.querySelector('.text-danger')) {
+            label.innerHTML += ' <span class="text-danger">*</span>';
+        }
+    });
+});
+</script>
+{% endblock %}

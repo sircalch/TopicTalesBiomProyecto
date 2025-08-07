@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nuevo Plan Dietético{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-clipboard-list me-2"></i>Nuevo Plan Dietético</h1>
+                <a href="{% url 'nutrition:diet_plan_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Planes
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="patient" class="form-label">Paciente</label>
+                                    <select class="form-select" id="patient" name="patient" required>
+                                        <option value="">Seleccionar paciente...</option>
+                                        <!-- Aquí irían los pacientes -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="start_date" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre del Plan</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   placeholder="Ej: Plan de Pérdida de Peso - Hipocalórico" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" 
+                                      placeholder="Descripción general del plan dietético y sus objetivos..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="plan_type" class="form-label">Tipo de Plan</label>
+                                    <select class="form-select" id="plan_type" name="plan_type" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="weight_loss">Pérdida de peso</option>
+                                        <option value="weight_gain">Ganancia de peso</option>
+                                        <option value="maintenance">Mantenimiento</option>
+                                        <option value="muscle_gain">Ganancia muscular</option>
+                                        <option value="diabetic">Diabético</option>
+                                        <option value="low_sodium">Bajo en sodio</option>
+                                        <option value="low_fat">Bajo en grasas</option>
+                                        <option value="high_protein">Alto en proteínas</option>
+                                        <option value="vegetarian">Vegetariano</option>
+                                        <option value="vegan">Vegano</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="duration_weeks" class="form-label">Duración (semanas)</label>
+                                    <input type="number" class="form-control" id="duration_weeks" name="duration_weeks" 
+                                           placeholder="4" min="1" max="52">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="daily_calories" class="form-label">Calorías Diarias Objetivo</label>
+                                    <input type="number" class="form-control" id="daily_calories" name="daily_calories" 
+                                           placeholder="1800" min="800" max="4000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="protein_percentage" class="form-label">% Proteínas</label>
+                                    <input type="number" class="form-control" id="protein_percentage" name="protein_percentage" 
+                                           placeholder="20" min="10" max="40" value="20">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="carb_percentage" class="form-label">% Carbohidratos</label>
+                                    <input type="number" class="form-control" id="carb_percentage" name="carb_percentage" 
+                                           placeholder="50" min="20" max="70" value="50">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="fat_percentage" class="form-label">% Grasas</label>
+                                    <input type="number" class="form-control" id="fat_percentage" name="fat_percentage" 
+                                           placeholder="30" min="15" max="50" value="30">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="meals_per_day" class="form-label">Comidas por Día</label>
+                                    <select class="form-select" id="meals_per_day" name="meals_per_day">
+                                        <option value="3">3 comidas</option>
+                                        <option value="4">4 comidas</option>
+                                        <option value="5" selected>5 comidas</option>
+                                        <option value="6">6 comidas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="water_intake_goal" class="form-label">Meta de Agua (litros/día)</label>
+                                    <input type="number" step="0.1" class="form-control" id="water_intake_goal" name="water_intake_goal" 
+                                           placeholder="2.5" min="1" max="5" value="2.5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="allowed_foods" class="form-label">Alimentos Permitidos</label>
+                            <textarea class="form-control" id="allowed_foods" name="allowed_foods" rows="4" 
+                                      placeholder="Lista de alimentos recomendados y permitidos en el plan..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="restricted_foods" class="form-label">Alimentos Restringidos</label>
+                            <textarea class="form-control" id="restricted_foods" name="restricted_foods" rows="3" 
+                                      placeholder="Alimentos que deben evitarse o limitarse..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="meal_timing" class="form-label">Horarios de Comida</label>
+                            <textarea class="form-control" id="meal_timing" name="meal_timing" rows="3" 
+                                      placeholder="Sugerencias de horarios para cada comida del día..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="special_instructions" class="form-label">Instrucciones Especiales</label>
+                            <textarea class="form-control" id="special_instructions" name="special_instructions" rows="4" 
+                                      placeholder="Instrucciones específicas para la preparación, combinaciones de alimentos, suplementos, etc."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="goals" class="form-label">Objetivos del Plan</label>
+                            <textarea class="form-control" id="goals" name="goals" rows="3" 
+                                      placeholder="Objetivos específicos que se esperan lograr con este plan dietético..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notas Adicionales</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                      placeholder="Cualquier información adicional relevante..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Crear Plan Dietético
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-calculate percentages to ensure they sum to 100%
+document.addEventListener('DOMContentLoaded', function() {
+    const proteinInput = document.getElementById('protein_percentage');
+    const carbInput = document.getElementById('carb_percentage');
+    const fatInput = document.getElementById('fat_percentage');
+    
+    function adjustPercentages(changedInput) {
+        const protein = parseFloat(proteinInput.value) || 0;
+        const carb = parseFloat(carbInput.value) || 0;
+        const fat = parseFloat(fatInput.value) || 0;
+        
+        const total = protein + carb + fat;
+        if (total > 100) {
+            if (changedInput === proteinInput) {
+                const remaining = 100 - protein;
+                const ratio = remaining / (carb + fat);
+                carbInput.value = Math.round(carb * ratio);
+                fatInput.value = Math.round(fat * ratio);
+            } else if (changedInput === carbInput) {
+                const remaining = 100 - carb;
+                const ratio = remaining / (protein + fat);
+                proteinInput.value = Math.round(protein * ratio);
+                fatInput.value = Math.round(fat * ratio);
+            } else if (changedInput === fatInput) {
+                const remaining = 100 - fat;
+                const ratio = remaining / (protein + carb);
+                proteinInput.value = Math.round(protein * ratio);
+                carbInput.value = Math.round(carb * ratio);
+            }
+        }
+    }
+    
+    proteinInput.addEventListener('input', () => adjustPercentages(proteinInput));
+    carbInput.addEventListener('input', () => adjustPercentages(carbInput));
+    fatInput.addEventListener('input', () => adjustPercentages(fatInput));
+});
+</script>
+{% endblock %}

@@ -1,0 +1,463 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <a href="{% url 'accounts:users' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Información Personal -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Información Personal</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.first_name.label_tag }}
+                                            {{ form.first_name }}
+                                            {% if form.first_name.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.first_name.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.last_name.label_tag }}
+                                            {{ form.last_name }}
+                                            {% if form.last_name.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.last_name.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.email.label_tag }}
+                                            {{ form.email }}
+                                            {% if form.email.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.email.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.username.label_tag }}
+                                            {{ form.username }}
+                                            <div class="form-text">Solo letras, números y @/./+/-/_ permitidos</div>
+                                            {% if form.username.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.username.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.password1.label_tag }}
+                                            {{ form.password1 }}
+                                            <div class="form-text">Mínimo 8 caracteres</div>
+                                            {% if form.password1.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.password1.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.password2.label_tag }}
+                                            {{ form.password2 }}
+                                            {% if form.password2.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.password2.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información Profesional -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Información Profesional</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ profile_form.position.label_tag }}
+                                            {{ profile_form.position }}
+                                            {% if profile_form.position.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.position.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ profile_form.department.label_tag }}
+                                            {{ profile_form.department }}
+                                            {% if profile_form.department.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.department.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ profile_form.phone.label_tag }}
+                                            {{ profile_form.phone }}
+                                            {% if profile_form.phone.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.phone.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ profile_form.employee_id.label_tag }}
+                                            {{ profile_form.employee_id }}
+                                            {% if profile_form.employee_id.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.employee_id.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ profile_form.bio.label_tag }}
+                                    {{ profile_form.bio }}
+                                    {% if profile_form.bio.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.bio.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Contacto -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Información de Contacto</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ profile_form.address.label_tag }}
+                                    {{ profile_form.address }}
+                                    {% if profile_form.address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.address.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ profile_form.city.label_tag }}
+                                            {{ profile_form.city }}
+                                            {% if profile_form.city.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.city.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ profile_form.state.label_tag }}
+                                            {{ profile_form.state }}
+                                            {% if profile_form.state.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.state.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            {{ profile_form.postal_code.label_tag }}
+                                            {{ profile_form.postal_code }}
+                                            {% if profile_form.postal_code.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.postal_code.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ profile_form.emergency_contact_name.label_tag }}
+                                            {{ profile_form.emergency_contact_name }}
+                                            {% if profile_form.emergency_contact_name.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.emergency_contact_name.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ profile_form.emergency_contact_phone.label_tag }}
+                                            {{ profile_form.emergency_contact_phone }}
+                                            {% if profile_form.emergency_contact_phone.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ profile_form.emergency_contact_phone.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Configuración de Cuenta -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Configuración de Cuenta</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ profile_form.organization.label_tag }}
+                                    {{ profile_form.organization }}
+                                    {% if profile_form.organization.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.organization.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Permisos</label>
+                                    <div class="form-check">
+                                        {{ form.is_staff }}
+                                        {{ form.is_staff.label_tag }}
+                                        <div class="form-text">Puede acceder al panel de administración</div>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.is_superuser }}
+                                        {{ form.is_superuser.label_tag }}
+                                        <div class="form-text">Tiene todos los permisos</div>
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.is_active }}
+                                        {{ form.is_active.label_tag }}
+                                        <div class="form-text">Puede iniciar sesión</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ profile_form.hire_date.label_tag }}
+                                    {{ profile_form.hire_date }}
+                                    {% if profile_form.hire_date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.hire_date.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Foto de Perfil -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Foto de Perfil</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <div class="avatar-preview mb-3">
+                                        <img id="avatar-preview" src="{% if profile_form.avatar.value %}{{ profile_form.avatar.value.url }}{% else %}{% load static %}{% static 'images/default-avatar.png' %}{% endif %}" 
+                                             alt="Avatar Preview" class="rounded-circle" width="120" height="120" style="object-fit: cover;">
+                                    </div>
+                                    {{ profile_form.avatar.label_tag }}
+                                    {{ profile_form.avatar }}
+                                    <div class="form-text">JPG, PNG. Máximo 2MB</div>
+                                    {% if profile_form.avatar.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.avatar.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configuraciones Adicionales -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5>Configuraciones</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ profile_form.timezone.label_tag }}
+                                    {{ profile_form.timezone }}
+                                    {% if profile_form.timezone.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.timezone.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ profile_form.language.label_tag }}
+                                    {{ profile_form.language }}
+                                    {% if profile_form.language.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ profile_form.language.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-check">
+                                    {{ profile_form.receive_notifications }}
+                                    {{ profile_form.receive_notifications.label_tag }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'accounts:users' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Crear Usuario
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Vista previa del avatar
+    const avatarInput = document.getElementById('id_avatar');
+    const avatarPreview = document.getElementById('avatar-preview');
+    
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Generar username automáticamente
+    const firstNameInput = document.getElementById('id_first_name');
+    const lastNameInput = document.getElementById('id_last_name');
+    const usernameInput = document.getElementById('id_username');
+    
+    function generateUsername() {
+        if (firstNameInput.value && lastNameInput.value && !usernameInput.value) {
+            const firstName = firstNameInput.value.toLowerCase().replace(/\s+/g, '');
+            const lastName = lastNameInput.value.toLowerCase().replace(/\s+/g, '');
+            const username = firstName.charAt(0) + lastName;
+            usernameInput.value = username;
+        }
+    }
+    
+    if (firstNameInput && lastNameInput && usernameInput) {
+        firstNameInput.addEventListener('blur', generateUsername);
+        lastNameInput.addEventListener('blur', generateUsername);
+    }
+    
+    // Validación de contraseñas
+    const password1 = document.getElementById('id_password1');
+    const password2 = document.getElementById('id_password2');
+    
+    function validatePasswords() {
+        if (password1.value && password2.value) {
+            if (password1.value !== password2.value) {
+                password2.setCustomValidity('Las contraseñas no coinciden');
+            } else {
+                password2.setCustomValidity('');
+            }
+        }
+    }
+    
+    if (password1 && password2) {
+        password1.addEventListener('input', validatePasswords);
+        password2.addEventListener('input', validatePasswords);
+    }
+    
+    // Validación del formulario
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+    
+    // Validación de email único
+    const emailInput = document.getElementById('id_email');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function() {
+            const email = this.value;
+            if (email) {
+                // Aquí podrías hacer una llamada AJAX para verificar si el email ya existe
+                // Por ahora solo validamos el formato
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    this.setCustomValidity('Por favor ingresa un email válido');
+                } else {
+                    this.setCustomValidity('');
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

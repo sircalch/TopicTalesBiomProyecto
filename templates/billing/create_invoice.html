@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <a href="{% url 'billing:invoices' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Información de la Factura</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.patient.label_tag }}
+                                            {{ form.patient }}
+                                            {% if form.patient.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.patient.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.invoice_number.label_tag }}
+                                            {{ form.invoice_number }}
+                                            {% if form.invoice_number.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.invoice_number.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.issue_date.label_tag }}
+                                            {{ form.issue_date }}
+                                            {% if form.issue_date.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.issue_date.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {{ form.due_date.label_tag }}
+                                            {{ form.due_date }}
+                                            {% if form.due_date.errors %}
+                                                <div class="invalid-feedback d-block">
+                                                    {{ form.due_date.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form.notes.label_tag }}
+                                    {{ form.notes }}
+                                    {% if form.notes.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.notes.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Servicios -->
+                        <div class="card mt-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>Servicios</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="add-service">
+                                    <i class="fas fa-plus"></i> Agregar Servicio
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="invoice-items">
+                                    {{ formset.management_form }}
+                                    {% for form in formset %}
+                                        <div class="invoice-item row mb-3">
+                                            <div class="col-md-4">
+                                                {{ form.service.label_tag }}
+                                                {{ form.service }}
+                                            </div>
+                                            <div class="col-md-2">
+                                                {{ form.quantity.label_tag }}
+                                                {{ form.quantity }}
+                                            </div>
+                                            <div class="col-md-2">
+                                                {{ form.unit_price.label_tag }}
+                                                {{ form.unit_price }}
+                                            </div>
+                                            <div class="col-md-2">
+                                                {{ form.discount.label_tag }}
+                                                {{ form.discount }}
+                                            </div>
+                                            <div class="col-md-2 d-flex align-items-end">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-item">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            {% for hidden in form.hidden_fields %}
+                                                {{ hidden }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Resumen</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal">$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Descuento:</span>
+                                    <span id="discount">$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Impuestos ({{ tax_rate }}%):</span>
+                                    <span id="taxes">$0.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total:</strong>
+                                    <strong id="total">$0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5>Configuración</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form.status.label_tag }}
+                                    {{ form.status }}
+                                </div>
+                                <div class="form-check">
+                                    {{ form.send_email }}
+                                    {{ form.send_email.label_tag }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Crear Factura
+                    </button>
+                    <a href="{% url 'billing:invoices' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let formIndex = {{ formset.total_form_count }};
+    
+    function updateTotals() {
+        let subtotal = 0;
+        let totalDiscount = 0;
+        
+        document.querySelectorAll('.invoice-item').forEach(function(item) {
+            const quantity = parseFloat(item.querySelector('[name$="-quantity"]').value) || 0;
+            const unitPrice = parseFloat(item.querySelector('[name$="-unit_price"]').value) || 0;
+            const discount = parseFloat(item.querySelector('[name$="-discount"]').value) || 0;
+            
+            const itemTotal = quantity * unitPrice;
+            subtotal += itemTotal;
+            totalDiscount += (itemTotal * discount / 100);
+        });
+        
+        const taxableAmount = subtotal - totalDiscount;
+        const taxes = taxableAmount * ({{ tax_rate }} / 100);
+        const total = taxableAmount + taxes;
+        
+        document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+        document.getElementById('discount').textContent = '$' + totalDiscount.toFixed(2);
+        document.getElementById('taxes').textContent = '$' + taxes.toFixed(2);
+        document.getElementById('total').textContent = '$' + total.toFixed(2);
+    }
+    
+    document.getElementById('add-service').addEventListener('click', function() {
+        const emptyForm = document.querySelector('#empty-form');
+        if (emptyForm) {
+            const newForm = emptyForm.cloneNode(true);
+            newForm.id = '';
+            newForm.style.display = 'block';
+            
+            // Update form indices
+            newForm.innerHTML = newForm.innerHTML.replace(/__prefix__/g, formIndex);
+            formIndex++;
+            
+            document.getElementById('invoice-items').appendChild(newForm);
+            
+            // Update management form
+            document.querySelector('[name="form-TOTAL_FORMS"]').value = formIndex;
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item') || e.target.parentElement.classList.contains('remove-item')) {
+            e.preventDefault();
+            const item = e.target.closest('.invoice-item');
+            item.remove();
+            updateTotals();
+        }
+    });
+    
+    document.addEventListener('input', function(e) {
+        if (e.target.matches('[name$="-quantity"], [name$="-unit_price"], [name$="-discount"]')) {
+            updateTotals();
+        }
+    });
+    
+    // Load service price when service is selected
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('[name$="-service"]')) {
+            const serviceSelect = e.target;
+            const priceInput = serviceSelect.closest('.invoice-item').querySelector('[name$="-unit_price"]');
+            
+            if (serviceSelect.value) {
+                // You would typically fetch this via AJAX
+                // For now, we'll assume the price is in a data attribute
+                const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+                if (selectedOption.dataset.price) {
+                    priceInput.value = selectedOption.dataset.price;
+                    updateTotals();
+                }
+            }
+        }
+    });
+    
+    updateTotals();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,291 @@
+/* ============================================================
+   BOOTSTRAP ICONS FIX - TopicTales Biomédica
+   Forzar carga correcta de iconos Bootstrap y corregir espaciado
+   ============================================================ */
+
+/* Asegurar que Bootstrap Icons se carguen correctamente */
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css');
+
+/* CORRECCIÓN DE ESPACIADO Y LAYOUT DEL SIDEBAR */
+.pcoded-navbar .pcoded-inner-navbar .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 12px 20px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+}
+
+/* CONTENEDOR DE ICONOS - ESPACIADO CORRECTO */
+.pcoded-navbar .pcoded-micon {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 12px !important;
+    flex-shrink: 0 !important;
+    position: static !important;
+}
+
+/* TEXTO DEL MENÚ - NO SOLAPAMIENTO */
+.pcoded-navbar .pcoded-mtext {
+    flex: 1 !important;
+    display: inline-block !important;
+    margin-left: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* ICONOS - TAMAÑO Y POSICIONAMIENTO CORRECTO */
+.pcoded-navbar .pcoded-micon i {
+    font-size: 16px !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    text-align: center !important;
+    width: 16px !important;
+    height: 16px !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+}
+
+/* Forzar display de iconos Bootstrap en sidebar */
+.pcoded-navbar .pcoded-micon i[class*="bi-"] {
+    font-family: "bootstrap-icons" !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Iconos específicos con contenido unicode como fallback */
+.pcoded-navbar .pcoded-micon i.bi-heart-pulse::before {
+    content: "\f0ab" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-person-hearts::before {
+    content: "\f0a4" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-gender-female::before {
+    content: "\f0a5" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-apple::before {
+    content: "\f179" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-brain::before {
+    content: "\f233" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-credit-card-fill::before {
+    content: "\f2a2" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-tools::before {
+    content: "\f727" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-people-fill::before {
+    content: "\f56b" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-eye::before {
+    content: "\f341" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-tooth::before {
+    content: "\f719" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-droplet::before {
+    content: "\f2eb" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-bandaid-fill::before {
+    content: "\f1f4" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-person-circle::before {
+    content: "\f56a" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-gear-fill::before {
+    content: "\f3c5" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-chat-dots-fill::before {
+    content: "\f264" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-virus::before {
+    content: "\f76a" !important;
+}
+
+/* Fallback con Font Awesome si Bootstrap Icons falla */
+.pcoded-navbar .pcoded-micon i.bi-heart-pulse {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-person-hearts {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-gender-female {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-apple {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-brain {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-credit-card-fill {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-tools {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+.pcoded-navbar .pcoded-micon i.bi-people-fill {
+    font-family: "Font Awesome 5 Free", "bootstrap-icons" !important;
+}
+
+/* Alternativa con símbolos unicode simples */
+.bi-fallback-heart::before { content: "♥" !important; }
+.bi-fallback-child::before { content: "👶" !important; }
+.bi-fallback-female::before { content: "♀" !important; }
+.bi-fallback-apple::before { content: "🍎" !important; }
+.bi-fallback-brain::before { content: "🧠" !important; }
+.bi-fallback-card::before { content: "💳" !important; }
+.bi-fallback-tools::before { content: "🔧" !important; }
+.bi-fallback-users::before { content: "👥" !important; }
+
+/* Debug para verificar carga de iconos */
+.pcoded-navbar .pcoded-micon i {
+    background-color: transparent !important;
+    color: inherit !important;
+    border: 1px solid transparent;
+}
+
+/* BADGES Y CONTADORES - POSICIONAMIENTO CORRECTO */
+.pcoded-navbar .pcoded-badge {
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
+    font-size: 11px !important;
+    padding: 2px 6px !important;
+    border-radius: 10px !important;
+}
+
+/* SUBMENU ITEMS - ESPACIADO CORRECTO */
+.pcoded-navbar .pcoded-submenu li a {
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 20px 8px 55px !important;
+    white-space: nowrap !important;
+}
+
+.pcoded-navbar .pcoded-submenu li a i {
+    margin-right: 8px !important;
+    font-size: 14px !important;
+    width: 14px !important;
+    flex-shrink: 0 !important;
+}
+
+/* MENÚ CAPTION - ESPACIADO */
+.pcoded-navbar .pcoded-menu-caption {
+    padding: 15px 20px 8px 20px !important;
+}
+
+.pcoded-navbar .pcoded-menu-caption label {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin: 0 !important;
+}
+
+/* CORRECCIÓN ESPECÍFICA PARA ICONOS FALTANTES */
+.pcoded-navbar .pcoded-micon i.bi-heart-pulse,
+.pcoded-navbar .pcoded-micon i.bi-person-hearts,
+.pcoded-navbar .pcoded-micon i.bi-gender-female,
+.pcoded-navbar .pcoded-micon i.bi-apple,
+.pcoded-navbar .pcoded-micon i.bi-brain,
+.pcoded-navbar .pcoded-micon i.bi-credit-card-fill,
+.pcoded-navbar .pcoded-micon i.bi-tools,
+.pcoded-navbar .pcoded-micon i.bi-person-circle {
+    font-family: "bootstrap-icons", "Font Awesome 5 Free" !important;
+    speak: none !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    line-height: 1 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* FALLBACK MANUAL PARA ICONOS PROBLEMÁTICOS */
+.pcoded-navbar .pcoded-micon i.bi-heart-pulse:not(:empty)::before,
+.pcoded-navbar .pcoded-micon i.bi-person-hearts:not(:empty)::before,
+.pcoded-navbar .pcoded-micon i.bi-gender-female:not(:empty)::before,
+.pcoded-navbar .pcoded-micon i.bi-apple:not(:empty)::before,
+.pcoded-navbar .pcoded-micon i.bi-brain:not(:empty)::before,
+.pcoded-navbar .pcoded-micon i.bi-credit-card-fill:not(:empty)::before,
+.pcoded-navbar .pcoded-micon i.bi-tools:not(:empty)::before,
+.pcoded-navbar .pcoded-micon i.bi-person-circle:not(:empty)::before {
+    content: '' !important;
+}
+
+/* RESET DE POSICIONAMIENTO ABSOLUTO PROBLEMÁTICO */
+.pcoded-navbar .pcoded-micon i {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+}
+
+/* FALLBACK CON SÍMBOLOS UNICODE PARA ICONOS QUE NO CARGAN */
+
+/* Iconos principales de especialidades */
+.pcoded-navbar .pcoded-micon i.bi-heart-pulse:not([data-icon-loaded])::before { content: '♥' !important; font-family: serif !important; color: #ff6b6b !important; }
+.pcoded-navbar .pcoded-micon i.bi-person-hearts:not([data-icon-loaded])::before { content: '👶' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-gender-female:not([data-icon-loaded])::before { content: '♀' !important; font-family: serif !important; color: #ff69b4 !important; }
+.pcoded-navbar .pcoded-micon i.bi-apple:not([data-icon-loaded])::before { content: '🍎' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-brain:not([data-icon-loaded])::before { content: '🧠' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-credit-card-fill:not([data-icon-loaded])::before { content: '💳' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-tools:not([data-icon-loaded])::before { content: '🔧' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-person-circle:not([data-icon-loaded])::before { content: '👤' !important; font-family: serif !important; }
+
+/* Iconos adicionales comunes */
+.pcoded-navbar .pcoded-micon i.bi-hospital:not([data-icon-loaded])::before { content: '🏥' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-speedometer2:not([data-icon-loaded])::before { content: '📊' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-people-fill:not([data-icon-loaded])::before { content: '👥' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-calendar-event-fill:not([data-icon-loaded])::before { content: '📅' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-file-medical-fill:not([data-icon-loaded])::before { content: '📋' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-graph-up-arrow:not([data-icon-loaded])::before { content: '📈' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-gear-fill:not([data-icon-loaded])::before { content: '⚙' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-files:not([data-icon-loaded])::before { content: '📁' !important; font-family: serif !important; }
+.pcoded-navbar .pcoded-micon i.bi-virus:not([data-icon-loaded])::before { content: '🦠' !important; font-family: serif !important; }
+
+/* Fallback universal para iconos no especificados */
+.pcoded-navbar .pcoded-micon i[class*="bi-"]:not([data-icon-loaded]):empty::before {
+    content: '⚪' !important;
+    font-family: serif !important;
+    font-size: 14px !important;
+    color: inherit !important;
+}

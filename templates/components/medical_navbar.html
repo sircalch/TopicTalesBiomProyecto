@@ -1,0 +1,279 @@
+<!-- [ Medical Header ] start -->
+<header class="navbar pcoded-header navbar-expand-lg navbar-light">
+
+  <div class="m-header">
+    <a class="mobile-menu" id="mobile-collapse1" href="#!"><span></span></a>
+    <a href="{% url 'dashboard:index' %}" class="b-brand">
+      <div class="b-bg">
+        <i class="bi bi-heart-pulse-fill"></i>
+      </div>
+      <span class="b-title">TopicTales Biomédica</span>
+    </a>
+  </div>
+  
+  <a class="mobile-menu" id="mobile-header" href="#!">
+    <i class="bi bi-three-dots"></i>
+  </a>
+  
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav me-auto">
+      <li><a href="#!" class="full-screen" onclick="javascript:toggleFullScreen()"><i
+            class="bi bi-fullscreen"></i></a></li>
+      <li class="nav-item dropdown">
+        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown">Acciones Rápidas</a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'patients:create' %}">Nuevo Paciente</a></li>
+          <li><a class="dropdown-item" href="{% url 'appointments:create' %}">Nueva Cita</a></li>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <div class="main-search">
+          <div class="input-group">
+            <input type="text" id="m-search" class="form-control" placeholder="Buscar . . .">
+            <a href="#!" class="input-group-append search-close">
+              <i class="bi bi-x input-group-text"></i>
+            </a>
+            <span class="input-group-append search-btn btn btn-primary">
+              <i class="bi bi-search input-group-text"></i>
+            </span>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <ul class="navbar-nav ms-auto">
+      <li class="layout-type">
+        <a data-value="dark" data-bs-toggle="tooltip" href="#!" onclick="toggleDarkMode()"><i class="bi bi-moon-fill" id="theme-icon"></i></a>
+      </li>
+      
+        <div class="dropdown">
+          <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-bell-fill"></i></a>
+          <div class="dropdown-menu dropdown-menu-end notification">
+            <div class="noti-head">
+              <h6 class="d-inline-block m-b-0">Notificaciones</h6>
+              <div class="float-end">
+                <a href="#!" class="m-r-10">marcar como leídas</a>
+                <a href="#!">limpiar todo</a>
+              </div>
+            </div>
+            <ul class="noti-body">
+              <li class="n-title">
+                <p class="m-b-0">NUEVAS</p>
+              </li>
+              <li class="notification">
+                <div class="media">
+                  <i class="bi bi-person-circle img-radius"></i>
+                  <div class="media-body">
+                    <p><strong>Sistema Médico</strong><span class="n-time text-muted"><i
+                          class="bi bi-clock m-r-10"></i>Ahora</span></p>
+                    <p>Bienvenido al sistema</p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <div class="noti-footer">
+              <a href="#!">mostrar todas</a>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li><a href="#!" class="displayChatbox"><i class="bi bi-chat-dots-fill"></i></a></li>
+      <li>
+        <div class="dropdown drp-user">
+          <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end profile-notification">
+            <div class="pro-head">
+              <i class="bi bi-person-circle img-radius"></i>
+              <span>
+                {{ user.get_full_name|default:user.username }}
+              </span>
+              <a href="{% url 'accounts:logout' %}" class="dud-logout" title="Logout">
+                <i class="bi bi-box-arrow-right"></i>
+              </a>
+            </div>
+            <ul class="pro-body">
+              <li><a href="{% url 'accounts:profile' %}" class="dropdown-item"><i class="bi bi-person"></i> Perfil</a></li>
+              <li><a href="{% url 'accounts:settings' %}" class="dropdown-item"><i class="bi bi-gear"></i> Configuración</a></li>
+            </ul>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</header>
+<!-- [ Medical Header ] end -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Dark mode toggle
+  window.toggleDarkMode = function() {
+    const body = document.body;
+    const themeIcon = document.getElementById('theme-icon');
+    
+    if (body.classList.contains('dark-mode')) {
+      body.classList.remove('dark-mode');
+      themeIcon.className = 'bi bi-moon-fill';
+      localStorage.setItem('theme', 'light');
+    } else {
+      body.classList.add('dark-mode');
+      themeIcon.className = 'bi bi-sun-fill';
+      localStorage.setItem('theme', 'dark');
+    }
+  };
+
+  // Full screen toggle
+  window.toggleFullScreen = function() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  // Initialize tooltips
+  const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltips.forEach(tooltip => {
+    new bootstrap.Tooltip(tooltip);
+  });
+
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('theme-icon').className = 'bi bi-sun-fill';
+  }
+  
+  // Notifications functionality
+  loadNotifications();
+  
+  // Load notifications when dropdown is opened
+  document.getElementById('notifications-toggle').addEventListener('click', function() {
+    loadNotifications();
+  });
+  
+  // Mark all notifications as read
+  document.getElementById('mark-all-read').addEventListener('click', function(e) {
+    e.preventDefault();
+    markAllNotificationsRead();
+  });
+  
+  // Refresh notifications every 30 seconds
+  setInterval(loadNotifications, 30000);
+});
+
+// Notifications functions (same as before)
+function loadNotifications() {
+  fetch('/accounts/notifications/')
+    .then(response => response.json())
+    .then(data => {
+      updateNotificationsDropdown(data.notifications);
+      updateNotificationCount(data.unread_count);
+    })
+    .catch(error => {
+      console.error('Error loading notifications:', error);
+      document.getElementById('notifications-list').innerHTML = 
+        '<div class="dropdown-item-text text-center text-danger"><i class="bi bi-exclamation-triangle"></i> Error al cargar</div>';
+    });
+}
+
+function updateNotificationsDropdown(notifications) {
+  const notificationsList = document.getElementById('notifications-list');
+  
+  if (notifications.length === 0) {
+    notificationsList.innerHTML = 
+      '<div class="dropdown-item-text text-center text-muted"><i class="bi bi-check-circle"></i> No hay notificaciones</div>';
+    return;
+  }
+  
+  let html = '';
+  notifications.forEach(notification => {
+    const readClass = notification.is_read ? 'text-muted' : '';
+    const priorityClass = notification.priority_class;
+    
+    html += `
+      <div class="dropdown-item ${readClass}" data-notification-id="${notification.id}">
+        <div class="d-flex align-items-start">
+          <i class="bi ${notification.icon} me-2 ${priorityClass}" style="margin-top: 2px;"></i>
+          <div class="flex-grow-1">
+            <div class="fw-bold" style="font-size: 0.9rem;">${notification.title}</div>
+            <div style="font-size: 0.8rem;">${notification.message}</div>
+            <small class="text-muted">${notification.created_at}</small>
+          </div>
+          ${!notification.is_read ? '<div class="badge bg-primary ms-2" style="width: 8px; height: 8px; border-radius: 50%;"></div>' : ''}
+        </div>
+      </div>`;
+  });
+  
+  notificationsList.innerHTML = html;
+  
+  // Add click handlers to mark individual notifications as read
+  notificationsList.querySelectorAll('[data-notification-id]').forEach(item => {
+    item.addEventListener('click', function() {
+      const notificationId = this.dataset.notificationId;
+      markNotificationRead(notificationId);
+    });
+  });
+}
+
+function updateNotificationCount(count) {
+  const countBadge = document.getElementById('notifications-count');
+  if (count > 0) {
+    countBadge.textContent = count;
+    countBadge.style.display = 'inline';
+  } else {
+    countBadge.style.display = 'none';
+  }
+}
+
+function markNotificationRead(notificationId) {
+  fetch(`/accounts/notifications/${notificationId}/read/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      loadNotifications();
+    }
+  })
+  .catch(error => console.error('Error marking notification as read:', error));
+}
+
+function markAllNotificationsRead() {
+  fetch('/accounts/notifications/mark-all-read/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      loadNotifications();
+    }
+  })
+  .catch(error => console.error('Error marking all notifications as read:', error));
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+</script>

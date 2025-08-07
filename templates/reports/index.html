@@ -1,0 +1,649 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Reportes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-chart-line me-2 text-primary"></i>Dashboard de Reportes y Análisis
+                </h1>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Total Pacientes</h6>
+                                    <h3 class="mb-0">{{ total_patients|default:0 }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-users fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Consultas Este Mes</h6>
+                                    <h3 class="mb-0">{{ consultations_this_month|default:0 }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-stethoscope fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Ingresos Mes</h6>
+                                    <h3 class="mb-0">${{ monthly_revenue|default:0 }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Citas Programadas</h6>
+                                    <h3 class="mb-0">{{ upcoming_appointments|default:0 }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-calendar fa-2x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Categories -->
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Reportes de Pacientes</h5>
+                            <p class="card-text">Estadísticas y análisis sobre la población de pacientes.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#patientsReportModal">
+                                <i class="fas fa-chart-bar me-2"></i>Ver Reportes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-money-bill fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Reportes Financieros</h5>
+                            <p class="card-text">Análisis de ingresos, gastos y rentabilidad.</p>
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#financialReportModal">
+                                <i class="fas fa-chart-line me-2"></i>Ver Reportes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-alt fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Reportes de Citas</h5>
+                            <p class="card-text">Estadísticas sobre programación y asistencia.</p>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#appointmentsReportModal">
+                                <i class="fas fa-chart-pie me-2"></i>Ver Reportes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-laptop-medical fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Reportes de Equipos</h5>
+                            <p class="card-text">Estado y mantenimiento de equipos médicos.</p>
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#equipmentReportModal">
+                                <i class="fas fa-tools me-2"></i>Ver Reportes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-md fa-3x text-secondary mb-3"></i>
+                            <h5 class="card-title">Reportes de Especialidades</h5>
+                            <p class="card-text">Análisis por especialidad médica.</p>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#specialtiesReportModal">
+                                <i class="fas fa-stethoscope me-2"></i>Ver Reportes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patients Report Modal -->
+<div class="modal fade" id="patientsReportModal" tabindex="-1" aria-labelledby="patientsReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="patientsReportModalLabel">
+                    <i class="fas fa-users me-2"></i>Reportes de Pacientes
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-primary">247</h3>
+                                <small class="text-muted">Total Pacientes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-success">18</h3>
+                                <small class="text-muted">Nuevos Este Mes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-info">35</h3>
+                                <small class="text-muted">Edad Promedio</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-warning">89%</h3>
+                                <small class="text-muted">Pacientes Activos</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Distribución por Género:</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-primary" style="width: 58%">Femenino 58%</div>
+                            <div class="progress-bar bg-info" style="width: 42%">Masculino 42%</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Especialidades Más Consultadas:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Medicina General</span>
+                                <span class="badge bg-primary">89</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Psicología</span>
+                                <span class="badge bg-success">45</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Nutrición</span>
+                                <span class="badge bg-info">32</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">
+                    <i class="fas fa-download me-2"></i>Exportar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Financial Report Modal -->
+<div class="modal fade" id="financialReportModal" tabindex="-1" aria-labelledby="financialReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="financialReportModalLabel">
+                    <i class="fas fa-money-bill me-2"></i>Reportes Financieros
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-success">$18,750</h3>
+                                <small class="text-muted">Ingresos Este Mes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-info">$6,200</h3>
+                                <small class="text-muted">Gastos Operativos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-primary">$12,550</h3>
+                                <small class="text-muted">Ganancia Neta</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-warning">67%</h3>
+                                <small class="text-muted">Margen de Ganancia</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Ingresos por Especialidad:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Medicina General</span>
+                                <span class="badge bg-success">$8,900</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Psicología</span>
+                                <span class="badge bg-primary">$5,400</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Nutrición</span>
+                                <span class="badge bg-info">$3,200</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Cardiología</span>
+                                <span class="badge bg-warning">$1,250</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Métodos de Pago:</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" style="width: 45%">Efectivo 45%</div>
+                            <div class="progress-bar bg-primary" style="width: 35%">Tarjeta 35%</div>
+                            <div class="progress-bar bg-info" style="width: 20%">Seguro 20%</div>
+                        </div>
+                        <h6 class="fw-bold mt-3">Tendencia Mensual:</h6>
+                        <p class="text-success"><i class="fas fa-arrow-up me-1"></i>+15% respecto al mes anterior</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i>Exportar Excel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointments Report Modal -->
+<div class="modal fade" id="appointmentsReportModal" tabindex="-1" aria-labelledby="appointmentsReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="appointmentsReportModalLabel">
+                    <i class="fas fa-calendar-alt me-2"></i>Reportes de Citas
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-info">156</h3>
+                                <small class="text-muted">Citas Este Mes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-success">142</h3>
+                                <small class="text-muted">Citas Completadas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-warning">8</h3>
+                                <small class="text-muted">Canceladas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-danger">6</h3>
+                                <small class="text-muted">No Asistieron</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Tasa de Asistencia:</h6>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" style="width: 91%">91% Asistencia</div>
+                        </div>
+                        <h6 class="fw-bold">Horarios Más Solicitados:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>9:00 - 12:00</span>
+                                <span class="badge bg-success">48 citas</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>14:00 - 17:00</span>
+                                <span class="badge bg-primary">38 citas</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>17:00 - 20:00</span>
+                                <span class="badge bg-info">25 citas</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Distribución por Día:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Lunes</span>
+                                <span class="badge bg-primary">28</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Martes</span>
+                                <span class="badge bg-success">32</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Miércoles</span>
+                                <span class="badge bg-info">26</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Jueves</span>
+                                <span class="badge bg-warning">30</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Viernes</span>
+                                <span class="badge bg-danger">25</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-info">
+                    <i class="fas fa-download me-2"></i>Exportar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Equipment Report Modal -->
+<div class="modal fade" id="equipmentReportModal" tabindex="-1" aria-labelledby="equipmentReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="equipmentReportModalLabel">
+                    <i class="fas fa-laptop-medical me-2"></i>Reportes de Equipos
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-warning">24</h3>
+                                <small class="text-muted">Total Equipos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-success">20</h3>
+                                <small class="text-muted">Operativos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-info">3</h3>
+                                <small class="text-muted">En Mantenimiento</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-danger">1</h3>
+                                <small class="text-muted">Fuera de Servicio</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Estado de Equipos:</h6>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" style="width: 83%">Operativo 83%</div>
+                            <div class="progress-bar bg-info" style="width: 13%">Mantenimiento 13%</div>
+                            <div class="progress-bar bg-danger" style="width: 4%">Fuera de Servicio 4%</div>
+                        </div>
+                        <h6 class="fw-bold">Próximos Mantenimientos:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Electrocardiografo EC-001</span>
+                                <span class="badge bg-warning">5 Feb</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Monitor Signos Vitales SV-003</span>
+                                <span class="badge bg-info">12 Feb</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Equipos por Especialidad:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Cardiología</span>
+                                <span class="badge bg-danger">6 equipos</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Medicina General</span>
+                                <span class="badge bg-primary">8 equipos</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Laboratorio</span>
+                                <span class="badge bg-success">5 equipos</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Oftalmología</span>
+                                <span class="badge bg-info">3 equipos</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Odontología</span>
+                                <span class="badge bg-warning">2 equipos</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-warning">
+                    <i class="fas fa-download me-2"></i>Exportar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Specialties Report Modal -->
+<div class="modal fade" id="specialtiesReportModal" tabindex="-1" aria-labelledby="specialtiesReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="specialtiesReportModalLabel">
+                    <i class="fas fa-user-md me-2"></i>Reportes de Especialidades
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-secondary">6</h3>
+                                <small class="text-muted">Especialidades Activas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-primary">12</h3>
+                                <small class="text-muted">Especialistas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-success">89</h3>
+                                <small class="text-muted">Consultas/Semana</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-info">4.8</h3>
+                                <small class="text-muted">Calificación Promedio</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Productividad por Especialidad:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Medicina General</span>
+                                <div>
+                                    <span class="badge bg-primary me-2">35/sem</span>
+                                    <span class="badge bg-success">$8,900</span>
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Psicología</span>
+                                <div>
+                                    <span class="badge bg-primary me-2">22/sem</span>
+                                    <span class="badge bg-success">$5,400</span>
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Nutrición</span>
+                                <div>
+                                    <span class="badge bg-primary me-2">18/sem</span>
+                                    <span class="badge bg-success">$3,200</span>
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Cardiología</span>
+                                <div>
+                                    <span class="badge bg-primary me-2">8/sem</span>
+                                    <span class="badge bg-success">$1,250</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Satisfacción del Paciente:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Medicina General</span>
+                                <span class="badge bg-success">4.9/5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Psicología</span>
+                                <span class="badge bg-success">4.8/5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Nutrición</span>
+                                <span class="badge bg-success">4.7/5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Cardiología</span>
+                                <span class="badge bg-info">4.6/5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Oftalmología</span>
+                                <span class="badge bg-info">4.5/5</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Odontología</span>
+                                <span class="badge bg-warning">4.3/5</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary">
+                    <i class="fas fa-download me-2"></i>Exportar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

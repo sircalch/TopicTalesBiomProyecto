@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Suscripción{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-credit-card me-2 text-primary"></i>Plan de Suscripción
+                </h1>
+            </div>
+
+            <!-- Current Plan -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-check-circle me-2"></i>Plan Actual: Plan Básico
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Características Incluidas:</h6>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Hasta 5 usuarios</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Hasta 100 pacientes</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Módulo de Psicología</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Módulo de Nutrición</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Gestión de Citas</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Expedientes Médicos</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Facturación Básica</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Soporte por Email</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-center">
+                                        <h2 class="text-success">$29.99/mes</h2>
+                                        <p class="text-muted">Facturado mensualmente</p>
+                                        <div class="mb-3">
+                                            <strong>Próximo Pago:</strong><br>
+                                            <span class="text-muted">15 de Febrero, 2025</span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Estado:</strong>
+                                            <span class="badge bg-success ms-2">Activo</span>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-times me-2"></i>Cancelar Suscripción
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-chart-pie me-2"></i>Uso Actual del Plan
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Usuarios</small>
+                                    <small>{{ total_users|default:1 }}/5</small>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: {% widthratio total_users|default:1 5 100 %}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Pacientes</small>
+                                    <small>{{ total_patients|default:0 }}/100</small>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {% widthratio total_patients|default:0 100 100 %}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small>Almacenamiento</small>
+                                    <small>3.5GB/10GB</small>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-info" style="width: 35%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Tu plan actual cubre tus necesidades</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-history me-2"></i>Historial de Pagos
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <strong>Enero 2025</strong><br>
+                                        <small class="text-muted">Plan Básico</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-success">$29.99</span><br>
+                                        <small class="badge bg-success">Pagado</small>
+                                    </div>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <strong>Diciembre 2024</strong><br>
+                                        <small class="text-muted">Plan Básico</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-success">$29.99</span><br>
+                                        <small class="badge bg-success">Pagado</small>
+                                    </div>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <strong>Noviembre 2024</strong><br>
+                                        <small class="text-muted">Plan Básico</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-success">$29.99</span><br>
+                                        <small class="badge bg-success">Pagado</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-download me-2"></i>Descargar Facturas
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Plans -->
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <h4><i class="fas fa-star me-2"></i>Planes Disponibles</h4>
+                    <p class="text-muted">Actualiza tu plan para obtener más funcionalidades</p>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h5 class="card-title mb-0">Plan Básico</h5>
+                            <small>Plan Actual</small>
+                        </div>
+                        <div class="card-body text-center">
+                            <h2 class="text-primary">$29.99</h2>
+                            <p class="text-muted">por mes</p>
+                            <ul class="list-unstyled text-start">
+                                <li><i class="fas fa-check text-success me-2"></i>5 usuarios</li>
+                                <li><i class="fas fa-check text-success me-2"></i>100 pacientes</li>
+                                <li><i class="fas fa-check text-success me-2"></i>10GB almacenamiento</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Psicología y Nutrición</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Soporte por email</li>
+                            </ul>
+                            <button type="button" class="btn btn-primary w-100" disabled>
+                                Plan Actual
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning text-white text-center">
+                            <h5 class="card-title mb-0">Plan Profesional</h5>
+                            <small>Recomendado</small>
+                        </div>
+                        <div class="card-body text-center">
+                            <h2 class="text-warning">$59.99</h2>
+                            <p class="text-muted">por mes</p>
+                            <ul class="list-unstyled text-start">
+                                <li><i class="fas fa-check text-success me-2"></i>15 usuarios</li>
+                                <li><i class="fas fa-check text-success me-2"></i>500 pacientes</li>
+                                <li><i class="fas fa-check text-success me-2"></i>50GB almacenamiento</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Todas las especialidades</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Reportes avanzados</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Soporte prioritario</li>
+                            </ul>
+                            <button type="button" class="btn btn-warning w-100">
+                                <i class="fas fa-arrow-up me-2"></i>Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white text-center">
+                            <h5 class="card-title mb-0">Plan Enterprise</h5>
+                            <small>Para grandes clínicas</small>
+                        </div>
+                        <div class="card-body text-center">
+                            <h2 class="text-danger">$119.99</h2>
+                            <p class="text-muted">por mes</p>
+                            <ul class="list-unstyled text-start">
+                                <li><i class="fas fa-check text-success me-2"></i>Usuarios ilimitados</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Pacientes ilimitados</li>
+                                <li><i class="fas fa-check text-success me-2"></i>500GB almacenamiento</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Todas las funciones</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Integraciones API</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Soporte 24/7</li>
+                            </ul>
+                            <button type="button" class="btn btn-danger w-100">
+                                <i class="fas fa-crown me-2"></i>Contactar Ventas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planes de Tratamiento{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-route me-2 text-info"></i>Planes de Tratamiento
+                </h1>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'psychology:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                    <button type="button" class="btn btn-info">
+                        <i class="fas fa-plus me-2"></i>Nuevo Plan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Treatment Plans List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Planes de Tratamiento Activos</h5>
+                    <span class="badge bg-secondary">8 planes</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Diagnóstico</th>
+                                    <th>Tipo de Terapia</th>
+                                    <th>Progreso</th>
+                                    <th>Sesiones</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-primary text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>María González</strong><br>
+                                                <small class="text-muted">PAC001</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Trastorno de Ansiedad</strong><br>
+                                        <small class="text-muted">Ansiedad generalizada</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Terapia Cognitivo-Conductual</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                                        </div>
+                                        <small class="text-success">75%</small>
+                                    </td>
+                                    <td>
+                                        <strong>12/16</strong><br>
+                                        <small class="text-muted">sesiones</small>
+                                    </td>
+                                    <td>
+                                        <small>15 Dic 2024</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Activo</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Nueva Sesión">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-warning text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Carlos Rodríguez</strong><br>
+                                                <small class="text-muted">PAC002</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Depresión</strong><br>
+                                        <small class="text-muted">Episodio depresivo mayor</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Terapia Interpersonal</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-warning" style="width: 40%"></div>
+                                        </div>
+                                        <small class="text-warning">40%</small>
+                                    </td>
+                                    <td>
+                                        <strong>6/20</strong><br>
+                                        <small class="text-muted">sesiones</small>
+                                    </td>
+                                    <td>
+                                        <small>10 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">En Progreso</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Nueva Sesión">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Actualizar">
+                                                <i class="fas fa-sync"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-success text-white rounded-circle me-2">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Familia Hernández</strong><br>
+                                                <small class="text-muted">Terapia Familiar</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Conflictos Familiares</strong><br>
+                                        <small class="text-muted">Problemas de comunicación</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Terapia Sistémica</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-info" style="width: 60%"></div>
+                                        </div>
+                                        <small class="text-info">60%</small>
+                                    </td>
+                                    <td>
+                                        <strong>9/12</strong><br>
+                                        <small class="text-muted">sesiones</small>
+                                    </td>
+                                    <td>
+                                        <small>05 Ene 2025</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Activo</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Programar Sesión">
+                                                <i class="fas fa-calendar"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Ver Participantes">
+                                                <i class="fas fa-users"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-danger text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Ana López</strong><br>
+                                                <small class="text-muted">PAC003</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>TEPT</strong><br>
+                                        <small class="text-muted">Trastorno por estrés postraumático</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">EMDR</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 90%"></div>
+                                        </div>
+                                        <small class="text-success">90%</small>
+                                    </td>
+                                    <td>
+                                        <strong>18/20</strong><br>
+                                        <small class="text-muted">sesiones</small>
+                                    </td>
+                                    <td>
+                                        <small>20 Nov 2024</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Finalizando</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Plan">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Evaluación Final">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Reporte Final">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Statistics -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">8</h3>
+                            <small class="text-muted">Planes Activos</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">5</h3>
+                            <small class="text-muted">Completados Este Mes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">68%</h3>
+                            <small class="text-muted">Promedio de Progreso</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">12</h3>
+                            <small class="text-muted">Sesiones Esta Semana</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

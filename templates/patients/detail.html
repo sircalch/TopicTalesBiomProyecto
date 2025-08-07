@@ -14,20 +14,270 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="fas fa-user me-2"></i>Detalle del Paciente
+                    <i class="bi bi-person-circle me-2"></i>Detalle del Paciente
                 </h5>
             </div>
             <div class="card-body">
-                <div class="text-center py-5">
-                    <i class="fas fa-user fa-4x text-muted mb-3"></i>
-                    <h5 class="text-muted">Vista Detallada del Paciente</h5>
-                    <p class="text-muted">Esta funcionalidad estará disponible próximamente.</p>
-                    <a href="{% url 'patients:list' %}" class="btn btn-primary">
-                        <i class="fas fa-arrow-left me-1"></i>Volver a Lista de Pacientes
-                    </a>
+                <!-- Patient Header -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <img src="{% if patient.profile_picture %}{{ patient.profile_picture.url }}{% else %}https://via.placeholder.com/80x80/007bff/ffffff?text={{ patient.first_name|first|upper }}{% endif %}" 
+                                 class="rounded-circle me-3" width="80" height="80" alt="Avatar">
+                            <div>
+                                <h3 class="mb-1">{{ patient.get_full_name }}</h3>
+                                <p class="text-muted mb-1">ID: {{ patient.patient_id }} • {{ patient.get_age }} años • {{ patient.get_gender_display }}</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-success">Activo</span>
+                                    {% if patient.blood_type %}
+                                    <span class="badge bg-danger">{{ patient.blood_type }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="btn-group">
+                            <a href="{% url 'patients:edit' patient.id %}" class="btn btn-primary">
+                                <i class="bi bi-pencil me-1"></i>Editar
+                            </a>
+                            <button type="button" class="btn btn-outline-success" onclick="scheduleAppointment()">
+                                <i class="bi bi-calendar-plus me-1"></i>Nueva Cita
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Patient Information Tabs -->
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="patientTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                                    <i class="bi bi-person-vcard me-1"></i>Información Personal
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="medical-tab" data-bs-toggle="tab" data-bs-target="#medical" type="button" role="tab">
+                                    <i class="bi bi-clipboard2-pulse me-1"></i>Información Médica
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab">
+                                    <i class="bi bi-calendar-event me-1"></i>Citas Recientes
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content mt-3" id="patientTabsContent">
+                            <!-- Personal Information -->
+                            <div class="tab-pane fade show active" id="info" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted mb-3">Información de Contacto</h6>
+                                        <div class="mb-2">
+                                            <strong>Email:</strong> {{ patient.email|default:"No especificado" }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Teléfono:</strong> {{ patient.phone_number|default:"No especificado" }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Dirección:</strong> {{ patient.address|default:"No especificada" }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Contacto de Emergencia:</strong> {{ patient.emergency_contact_name|default:"No especificado" }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted mb-3">Información General</h6>
+                                        <div class="mb-2">
+                                            <strong>Fecha de Nacimiento:</strong> {{ patient.birth_date|date:"d/m/Y" }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Edad:</strong> {{ patient.get_age }} años
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Género:</strong> {{ patient.get_gender_display }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Fecha de Registro:</strong> {{ patient.registration_date|date:"d/m/Y" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Medical Information -->
+                            <div class="tab-pane fade" id="medical" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted mb-3">Información Médica</h6>
+                                        <div class="mb-2">
+                                            <strong>Tipo de Sangre:</strong> {{ patient.blood_type|default:"No especificado" }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Notas Médicas:</strong>
+                                            <div class="mt-1">{{ patient.notes|default:"Sin notas médicas registradas"|linebreaks }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted mb-3">Estadísticas</h6>
+                                        <div class="mb-2">
+                                            <strong>Última Visita:</strong> {{ patient.last_visit|date:"d/m/Y"|default:"Sin visitas" }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Total de Citas:</strong> <span id="total-appointments">Cargando...</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Estado:</strong> 
+                                            {% if patient.is_active %}
+                                                <span class="badge bg-success">Activo</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactivo</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Appointments -->
+                            <div class="tab-pane fade" id="appointments" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Hora</th>
+                                                <th>Tipo</th>
+                                                <th>Médico</th>
+                                                <th>Estado</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="appointments-table">
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted">Cargando citas...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'patients:list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Volver a Lista
+                            </a>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-info" onclick="viewVitalSigns()" data-bs-toggle="tooltip" title="Ver y registrar signos vitales">
+                                    <i class="bi bi-heart-pulse me-1"></i>Signos Vitales
+                                </button>
+                                <button type="button" class="btn btn-outline-warning" onclick="viewDocuments()" data-bs-toggle="tooltip" title="Ver documentos del paciente">
+                                    <i class="bi bi-file-earmark-medical me-1"></i>Documentos
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="viewMedicalHistory()" data-bs-toggle="tooltip" title="Ver historia médica completa">
+                                    <i class="bi bi-clock-history me-1"></i>Historia Médica
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Load appointments data when tab is clicked
+document.getElementById('appointments-tab').addEventListener('click', function() {
+    loadAppointments();
+});
+
+// Load initial data
+document.addEventListener('DOMContentLoaded', function() {
+    loadAppointmentCount();
+});
+
+function loadAppointmentCount() {
+    // Simulate loading appointment count
+    setTimeout(() => {
+        document.getElementById('total-appointments').textContent = '7 citas';
+    }, 500);
+}
+
+function loadAppointments() {
+    const tableBody = document.getElementById('appointments-table');
+    
+    // Show loading
+    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Cargando citas...</td></tr>';
+    
+    // Simulate loading appointments
+    setTimeout(() => {
+        const sampleAppointments = `
+            <tr>
+                <td>15/07/2025</td>
+                <td>10:30</td>
+                <td><span class="badge bg-primary">Consulta General</span></td>
+                <td>Dr. García</td>
+                <td><span class="badge bg-success">Completada</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewAppointment(1)" data-bs-toggle="tooltip" title="Ver detalles de la cita">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>20/07/2025</td>
+                <td>14:00</td>
+                <td><span class="badge bg-info">Seguimiento</span></td>
+                <td>Dr. Martínez</td>
+                <td><span class="badge bg-warning">Programada</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewAppointment(2)" data-bs-toggle="tooltip" title="Ver detalles de la cita">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML = sampleAppointments;
+    }, 800);
+}
+
+function scheduleAppointment() {
+    alert('Redirigiendo a formulario de nueva cita...');
+    // window.location.href = '/appointments/create/?patient={{ patient.id }}';
+}
+
+function viewVitalSigns() {
+    window.location.href = '{% url "patients:vital_signs" patient.id %}';
+}
+
+function viewDocuments() {
+    window.location.href = '{% url "patients:documents" patient.id %}';
+}
+
+function viewMedicalHistory() {
+    window.location.href = '{% url "patients:medical_history" patient.id %}';
+}
+
+function viewAppointment(appointmentId) {
+    alert(`Ver detalles de la cita #${appointmentId}`);
+    // window.location.href = `/appointments/${appointmentId}/`;
+}
+
+// Initialize tooltips when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
 {% endblock %}

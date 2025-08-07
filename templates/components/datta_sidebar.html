@@ -1,0 +1,646 @@
+{% load static %}
+
+<!-- TopicTales Biomédica - Datta Able Style Sidebar -->
+<!-- [ navigation menu ] start -->
+<nav class="pcoded-navbar menupos-fixed">
+  <div class="navbar-wrapper">
+    
+    <!-- Brand Header -->
+    <div class="navbar-brand header-logo">
+      <a href="{% url 'dashboard:index' %}" class="b-brand">
+        <div class="b-bg">
+          <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+        <span class="b-title">TopicTales Biomédica</span>
+      </a>
+      <a class="mobile-menu" id="mobile-collapse" href="#!">
+        <span></span>
+        <span></span>
+        <span></span>
+      </a>
+    </div>
+    
+    <!-- Navigation Content -->
+    <div class="navbar-content scroll-div">
+      <ul class="nav pcoded-inner-navbar">
+        
+        <!-- Dashboard -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Navegación</label>
+        </li>
+        <li data-username="dashboard principal inicio" class="nav-item">
+          <a href="{% url 'dashboard:index' %}" class="nav-link {% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}">
+            <span class="pcoded-micon">
+              <i class="bi bi-speedometer2"></i>
+            </span>
+            <span class="pcoded-mtext">Panel Principal</span>
+          </a>
+        </li>
+
+        <!-- Dynamic Medical Modules -->
+        {% for category, modules in sidebar_modules.items %}
+          {% if modules %}
+            
+            <!-- Category Section -->
+            <li class="nav-item pcoded-menu-caption">
+              <label>
+                {% if category == 'core' %}
+                  Gestión Principal
+                {% elif category == 'medical' %}
+                  Especialidades Médicas
+                {% elif category == 'admin' %}
+                  Administración
+                {% elif category == 'reports' %}
+                  Reportes y Analytics
+                {% elif category == 'communication' %}
+                  Comunicación
+                {% elif category == 'integration' %}
+                  Integraciones
+                {% else %}
+                  {{ category|title }}
+                {% endif %}
+              </label>
+            </li>
+
+            <!-- Category Modules -->
+            {% for module_data in modules %}
+              {% with module=module_data.module submodules=module_data.submodules %}
+                {% if submodules %}
+                  <!-- Module with Submenu -->
+                  <li data-username="{{ module.display_name|lower }}" class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link">
+                      <span class="pcoded-micon">
+                        <i class="bi {{ module.icon|default:'bi-folder2' }}"></i>
+                      </span>
+                      <span class="pcoded-mtext">{{ module.display_name }}</span>
+                      {% if user_subscription.plan == 'BASIC' and module.min_plan_required != 'BASIC' %}
+                        <span class="pcoded-badge label label-warning">PRO</span>
+                      {% endif %}
+                    </a>
+                    <ul class="pcoded-submenu">
+                      {% for submodule in submodules %}
+                        <li>
+                          <a href="{% if submodule.url_name %}{% url submodule.url_name %}{% else %}#{% endif %}">
+                            {{ submodule.display_name }}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+                {% else %}
+                  <!-- Simple Module -->
+                  <li data-username="{{ module.display_name|lower }}" class="nav-item">
+                    <a href="{% if module.url_name %}{% url module.url_name %}{% else %}#{% endif %}" class="nav-link">
+                      <span class="pcoded-micon">
+                        <i class="bi {{ module.icon|default:'bi-folder2' }}"></i>
+                      </span>
+                      <span class="pcoded-mtext">{{ module.display_name }}</span>
+                      {% if user_subscription.plan == 'BASIC' and module.min_plan_required != 'BASIC' %}
+                        <span class="pcoded-badge label label-warning">PRO</span>
+                      {% endif %}
+                    </a>
+                  </li>
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+
+          {% endif %}
+        {% endfor %}
+
+        <!-- Fallback Medical Menu if no dynamic modules -->
+        {% if not sidebar_modules %}
+          <li class="nav-item pcoded-menu-caption">
+            <label>Gestión Médica</label>
+          </li>
+          
+          <!-- Patients -->
+          <li data-username="pacientes gestión lista nuevo buscar" class="nav-item pcoded-hasmenu">
+            <a href="#" class="nav-link">
+              <span class="pcoded-micon">
+                <i class="bi bi-people-fill"></i>
+              </span>
+              <span class="pcoded-mtext">Pacientes</span>
+              <span class="pcoded-badge label label-primary">{{ subscription_features.current_patients|default:0 }}</span>
+            </a>
+            <ul class="pcoded-submenu">
+              <li><a href="{% url 'patients:list' %}">Lista de Pacientes</a></li>
+              <li><a href="{% url 'patients:create' %}">Nuevo Paciente</a></li>
+              <li><a href="{% url 'patients:search' %}">Búsqueda Avanzada</a></li>
+            </ul>
+          </li>
+
+          <!-- Appointments -->
+          <li data-username="agenda citas calendario nueva lista" class="nav-item pcoded-hasmenu">
+            <a href="#" class="nav-link">
+              <span class="pcoded-micon">
+                <i class="bi bi-calendar-event-fill"></i>
+              </span>
+              <span class="pcoded-mtext">Agenda</span>
+              <span class="pcoded-badge label label-danger">8</span>
+            </a>
+            <ul class="pcoded-submenu">
+              <li><a href="{% url 'appointments:calendar' %}">Calendario</a></li>
+              <li><a href="{% url 'appointments:list' %}">Lista de Citas</a></li>
+              <li><a href="{% url 'appointments:create' %}">Nueva Cita</a></li>
+            </ul>
+          </li>
+
+          <!-- Medical Records -->
+          <li data-username="expedientes médicos historial" class="nav-item">
+            <a href="{% url 'medical_records:index' %}" class="nav-link">
+              <span class="pcoded-micon">
+                <i class="bi bi-file-medical-fill"></i>
+              </span>
+              <span class="pcoded-mtext">Expedientes</span>
+            </a>
+          </li>
+
+          <!-- Reports -->
+          <li data-username="reportes analytics estadísticas" class="nav-item">
+            <a href="{% url 'reports:index' %}" class="nav-link">
+              <span class="pcoded-micon">
+                <i class="bi bi-graph-up"></i>
+              </span>
+              <span class="pcoded-mtext">Reportes</span>
+            </a>
+          </li>
+        {% endif %}
+
+        <!-- Administrative Section -->
+        {% if user.is_superuser %}
+          <li class="nav-item pcoded-menu-caption">
+            <label>Administración</label>
+          </li>
+          <li data-username="admin panel administración sistema" class="nav-item">
+            <a href="{% url 'admin:index' %}" class="nav-link">
+              <span class="pcoded-micon">
+                <i class="bi bi-gear-fill"></i>
+              </span>
+              <span class="pcoded-mtext">Panel Admin</span>
+            </a>
+          </li>
+        {% endif %}
+
+        <!-- User Profile Section -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Usuario</label>
+        </li>
+        <li data-username="perfil usuario configuración" class="nav-item pcoded-hasmenu">
+          <a href="#" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-person-circle"></i>
+            </span>
+            <span class="pcoded-mtext">{% if user.profile %}{{ user.profile.role|default:"Médico" }}{% else %}Médico{% endif %}</span>
+            <span class="pcoded-badge label label-success">Online</span>
+          </a>
+          <ul class="pcoded-submenu">
+            <li><a href="{% url 'accounts:profile' %}">Mi Perfil</a></li>
+            {% if user_subscription.plan == 'BASIC' %}
+              <li><a href="{% url 'accounts:subscription' %}">Actualizar Plan</a></li>
+            {% endif %}
+            <li><a href="{% url 'accounts:logout' %}">Cerrar Sesión</a></li>
+          </ul>
+        </li>
+
+        <!-- Subscription Info -->
+        <li class="nav-item pcoded-menu-caption">
+          <label>Plan: {{ user_subscription.plan|default:"Básico" }}</label>
+        </li>
+        <li data-username="subscripción plan pacientes" class="nav-item">
+          <a href="{% if user_subscription.plan == 'BASIC' %}{% url 'accounts:subscription' %}{% else %}#{% endif %}" class="nav-link">
+            <span class="pcoded-micon">
+              <i class="bi bi-award-fill"></i>
+            </span>
+            <span class="pcoded-mtext">{{ subscription_features.current_patients|default:0 }}{% if subscription_features.max_patients != -1 %}/{{ subscription_features.max_patients }}{% endif %} Pacientes</span>
+            {% if user_subscription.plan == 'BASIC' %}
+              <span class="pcoded-badge label label-warning">Actualizar</span>
+            {% endif %}
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- [ navigation menu ] end -->
+
+<!-- Datta Able Sidebar Styles -->
+<style>
+/* Datta Able Pro Sidebar Styles */
+:root {
+    --datta-primary: #04a9f5;
+    --datta-primary-dark: #0391d1;
+    --datta-secondary: #8392ab;
+    --datta-success: #4caf50;
+    --datta-info: #2196f3;
+    --datta-warning: #ff9800;
+    --datta-danger: #f44336;
+    --datta-light: #f4f7fa;
+    --datta-dark: #212529;
+    --datta-white: #ffffff;
+    --datta-gray: #888888;
+    --datta-sidebar-width: 270px;
+}
+
+/* Main Sidebar */
+.pcoded-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--datta-sidebar-width);
+    background: var(--datta-white);
+    box-shadow: 0 0 35px 0 rgba(69, 90, 100, 0.08);
+    border-right: 1px solid #e2e5e8;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    font-family: "Open Sans", sans-serif;
+}
+
+.navbar-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Brand Header */
+.header-logo {
+    position: relative;
+    background: linear-gradient(135deg, var(--datta-primary) 0%, var(--datta-primary-dark) 100%);
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.b-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--datta-white);
+}
+
+.b-bg {
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.b-bg i {
+    font-size: 18px;
+    color: var(--datta-white);
+}
+
+.b-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--datta-white);
+    white-space: nowrap;
+}
+
+.mobile-menu {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    color: var(--datta-white);
+    font-size: 18px;
+    text-decoration: none;
+    z-index: 10;
+}
+
+.mobile-menu span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--datta-white);
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+.mobile-menu.is-active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-4px, 4px);
+}
+
+.mobile-menu.is-active span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu.is-active span:nth-child(3) {
+    transform: rotate(45deg) translate(-4px, -4px);
+}
+
+/* Navigation Content */
+.navbar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #e2e5e8 transparent;
+}
+
+.navbar-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.navbar-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.navbar-content::-webkit-scrollbar-thumb {
+    background: #e2e5e8;
+    border-radius: 3px;
+}
+
+/* Navigation List */
+.pcoded-inner-navbar {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Menu Caption */
+.pcoded-menu-caption {
+    margin: 25px 0 15px 0;
+}
+
+.pcoded-menu-caption label {
+    color: #a7afb7;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 0;
+    padding: 0 25px;
+    display: block;
+}
+
+/* Navigation Items */
+.nav-item {
+    margin-bottom: 2px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    color: #5a6c7d;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    background: #f8f9fa;
+    color: var(--datta-primary);
+    text-decoration: none;
+}
+
+.nav-link.active {
+    background: linear-gradient(135deg, rgba(4, 169, 245, 0.1) 0%, rgba(4, 169, 245, 0.05) 100%);
+    color: var(--datta-primary);
+    border-right: 3px solid var(--datta-primary);
+    font-weight: 600;
+}
+
+.pcoded-micon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.pcoded-mtext {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Badges */
+.pcoded-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.label-primary {
+    background: var(--datta-primary);
+    color: var(--datta-white);
+}
+
+.label-success {
+    background: var(--datta-success);
+    color: var(--datta-white);
+}
+
+.label-warning {
+    background: var(--datta-warning);
+    color: var(--datta-white);
+}
+
+.label-danger {
+    background: var(--datta-danger);
+    color: var(--datta-white);
+}
+
+/* Submenu */
+.pcoded-hasmenu > .nav-link::after {
+    content: "\f054";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 20px;
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.pcoded-hasmenu.pcoded-trigger > .nav-link::after {
+    transform: rotate(90deg);
+}
+
+.pcoded-submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    background: #f8f9fa;
+    transition: max-height 0.3s ease;
+}
+
+.pcoded-hasmenu.pcoded-trigger .pcoded-submenu {
+    max-height: 500px;
+    padding: 5px 0;
+}
+
+.pcoded-submenu li {
+    margin: 0;
+}
+
+.pcoded-submenu a {
+    display: block;
+    padding: 10px 25px 10px 60px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.pcoded-submenu a:hover {
+    background: #e9ecef;
+    color: var(--datta-primary);
+    text-decoration: none;
+}
+
+/* Layout Adjustments */
+.pcoded-main-container {
+    margin-left: var(--datta-sidebar-width);
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.pcoded-content {
+    padding-top: 85px;
+}
+
+.pcoded-inner-content {
+    padding: 15px;
+}
+
+.pcoded-header {
+    position: fixed;
+    top: 0;
+    left: var(--datta-sidebar-width);
+    right: 0;
+    z-index: 1001;
+    background: #fff;
+    box-shadow: 0 1px 15px rgba(69, 90, 100, 0.08);
+    transition: left 0.3s ease;
+    height: 70px;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .pcoded-navbar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .pcoded-navbar.mobile-menu-open {
+        transform: translateX(0);
+    }
+    
+    .mobile-menu {
+        display: block;
+    }
+    
+    .pcoded-main-container {
+        margin-left: 0;
+    }
+    
+    .pcoded-header {
+        left: 0;
+    }
+}
+
+/* Sidebar collapsed state */
+.pcoded-navbar.collapsed {
+    width: 60px;
+}
+
+.pcoded-navbar.collapsed .pcoded-mtext,
+.pcoded-navbar.collapsed .b-title,
+.pcoded-navbar.collapsed .pcoded-menu-caption label {
+    display: none;
+}
+
+.pcoded-navbar.collapsed .pcoded-micon {
+    margin-right: 0;
+}
+
+body.sidebar-collapsed .pcoded-main-container {
+    margin-left: 60px;
+}
+
+body.sidebar-collapsed .pcoded-header {
+    left: 60px;
+}
+</style>
+
+<!-- Datta Able Sidebar JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dropdown functionality
+    const dropdownItems = document.querySelectorAll('.pcoded-hasmenu');
+    
+    dropdownItems.forEach(item => {
+        const link = item.querySelector('.nav-link');
+        
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Close other dropdowns
+            dropdownItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('pcoded-trigger');
+                }
+            });
+            
+            // Toggle current dropdown
+            item.classList.toggle('pcoded-trigger');
+        });
+    });
+    
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-collapse');
+    const sidebar = document.querySelector('.pcoded-navbar');
+    
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Check if mobile or desktop
+            if (window.innerWidth <= 991) {
+                // Mobile: slide sidebar in/out
+                sidebar.classList.toggle('mobile-menu-open');
+                mobileMenuBtn.classList.toggle('is-active');
+            } else {
+                // Desktop: collapse sidebar
+                sidebar.classList.toggle('collapsed');
+                document.body.classList.toggle('sidebar-collapsed');
+            }
+        });
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 991) {
+            // Remove mobile classes on desktop
+            sidebar.classList.remove('mobile-menu-open');
+            mobileMenuBtn.classList.remove('is-active');
+        } else {
+            // Remove desktop classes on mobile
+            sidebar.classList.remove('collapsed');
+            document.body.classList.remove('sidebar-collapsed');
+        }
+    });
+    
+    console.log('Datta Able sidebar initialized');
+});
+</script>

@@ -1,0 +1,146 @@
+/* ============================================================
+   NAVBAR RESET - TopicTales Biomédica
+   Resetear a plantilla original Datta Able
+   ============================================================ */
+
+/* REMOVER TODOS LOS OVERRIDES DEL NAVBAR */
+/* Dejar que la plantilla original maneje el layout */
+
+/* Solo ajustes mínimos necesarios para sidebar colapsado */
+.pcoded-navbar-hide .pcoded-header,
+body.navbar-collapsed .pcoded-header,
+.navbar-minimize .pcoded-header {
+    left: 70px !important;
+    width: calc(100vw - 70px) !important;
+}
+
+
+
+
+
+.pcoded-header .navbar-search .form-control {
+    border-radius: 6px 0 0 6px !important;
+    border-right: none !important;
+    font-size: 0.875rem !important;
+}
+
+.pcoded-header .navbar-search .input-group-text {
+    border-radius: 0 6px 6px 0 !important;
+    border-left: none !important;
+    background-color: #f8f9fa !important;
+    cursor: pointer !important;
+}
+
+/* ELEMENTOS INDIVIDUALES */
+.pcoded-header a {
+    color: #495057 !important;
+    text-decoration: none !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 0.9rem !important;
+}
+
+.pcoded-header a:hover {
+    background-color: #f8f9fa !important;
+    color: #007bff !important;
+}
+
+/* ICONOS */
+.pcoded-header i {
+    font-size: 1.2rem !important;
+    color: inherit !important;
+}
+
+/* DROPDOWNS */
+.pcoded-header .dropdown-menu {
+    top: 100% !important;
+    margin-top: 5px !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+}
+
+/* BADGES */
+.pcoded-header .badge {
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    font-size: 0.65rem !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    line-height: 16px !important;
+    border-radius: 9px !important;
+}
+
+/* TEXTO DE USUARIO */
+.pcoded-header .navbar-right span {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #495057 !important;
+}
+
+
+
+/* NAVBAR USANDO LAYOUT ORIGINAL DE DATTA ABLE */
+/* Sin overrides innecesarios - layout natural de la plantilla */
+
+/* EVITAR OVERFLOW */
+.pcoded-header {
+    overflow: visible !important;
+}
+
+.pcoded-header .container-fluid {
+    overflow: visible !important;
+}
+
+/* FORZAR ALINEACIÓN VERTICAL */
+.pcoded-header * {
+    box-sizing: border-box !important;
+}
+
+/* ESPACIO ENTRE ELEMENTOS */
+.pcoded-header .dropdown {
+    position: relative !important;
+}
+
+.pcoded-header .dropdown-toggle::after {
+    margin-left: 0.5rem !important;
+}
+
+/* TEMA OSCURO COMPATIBLE */
+.dark-mode .pcoded-header {
+    background-color: #2c3e50 !important;
+    border-bottom-color: #34495e !important;
+}
+
+.dark-mode .pcoded-header a {
+    color: #ecf0f1 !important;
+}
+
+.dark-mode .pcoded-header a:hover {
+    background-color: #34495e !important;
+    color: #3498db !important;
+}
+
+.dark-mode .pcoded-header .form-control {
+    background-color: #34495e !important;
+    border-color: #495867 !important;
+    color: #ecf0f1 !important;
+}
+
+.dark-mode .pcoded-header .input-group-text {
+    background-color: #495867 !important;
+    border-color: #495867 !important;
+    color: #ecf0f1 !important;
+}
+
+/* DEBUG - VERIFICAR CLASES DE SIDEBAR COLAPSADO */
+.pcoded-navbar-hide,
+body.navbar-collapsed,
+.navbar-minimize {
+    /* Estas clases activan el modo sidebar colapsado */
+}

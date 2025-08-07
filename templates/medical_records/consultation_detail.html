@@ -52,7 +52,13 @@
                     <div class="col-md-6">
                         <h6 class="text-muted mb-2">Personal Médico</h6>
                         <p><strong>Médico:</strong> Dr. {{ consultation.doctor.get_full_name }}</p>
-                        <p><strong>Especialidad:</strong> {{ consultation.doctor.profile.specialty|default:"Medicina General" }}</p>
+                        <p><strong>Especialidad:</strong> 
+                            {% if consultation.doctor.profile.specialty %}
+                                {{ consultation.doctor.profile.specialty }}
+                            {% else %}
+                                Medicina General
+                            {% endif %}
+                        </p>
                         <p><strong>Registro:</strong> {{ consultation.created_at|date:"d/m/Y H:i" }}</p>
                     </div>
                 </div>
@@ -250,7 +256,7 @@
                 <div class="small">
                     <div class="row mb-2">
                         <div class="col-5"><strong>Edad:</strong></div>
-                        <div class="col-7">{{ consultation.patient.age }} años</div>
+                        <div class="col-7">{{ consultation.patient.get_age }} años</div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-5"><strong>Género:</strong></div>

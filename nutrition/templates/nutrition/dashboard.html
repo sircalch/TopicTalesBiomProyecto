@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Nutrición - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-card.success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    
+    .stat-card.warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .stat-card.info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .bmi-chart {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    
+    .recent-item {
+        background: white;
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 0 10px 10px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nutrition-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-primary">
+                        <i class="fas fa-leaf me-2"></i>Dashboard Nutrición
+                    </h1>
+                    <p class="text-muted mb-0">Gestión integral de nutrición y dietética</p>
+                </div>
+                <div>
+                    <a href="{% url 'nutrition:assessment_create' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-plus me-1"></i>Nueva Evaluación
+                    </a>
+                    <a href="{% url 'nutrition:diet_plan_create' %}" class="btn btn-success">
+                        <i class="fas fa-utensils me-1"></i>Nuevo Plan
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="text-center">
+                    <i class="fas fa-clipboard-list nutrition-icon"></i>
+                    <h3 class="mb-1">{{ total_assessments }}</h3>
+                    <p class="mb-0">Evaluaciones Nutricionales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card success">
+                <div class="text-center">
+                    <i class="fas fa-utensils nutrition-icon"></i>
+                    <h3 class="mb-1">{{ total_diet_plans }}</h3>
+                    <p class="mb-0">Planes Dietéticos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card warning">
+                <div class="text-center">
+                    <i class="fas fa-chart-line nutrition-icon"></i>
+                    <h3 class="mb-1">{{ active_plans }}</h3>
+                    <p class="mb-0">Planes Activos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card info">
+                <div class="text-center">
+                    <i class="fas fa-user-check nutrition-icon"></i>
+                    <h3 class="mb-1">{{ recent_consultations }}</h3>
+                    <p class="mb-0">Consultas Nutricionales</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Distribución de IMC -->
+        <div class="col-lg-6 mb-4">
+            <div class="bmi-chart">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Distribución por IMC
+                </h5>
+                {% if bmi_stats %}
+                <canvas id="bmiChart" width="400" height="200"></canvas>
+                {% else %}
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                    <p>No hay datos de IMC disponibles</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Evaluaciones Recientes -->
+        <div class="col-lg-6 mb-4">
+            <div class="bmi-chart">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-clock me-2"></i>Evaluaciones Recientes
+                </h5>
+                {% if recent_assessments %}
+                    {% for assessment in recent_assessments %}
+                    <div class="recent-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ assessment.patient.get_full_name }}</h6>
+                                <small class="text-muted">
+                                    IMC: {{ assessment.bmi }} - {{ assessment.get_bmi_category }}
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">{{ assessment.created_at|date:"d/m/Y" }}</small>
+                                <br>
+                                <a href="{% url 'nutrition:assessment_detail' assessment.pk %}" class="btn btn-sm btn-outline-primary">
+                                    Ver
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'nutrition:assessment_list' %}" class="btn btn-outline-primary">
+                            Ver todas las evaluaciones
+                        </a>
+                    </div>
+                {% else %}
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                    <p>No hay evaluaciones nutricionales registradas</p>
+                    <a href="{% url 'nutrition:assessment_create' %}" class="btn btn-primary">
+                        Crear primera evaluación
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultas Próximas -->
+    {% if upcoming_consultations %}
+    <div class="row">
+        <div class="col-12">
+            <div class="bmi-chart">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-calendar-alt me-2"></i>Próximas Consultas Nutricionales
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Última Consulta</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for consultation in upcoming_consultations %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                            {{ consultation.patient.first_name.0 }}{{ consultation.patient.last_name.0 }}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ consultation.patient.get_full_name }}</h6>
+                                            <small class="text-muted">{{ consultation.patient.identification_number }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ consultation.next_appointment|date:"d/m/Y H:i" }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ consultation.get_consultation_type_display }}</span>
+                                </td>
+                                <td>{{ consultation.consultation_date|date:"d/m/Y" }}</td>
+                                <td>
+                                    <a href="{% url 'nutrition:consultation_detail' consultation.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'nutrition:consultation_list' %}" class="btn btn-outline-primary">
+                        Ver todas las consultas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if bmi_stats %}
+    // Gráfico de distribución de IMC
+    const bmiData = {{ bmi_stats|safe }};
+    const ctx = document.getElementById('bmiChart').getContext('2d');
+    
+    const labels = Object.keys(bmiData);
+    const data = Object.values(bmiData);
+    const colors = [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+    ];
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors.slice(0, labels.length),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %}

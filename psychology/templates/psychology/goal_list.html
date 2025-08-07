@@ -1,0 +1,1334 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Objetivos Psicológicos - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        --success-gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        --warning-gradient: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        --danger-gradient: linear-gradient(135deg, #dc3545 0%, #e91e63 100%);
+        --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        --border-radius-lg: 20px;
+        --border-radius-md: 15px;
+        --border-radius-sm: 10px;
+    }
+
+    .goals-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 40px 30px;
+        border-radius: var(--border-radius-lg);
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .goals-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .goals-header::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -5%;
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    .goals-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 35px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: var(--border-radius-md);
+        padding: 30px;
+        text-align: center;
+        box-shadow: var(--card-shadow);
+        border-top: 5px solid;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.8s;
+    }
+
+    .stat-card:hover::before {
+        left: 100%;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--card-hover-shadow);
+    }
+
+    .stat-card.total { border-top-color: #6f42c1; }
+    .stat-card.active { border-top-color: #28a745; }
+    .stat-card.completed { border-top-color: #17a2b8; }
+    .stat-card.overdue { border-top-color: #dc3545; }
+
+    .stat-value {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-trend {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .filter-panel {
+        background: white;
+        border-radius: var(--border-radius-md);
+        padding: 30px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 30px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-panel h5 {
+        color: #495057;
+        font-weight: 700;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .search-box input {
+        border-radius: 50px;
+        border: 2px solid #e9ecef;
+        padding: 12px 50px 12px 20px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .search-box input:focus {
+        border-color: #6f42c1;
+        background: white;
+        box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.1);
+    }
+
+    .search-box .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 1.2rem;
+    }
+
+    .filter-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .filter-tag {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-tag.active {
+        background: var(--success-gradient);
+        transform: scale(1.05);
+    }
+
+    .filter-tag:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+    }
+
+    .goals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .goal-card {
+        background: white;
+        border-radius: var(--border-radius-md);
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+        border-left: 6px solid transparent;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .goal-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .goal-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .goal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-hover-shadow);
+    }
+
+    .goal-card.priority-high { border-left-color: #dc3545; }
+    .goal-card.priority-medium { border-left-color: #ffc107; }
+    .goal-card.priority-low { border-left-color: #28a745; }
+
+    .goal-header {
+        display: flex;
+        justify-content: between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        gap: 15px;
+    }
+
+    .goal-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        line-height: 1.3;
+        flex-grow: 1;
+    }
+
+    .goal-status {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+    }
+
+    .status-active { 
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); 
+        color: #155724; 
+        border: 1px solid rgba(21, 87, 36, 0.2);
+    }
+    .status-completed { 
+        background: linear-gradient(135deg, #cce5ff 0%, #b3d7ff 100%); 
+        color: #004085; 
+        border: 1px solid rgba(0, 64, 133, 0.2);
+    }
+    .status-paused { 
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); 
+        color: #856404; 
+        border: 1px solid rgba(133, 100, 4, 0.2);
+    }
+    .status-cancelled { 
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); 
+        color: #721c24; 
+        border: 1px solid rgba(114, 28, 36, 0.2);
+    }
+
+    .goal-patient {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .patient-avatar {
+        width: 45px;
+        height: 45px;
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 3px 10px rgba(111, 66, 193, 0.3);
+    }
+
+    .patient-info h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .patient-info small {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .goal-description {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .progress-section {
+        margin-bottom: 20px;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .progress-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+    }
+
+    .progress-percentage {
+        font-weight: 700;
+        color: #6f42c1;
+        font-size: 1.1rem;
+    }
+
+    .progress-bar-container {
+        background: #e9ecef;
+        border-radius: 10px;
+        height: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: var(--primary-gradient);
+        border-radius: 10px;
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .goal-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .meta-item {
+        text-align: center;
+        padding: 12px;
+        background: rgba(111, 66, 193, 0.05);
+        border-radius: var(--border-radius-sm);
+        border: 1px solid rgba(111, 66, 193, 0.1);
+    }
+
+    .meta-value {
+        font-weight: 700;
+        color: #6f42c1;
+        font-size: 1.1rem;
+        display: block;
+    }
+
+    .meta-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
+    }
+
+    .goal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .btn-view {
+        background: var(--primary-gradient);
+        color: white;
+        flex-grow: 1;
+        justify-content: center;
+    }
+
+    .btn-view:hover {
+        color: white;
+        box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4);
+    }
+
+    .btn-edit {
+        background: transparent;
+        color: #6c757d;
+        border-color: #dee2e6;
+    }
+
+    .btn-edit:hover {
+        background: #f8f9fa;
+        border-color: #6f42c1;
+        color: #6f42c1;
+    }
+
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 30px;
+        background: white;
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--card-shadow);
+        margin: 40px 0;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .empty-state h4 {
+        color: #6c757d;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: #adb5bd;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    .fab-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fab-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 35px rgba(111, 66, 193, 0.6);
+        color: white;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+    }
+
+    .pagination {
+        background: white;
+        border-radius: 50px;
+        padding: 10px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .page-link {
+        border: none;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 12px 18px;
+        border-radius: 25px;
+        margin: 0 3px;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: var(--primary-gradient);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .page-item.active .page-link {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .goals-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-container {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .goal-meta {
+            grid-template-columns: 1fr;
+        }
+        
+        .fab-button {
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+    }
+
+    .filter-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #dc3545;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .quick-stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .quick-stat {
+        background: rgba(111, 66, 193, 0.1);
+        color: #6f42c1;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Principal -->
+    <div class="goals-header">
+        <div class="goals-icon">
+            <i class="fas fa-bullseye"></i>
+        </div>
+        <h1 class="h1 mb-3 font-weight-bold">Objetivos Psicológicos</h1>
+        <p class="h5 mb-0 opacity-90">Gestión integral de metas y objetivos terapéuticos</p>
+        
+        <!-- Estadísticas Rápidas -->
+        <div class="quick-stats mt-4">
+            <div class="quick-stat">
+                <i class="fas fa-chart-line"></i>
+                <span>{{ active_goals_count }} Objetivos Activos</span>
+            </div>
+            <div class="quick-stat">
+                <i class="fas fa-clock"></i>
+                <span>{{ goals_this_week }} Esta Semana</span>
+            </div>
+            <div class="quick-stat">
+                <i class="fas fa-trophy"></i>
+                <span>{{ completion_rate }}% Éxito</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Estadísticas Detalladas -->
+    <div class="stats-container">
+        <div class="stat-card total">
+            <div class="stat-value" data-target="{{ total_goals }}">0</div>
+            <div class="stat-label">Total de Objetivos</div>
+            <div class="stat-trend">
+                <i class="fas fa-arrow-up text-success"></i>
+                <span class="text-success">+{{ new_goals_this_month }} este mes</span>
+            </div>
+        </div>
+        
+        <div class="stat-card active">
+            <div class="stat-value" data-target="{{ active_goals }}">0</div>
+            <div class="stat-label">Objetivos Activos</div>
+            <div class="stat-trend">
+                <i class="fas fa-play text-primary"></i>
+                <span class="text-primary">En progreso</span>
+            </div>
+        </div>
+        
+        <div class="stat-card completed">
+            <div class="stat-value" data-target="{{ completed_goals }}">0</div>
+            <div class="stat-label">Completados</div>
+            <div class="stat-trend">
+                <i class="fas fa-check text-info"></i>
+                <span class="text-info">{{ completion_rate }}% de éxito</span>
+            </div>
+        </div>
+        
+        <div class="stat-card overdue">
+            <div class="stat-value" data-target="{{ overdue_goals }}">0</div>
+            <div class="stat-label">Vencidos</div>
+            <div class="stat-trend">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+                <span class="text-warning">Requieren atención</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel de Filtros -->
+    <div class="filter-panel">
+        <h5>
+            <i class="fas fa-filter text-primary"></i>
+            Filtros Avanzados
+            {% if active_filters_count > 0 %}
+                <span class="filter-badge">{{ active_filters_count }}</span>
+            {% endif %}
+        </h5>
+        
+        <form method="get" id="filterForm" class="row align-items-end">
+            <!-- Búsqueda -->
+            <div class="col-md-4 mb-3">
+                <div class="search-box">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Buscar objetivos, pacientes..." 
+                           value="{{ request.GET.search }}"
+                           id="searchInput">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+            
+            <!-- Filtro por Estado -->
+            <div class="col-md-2 mb-3">
+                <select name="status" class="form-select">
+                    <option value="">Todos los estados</option>
+                    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Activo</option>
+                    <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completado</option>
+                    <option value="paused" {% if request.GET.status == 'paused' %}selected{% endif %}>Pausado</option>
+                    <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelado</option>
+                </select>
+            </div>
+            
+            <!-- Filtro por Prioridad -->
+            <div class="col-md-2 mb-3">
+                <select name="priority" class="form-select">
+                    <option value="">Todas las prioridades</option>
+                    <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>Alta</option>
+                    <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Media</option>
+                    <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Baja</option>
+                </select>
+            </div>
+            
+            <!-- Filtro por Psicólogo -->
+            <div class="col-md-2 mb-3">
+                <select name="psychologist" class="form-select">
+                    <option value="">Todos los psicólogos</option>
+                    {% for psychologist in psychologists %}
+                    <option value="{{ psychologist.id }}" 
+                            {% if request.GET.psychologist == psychologist.id|stringformat:"s" %}selected{% endif %}>
+                        {{ psychologist.get_full_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Botones de Acción -->
+            <div class="col-md-2 mb-3">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="fas fa-search me-1"></i>Filtrar
+                    </button>
+                    <a href="{% url 'psychology:goal_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Etiquetas de Filtros Activos -->
+        <div class="filter-tags">
+            <button type="button" class="filter-tag" data-filter="all">
+                <i class="fas fa-list"></i>
+                Todos
+            </button>
+            <button type="button" class="filter-tag" data-filter="high-priority">
+                <i class="fas fa-exclamation-triangle"></i>
+                Alta Prioridad
+            </button>
+            <button type="button" class="filter-tag" data-filter="due-soon">
+                <i class="fas fa-clock"></i>
+                Próximos a Vencer
+            </button>
+            <button type="button" class="filter-tag" data-filter="completed-this-month">
+                <i class="fas fa-trophy"></i>
+                Completados Este Mes
+            </button>
+            <button type="button" class="filter-tag" data-filter="needs-attention">
+                <i class="fas fa-bell"></i>
+                Requieren Atención
+            </button>
+        </div>
+    </div>
+    
+    <!-- Grid de Objetivos -->
+    <div class="goals-grid" id="goalsGrid">
+        {% for goal in goals %}
+        <div class="goal-card priority-{{ goal.priority }}" data-goal-id="{{ goal.id }}">
+            <!-- Header del Objetivo -->
+            <div class="goal-header">
+                <div>
+                    <h5 class="goal-title">{{ goal.title }}</h5>
+                    <div class="goal-status status-{{ goal.status }}">
+                        {{ goal.get_status_display }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del Paciente -->
+            <div class="goal-patient">
+                <div class="patient-avatar">
+                    {{ goal.patient.first_name.0 }}{{ goal.patient.last_name.0 }}
+                </div>
+                <div class="patient-info">
+                    <h6>{{ goal.patient.get_full_name }}</h6>
+                    <small>{{ goal.patient.identification_number }}</small>
+                </div>
+            </div>
+            
+            <!-- Descripción -->
+            {% if goal.description %}
+            <div class="goal-description">{{ goal.description }}</div>
+            {% endif %}
+            
+            <!-- Progreso -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span class="progress-label">Progreso</span>
+                    <span class="progress-percentage">{{ goal.progress_percentage|default:"0" }}%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" 
+                         style="width: {{ goal.progress_percentage|default:"0" }}%"
+                         data-progress="{{ goal.progress_percentage|default:"0" }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metadatos -->
+            <div class="goal-meta">
+                <div class="meta-item">
+                    <span class="meta-value">{{ goal.target_date|date:"d/m/Y" }}</span>
+                    <div class="meta-label">Fecha Objetivo</div>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-value">{{ goal.days_remaining|default:"--" }}</span>
+                    <div class="meta-label">Días Restantes</div>
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="goal-actions">
+                <a href="{% url 'psychology:goal_detail' goal.pk %}" class="btn-action btn-view">
+                    <i class="fas fa-eye"></i>
+                    Ver Detalles
+                </a>
+                
+                <a href="{% url 'psychology:goal_edit' goal.pk %}" class="btn-action btn-edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+                
+                <div class="dropdown">
+                    <button class="btn-action btn-edit dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="updateProgress({{ goal.id }})">
+                                <i class="fas fa-chart-line me-2"></i>Actualizar Progreso
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="duplicateGoal({{ goal.id }})">
+                                <i class="fas fa-copy me-2"></i>Duplicar Objetivo
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% if goal.status == 'active' %}
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="pauseGoal({{ goal.id }})">
+                                <i class="fas fa-pause me-2"></i>Pausar
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-success" href="#" onclick="completeGoal({{ goal.id }})">
+                                <i class="fas fa-check me-2"></i>Marcar Completado
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="#" onclick="deleteGoal({{ goal.id }})">
+                                <i class="fas fa-trash me-2"></i>Eliminar
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="fas fa-bullseye empty-state-icon"></i>
+                <h4>No hay objetivos registrados</h4>
+                <p>
+                    {% if request.GET.search or request.GET.status or request.GET.priority %}
+                        No se encontraron objetivos con los filtros aplicados
+                    {% else %}
+                        Comienza creando tu primer objetivo psicológico
+                    {% endif %}
+                </p>
+                {% if not request.GET.search and not request.GET.status and not request.GET.priority %}
+                <a href="{% url 'psychology:goal_create' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Crear Primer Objetivo
+                </a>
+                {% else %}
+                <a href="{% url 'psychology:goal_list' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-times me-2"></i>Limpiar Filtros
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Paginación -->
+    {% if is_paginated %}
+    <div class="pagination-container">
+        <nav aria-label="Goals pagination">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+    
+    <!-- Botón Flotante para Agregar -->
+    <a href="{% url 'psychology:goal_create' %}" class="fab-button" title="Crear Nuevo Objetivo">
+        <i class="fas fa-plus"></i>
+    </a>
+</div>
+
+<!-- Modal para Actualizar Progreso -->
+<div class="modal fade" id="progressModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Actualizar Progreso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="progressForm">
+                    <div class="mb-3">
+                        <label for="progress_percentage" class="form-label">Porcentaje de Progreso</label>
+                        <div class="input-group">
+                            <input type="range" class="form-range" id="progress_percentage" 
+                                   min="0" max="100" value="0" oninput="updateProgressValue(this.value)">
+                            <span class="input-group-text" id="progressValue">0%</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="progress_notes" class="form-label">Notas del Progreso</label>
+                        <textarea class="form-control" id="progress_notes" rows="3" 
+                                  placeholder="Describe los avances logrados..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveProgress()">
+                    <i class="fas fa-save me-2"></i>Guardar Progreso
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedGoalId = null;
+
+// Animación de contadores
+function animateCounters() {
+    const counters = document.querySelectorAll('.stat-value[data-target]');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const increment = target / 30;
+        let current = 0;
+        
+        const updateCounter = () => {
+            if (current < target) {
+                current += increment;
+                counter.textContent = Math.ceil(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = target;
+            }
+        };
+        
+        updateCounter();
+    });
+}
+
+// Animación de barras de progreso
+function animateProgressBars() {
+    const progressBars = document.querySelectorAll('.progress-bar-fill');
+    
+    progressBars.forEach((bar, index) => {
+        const progress = bar.getAttribute('data-progress');
+        bar.style.width = '0%';
+        
+        setTimeout(() => {
+            bar.style.width = progress + '%';
+        }, index * 100);
+    });
+}
+
+// Filtros en tiempo real
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    filterGoals();
+});
+
+// Filtros por etiquetas
+document.querySelectorAll('.filter-tag').forEach(tag => {
+    tag.addEventListener('click', function() {
+        // Remover clase active de todos
+        document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+        
+        // Agregar clase active al seleccionado
+        this.classList.add('active');
+        
+        const filter = this.getAttribute('data-filter');
+        applyQuickFilter(filter);
+    });
+});
+
+function applyQuickFilter(filter) {
+    const goals = document.querySelectorAll('.goal-card');
+    
+    goals.forEach(goal => {
+        goal.style.display = 'block';
+        
+        switch(filter) {
+            case 'high-priority':
+                if (!goal.classList.contains('priority-high')) {
+                    goal.style.display = 'none';
+                }
+                break;
+            case 'due-soon':
+                const daysRemaining = parseInt(goal.querySelector('.meta-value:last-child').textContent);
+                if (isNaN(daysRemaining) || daysRemaining > 7) {
+                    goal.style.display = 'none';
+                }
+                break;
+            case 'completed-this-month':
+                if (!goal.querySelector('.status-completed')) {
+                    goal.style.display = 'none';
+                }
+                break;
+            case 'needs-attention':
+                const progress = parseInt(goal.querySelector('.progress-bar-fill').getAttribute('data-progress'));
+                const days = parseInt(goal.querySelector('.meta-value:last-child').textContent);
+                if (progress > 50 || days > 14) {
+                    goal.style.display = 'none';
+                }
+                break;
+        }
+    });
+    
+    // Animar entrada de tarjetas visibles
+    animateVisibleCards();
+}
+
+function filterGoals() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const goals = document.querySelectorAll('.goal-card');
+    
+    goals.forEach(goal => {
+        const title = goal.querySelector('.goal-title').textContent.toLowerCase();
+        const patient = goal.querySelector('.patient-info h6').textContent.toLowerCase();
+        const description = goal.querySelector('.goal-description')?.textContent.toLowerCase() || '';
+        
+        if (title.includes(searchTerm) || patient.includes(searchTerm) || description.includes(searchTerm)) {
+            goal.style.display = 'block';
+        } else {
+            goal.style.display = 'none';
+        }
+    });
+    
+    animateVisibleCards();
+}
+
+function animateVisibleCards() {
+    const visibleCards = document.querySelectorAll('.goal-card[style="display: block;"], .goal-card:not([style])');
+    
+    visibleCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+}
+
+// Funciones para acciones de objetivos
+function updateProgress(goalId) {
+    selectedGoalId = goalId;
+    const modal = new bootstrap.Modal(document.getElementById('progressModal'));
+    modal.show();
+}
+
+function updateProgressValue(value) {
+    document.getElementById('progressValue').textContent = value + '%';
+}
+
+function saveProgress() {
+    const percentage = document.getElementById('progress_percentage').value;
+    const notes = document.getElementById('progress_notes').value;
+    
+    if (!selectedGoalId) return;
+    
+    const data = {
+        goal_id: selectedGoalId,
+        progress_percentage: parseInt(percentage),
+        notes: notes
+    };
+    
+    fetch('/psychology/api/update-goal-progress/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al actualizar progreso: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al procesar la solicitud');
+    });
+}
+
+function duplicateGoal(goalId) {
+    if (confirm('¿Desea duplicar este objetivo?')) {
+        fetch(`/psychology/api/duplicate-goal/${goalId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al duplicar objetivo: ' + data.error);
+            }
+        });
+    }
+}
+
+function pauseGoal(goalId) {
+    if (confirm('¿Desea pausar este objetivo?')) {
+        updateGoalStatus(goalId, 'paused');
+    }
+}
+
+function completeGoal(goalId) {
+    if (confirm('¿Marcar este objetivo como completado?')) {
+        updateGoalStatus(goalId, 'completed');
+    }
+}
+
+function deleteGoal(goalId) {
+    if (confirm('¿Está seguro de que desea eliminar este objetivo? Esta acción no se puede deshacer.')) {
+        fetch(`/psychology/api/delete-goal/${goalId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Animar salida de la tarjeta
+                const goalCard = document.querySelector(`[data-goal-id="${goalId}"]`);
+                goalCard.style.transition = 'all 0.4s ease';
+                goalCard.style.opacity = '0';
+                goalCard.style.transform = 'translateX(-100%)';
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 400);
+            } else {
+                alert('Error al eliminar objetivo: ' + data.error);
+            }
+        });
+    }
+}
+
+function updateGoalStatus(goalId, status) {
+    fetch(`/psychology/api/update-goal-status/${goalId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al actualizar estado: ' + data.error);
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Auto-actualización de filtros
+document.getElementById('filterForm').addEventListener('change', function() {
+    this.submit();
+});
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    // Animar contadores después de un breve delay
+    setTimeout(animateCounters, 300);
+    
+    // Animar barras de progreso
+    setTimeout(animateProgressBars, 600);
+    
+    // Aplicar filtro "Todos" por defecto
+    document.querySelector('.filter-tag[data-filter="all"]').classList.add('active');
+    
+    // Configurar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+// Efecto de hover en las tarjetas
+document.querySelectorAll('.goal-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+});
+
+// Scroll suave para elementos con anclas
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

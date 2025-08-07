@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consultas Nutricionales - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .consultation-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .consultation-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .consultation-type-badge {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .initial { background-color: #d4edda; color: #155724; }
+    .followup { background-color: #cce5ff; color: #004085; }
+    .adjustment { background-color: #fff3cd; color: #856404; }
+    .emergency { background-color: #f8d7da; color: #721c24; }
+    
+    .patient-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .progress-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: conic-gradient(#28a745 0deg, #28a745 var(--percentage), #e9ecef var(--percentage), #e9ecef 360deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .progress-circle::before {
+        content: '';
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: white;
+        position: absolute;
+    }
+    
+    .progress-value {
+        position: relative;
+        z-index: 1;
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    
+    .search-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .weight-change {
+        padding: 4px 8px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .weight-loss { background-color: #d4edda; color: #155724; }
+    .weight-gain { background-color: #fff3cd; color: #856404; }
+    .weight-stable { background-color: #e2e3e5; color: #495057; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-info">
+                        <i class="fas fa-stethoscope me-2"></i>Consultas Nutricionales
+                    </h1>
+                    <p class="text-muted mb-0">Seguimiento y control de pacientes</p>
+                </div>
+                <a href="{% url 'nutrition:consultation_create' %}" class="btn btn-info btn-lg">
+                    <i class="fas fa-plus me-2"></i>Nueva Consulta
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Búsqueda -->
+    <div class="row">
+        <div class="col-12">
+            <div class="search-box">
+                <form method="get" class="d-flex align-items-center">
+                    {{ search_form.patient_search }}
+                    <button type="submit" class="btn btn-info ms-3">
+                        <i class="fas fa-search me-1"></i>Buscar
+                    </button>
+                    {% if request.GET.patient_search %}
+                    <a href="{% url 'nutrition:consultation_list' %}" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-times me-1"></i>Limpiar
+                    </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Consultas -->
+    <div class="row">
+        {% if page_obj %}
+            {% for consultation in page_obj %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="consultation-card">
+                    <!-- Header de la Consulta -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="patient-avatar me-3">
+                            {{ consultation.patient.first_name.0 }}{{ consultation.patient.last_name.0 }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ consultation.patient.get_full_name }}</h6>
+                            <small class="text-muted">{{ consultation.patient.identification_number }}</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ consultation.consultation_date|date:"d/m/Y" }}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Tipo de Consulta -->
+                    <div class="text-center mb-3">
+                        <span class="consultation-type-badge {% if consultation.consultation_type == 'initial' %}initial{% elif consultation.consultation_type == 'followup' %}followup{% elif consultation.consultation_type == 'adjustment' %}adjustment{% else %}emergency{% endif %}">
+                            {{ consultation.get_consultation_type_display }}
+                        </span>
+                    </div>
+                    
+                    <!-- Información Principal -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <h5 class="text-primary mb-1">{{ consultation.current_weight }} kg</h5>
+                                <small class="text-muted">Peso Actual</small>
+                                {% if consultation.weight_change %}
+                                <div class="mt-1">
+                                    {% if consultation.weight_change > 0 %}
+                                        <span class="weight-change weight-gain">+{{ consultation.weight_change }}kg</span>
+                                    {% elif consultation.weight_change < 0 %}
+                                        <span class="weight-change weight-loss">{{ consultation.weight_change }}kg</span>
+                                    {% else %}
+                                        <span class="weight-change weight-stable">Sin cambio</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <div class="progress-circle" style="--percentage: {{ consultation.diet_adherence }}%;">
+                                    <span class="progress-value">{{ consultation.diet_adherence }}%</span>
+                                </div>
+                                <small class="text-muted d-block mt-1">Adherencia</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Adherencia al Ejercicio -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">Ejercicio:</small>
+                            <small class="fw-bold">{{ consultation.exercise_adherence }}%</small>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: {{ consultation.exercise_adherence }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Satisfacción y Energía -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Satisfacción:</small>
+                            <div class="d-flex align-items-center">
+                                {% for i in "12345"|make_list %}
+                                    {% if consultation.patient_satisfaction >= i|add:0 %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-warning"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Energía:</small>
+                            <div class="d-flex align-items-center">
+                                {% for i in "12345"|make_list %}
+                                    {% if consultation.energy_level >= i|add:0 %}
+                                        <i class="fas fa-battery-full text-success" style="font-size: 0.8rem;"></i>
+                                    {% else %}
+                                        <i class="fas fa-battery-empty text-muted" style="font-size: 0.8rem;"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Próxima Cita -->
+                    {% if consultation.next_appointment %}
+                    <div class="alert alert-info py-2 mb-3">
+                        <small>
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            <strong>Próxima cita:</strong> {{ consultation.next_appointment|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Acciones -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-user-md me-1"></i>{{ consultation.nutritionist.get_full_name }}
+                        </small>
+                        <div>
+                            <a href="{% url 'nutrition:consultation_detail' consultation.pk %}" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-stethoscope fa-5x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No hay consultas nutricionales</h3>
+                    <p class="text-muted mb-4">Comienza registrando la primera consulta nutricional.</p>
+                    <a href="{% url 'nutrition:consultation_create' %}" class="btn btn-info btn-lg">
+                        <i class="fas fa-plus me-2"></i>Crear Primera Consulta
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="Navegación de consultas">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.patient_search %}&patient_search={{ request.GET.patient_search }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

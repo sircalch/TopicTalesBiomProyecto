@@ -1,0 +1,825 @@
+{% load static %}
+
+<!-- TopicTales Biomédica - Medesk Style Sidebar -->
+<aside class="medesk-sidebar" id="medesk-sidebar">
+    <!-- Brand Header -->
+    <div class="sidebar-brand">
+        <div class="brand-container">
+            <div class="brand-logo">
+                <i class="bi bi-heart-pulse-fill"></i>
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">TopicTales</div>
+                <div class="brand-tagline">Biomédica</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="user-profile">
+        <div class="profile-card">
+            <div class="profile-avatar">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.get_full_name }}">
+                {% else %}
+                    <div class="avatar-initials">
+                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                    </div>
+                {% endif %}
+                <div class="status-dot"></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
+                <div class="profile-role">{{ user.profile.role|default:"Médico" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+        <!-- Main Dashboard -->
+        <div class="nav-item">
+            <a href="{% url 'dashboard:index' %}" class="nav-link {% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}">
+                <div class="nav-icon">
+                    <i class="bi bi-grid-fill"></i>
+                </div>
+                <span class="nav-label">Panel de Control</span>
+            </a>
+        </div>
+
+        <!-- Dynamic Modules -->
+        {% for category, modules in sidebar_modules.items %}
+            {% if modules %}
+                <!-- Category Header -->
+                <div class="nav-category">
+                    <div class="category-header">
+                        {% if category == 'core' %}
+                            <i class="bi bi-layers-fill"></i>
+                            <span>Gestión Principal</span>
+                        {% elif category == 'medical' %}
+                            <i class="bi bi-hospital-fill"></i>
+                            <span>Especialidades</span>
+                        {% elif category == 'admin' %}
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Administración</span>
+                        {% elif category == 'reports' %}
+                            <i class="bi bi-bar-chart-fill"></i>
+                            <span>Reportes</span>
+                        {% else %}
+                            <i class="bi bi-folder-fill"></i>
+                            <span>{{ category|title }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Category Items -->
+                    {% for module_data in modules %}
+                        {% with module=module_data.module submodules=module_data.submodules %}
+                            {% if submodules %}
+                                <!-- Module with Dropdown -->
+                                <div class="nav-item dropdown-item" data-module="{{ module.name|slugify }}">
+                                    <button class="nav-link dropdown-trigger" onclick="toggleMedeskDropdown('{{ module.name|slugify }}')">
+                                        <div class="nav-icon">
+                                            <i class="bi {{ module.icon|default:'bi-folder-fill' }}"></i>
+                                        </div>
+                                        <span class="nav-label">{{ module.display_name }}</span>
+                                        {% if user_subscription.plan == 'BASIC' and module.min_plan_required != 'BASIC' %}
+                                            <span class="premium-badge">PRO</span>
+                                        {% endif %}
+                                        <div class="dropdown-arrow">
+                                            <i class="bi bi-chevron-down"></i>
+                                        </div>
+                                    </button>
+                                    <div class="dropdown-menu" id="menu-{{ module.name|slugify }}">
+                                        {% for submodule in submodules %}
+                                            <a href="{% if submodule.url_name %}{% url submodule.url_name %}{% else %}#{% endif %}" class="dropdown-link">
+                                                <i class="bi {{ submodule.icon|default:'bi-circle-fill' }}"></i>
+                                                <span>{{ submodule.display_name }}</span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <!-- Simple Module -->
+                                <div class="nav-item">
+                                    <a href="{% if module.url_name %}{% url module.url_name %}{% else %}#{% endif %}" class="nav-link">
+                                        <div class="nav-icon">
+                                            <i class="bi {{ module.icon|default:'bi-folder-fill' }}"></i>
+                                        </div>
+                                        <span class="nav-label">{{ module.display_name }}</span>
+                                        {% if user_subscription.plan == 'BASIC' and module.min_plan_required != 'BASIC' %}
+                                            <span class="premium-badge">PRO</span>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Default Menu if no dynamic modules -->
+        {% if not sidebar_modules %}
+            <div class="nav-category">
+                <div class="category-header">
+                    <i class="bi bi-hospital-fill"></i>
+                    <span>Gestión Médica</span>
+                </div>
+
+                <!-- Patients -->
+                <div class="nav-item dropdown-item" data-module="patients">
+                    <button class="nav-link dropdown-trigger" onclick="toggleMedeskDropdown('patients')">
+                        <div class="nav-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <span class="nav-label">Pacientes</span>
+                        <div class="nav-counter">{{ subscription_features.current_patients|default:0 }}</div>
+                        <div class="dropdown-arrow">
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                    </button>
+                    <div class="dropdown-menu" id="menu-patients">
+                        <a href="{% url 'patients:list' %}" class="dropdown-link">
+                            <i class="bi bi-list-ul"></i>
+                            <span>Lista de Pacientes</span>
+                        </a>
+                        <a href="{% url 'patients:create' %}" class="dropdown-link">
+                            <i class="bi bi-person-plus-fill"></i>
+                            <span>Nuevo Paciente</span>
+                        </a>
+                        <a href="{% url 'patients:search' %}" class="dropdown-link">
+                            <i class="bi bi-search"></i>
+                            <span>Búsqueda Avanzada</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Appointments -->
+                <div class="nav-item dropdown-item" data-module="appointments">
+                    <button class="nav-link dropdown-trigger" onclick="toggleMedeskDropdown('appointments')">
+                        <div class="nav-icon">
+                            <i class="bi bi-calendar-event-fill"></i>
+                        </div>
+                        <span class="nav-label">Agenda</span>
+                        <div class="nav-counter urgent">8</div>
+                        <div class="dropdown-arrow">
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                    </button>
+                    <div class="dropdown-menu" id="menu-appointments">
+                        <a href="{% url 'appointments:calendar' %}" class="dropdown-link">
+                            <i class="bi bi-calendar3"></i>
+                            <span>Calendario</span>
+                        </a>
+                        <a href="{% url 'appointments:list' %}" class="dropdown-link">
+                            <i class="bi bi-list-check"></i>
+                            <span>Lista de Citas</span>
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="dropdown-link">
+                            <i class="bi bi-plus-circle-fill"></i>
+                            <span>Nueva Cita</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Medical Records -->
+                <div class="nav-item">
+                    <a href="{% url 'medical_records:index' %}" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="bi bi-file-medical-fill"></i>
+                        </div>
+                        <span class="nav-label">Expedientes</span>
+                    </a>
+                </div>
+
+                <!-- Reports -->
+                <div class="nav-item">
+                    <a href="{% url 'reports:index' %}" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <span class="nav-label">Reportes</span>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </nav>
+
+    <!-- Subscription Card -->
+    <div class="subscription-info">
+        <div class="subscription-card">
+            <div class="plan-header">
+                <div class="plan-icon">
+                    <i class="bi bi-award-fill"></i>
+                </div>
+                <div class="plan-details">
+                    <div class="plan-name">{{ user_subscription.plan|default:"Plan Básico" }}</div>
+                    <div class="plan-usage">
+                        {{ subscription_features.current_patients|default:0 }}{% if subscription_features.max_patients != -1 %}/{{ subscription_features.max_patients }}{% endif %} pacientes
+                    </div>
+                </div>
+            </div>
+            <div class="usage-progress">
+                {% with usage_percent=subscription_features.current_patients|default:0|floatformat:0 %}
+                    {% if subscription_features.max_patients > 0 %}
+                        {% widthratio subscription_features.current_patients subscription_features.max_patients 100 as percentage %}
+                        <div class="progress-bar" style="width: {{ percentage }}%"></div>
+                    {% else %}
+                        <div class="progress-bar" style="width: 35%"></div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            {% if user_subscription.plan == 'BASIC' %}
+                <a href="{% url 'accounts:subscription' %}" class="upgrade-button">
+                    <i class="bi bi-arrow-up-circle-fill"></i>
+                    <span>Actualizar Plan</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+        <div class="footer-actions">
+            <button class="footer-btn" onclick="toggleTheme()" title="Cambiar tema">
+                <i class="bi bi-moon-fill"></i>
+            </button>
+            <a href="{% url 'accounts:profile' %}" class="footer-btn" title="Perfil">
+                <i class="bi bi-person-fill"></i>
+            </a>
+            <button class="footer-btn" onclick="showHelp()" title="Ayuda">
+                <i class="bi bi-question-circle-fill"></i>
+            </button>
+        </div>
+        
+        <a href="{% url 'accounts:logout' %}" class="logout-button">
+            <div class="logout-icon">
+                <i class="bi bi-box-arrow-left"></i>
+            </div>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Medesk-Style Professional CSS -->
+<style>
+/* Medesk-Inspired Color Palette */
+:root {
+    --medesk-primary: #2a527a;
+    --medesk-primary-light: #3d6b96;
+    --medesk-primary-dark: #1e3a56;
+    --medesk-secondary: #5a8db8;
+    --medesk-success: #28a745;
+    --medesk-warning: #ffc107;
+    --medesk-danger: #dc3545;
+    --medesk-info: #17a2b8;
+    
+    --sidebar-bg: #ffffff;
+    --sidebar-border: #e8eef5;
+    --sidebar-shadow: 0 0 25px rgba(42, 82, 122, 0.08);
+    
+    --text-primary: #2c3e50;
+    --text-secondary: #6c757d;
+    --text-muted: #95a5a6;
+    --text-light: #ecf0f1;
+    
+    --surface-hover: #f8fafc;
+    --surface-active: #e3f2fd;
+    --surface-border: #e1e8ed;
+    
+    --sidebar-width: 280px;
+    --font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Base Sidebar */
+.medesk-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    box-shadow: var(--sidebar-shadow);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-family);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Brand Section */
+.sidebar-brand {
+    padding: 20px 24px 24px;
+    border-bottom: 1px solid var(--surface-border);
+    background: linear-gradient(135deg, var(--medesk-primary) 0%, var(--medesk-primary-light) 100%);
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.brand-logo i {
+    color: white;
+    font-size: 24px;
+}
+
+.brand-name {
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.brand-tagline {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* User Profile */
+.user-profile {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--surface-hover);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.profile-card:hover {
+    background: var(--surface-active);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(42, 82, 122, 0.1);
+}
+
+.profile-avatar {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-initials {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--medesk-secondary), var(--medesk-primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    background: var(--medesk-success);
+    border: 3px solid white;
+    border-radius: 50%;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.profile-role {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Navigation */
+.sidebar-nav {
+    flex: 1;
+    padding: 16px 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-border) transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--surface-border);
+    border-radius: 3px;
+}
+
+/* Navigation Categories */
+.nav-category {
+    margin-bottom: 32px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px 16px;
+    color: var(--medesk-primary);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.category-header i {
+    font-size: 16px;
+}
+
+/* Navigation Items */
+.nav-item {
+    margin-bottom: 4px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    cursor: pointer;
+    position: relative;
+}
+
+.nav-link:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.nav-link.active {
+    background: var(--surface-active);
+    color: var(--medesk-primary);
+    border-right: 4px solid var(--medesk-primary);
+    font-weight: 600;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.nav-label {
+    flex: 1;
+    text-align: left;
+}
+
+.nav-counter {
+    background: var(--surface-border);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.nav-counter.urgent {
+    background: var(--medesk-danger);
+    color: white;
+}
+
+.premium-badge {
+    background: linear-gradient(135deg, var(--medesk-warning), #e67e22);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Dropdowns */
+.dropdown-item .dropdown-trigger {
+    position: relative;
+}
+
+.dropdown-arrow {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.dropdown-trigger.expanded .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    background: var(--surface-hover);
+    transition: max-height 0.3s ease;
+}
+
+.dropdown-menu.open {
+    max-height: 300px;
+    padding: 8px 0;
+}
+
+.dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px 12px 64px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.dropdown-link:hover {
+    background: var(--surface-active);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.dropdown-link i {
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+}
+
+/* Subscription Info */
+.subscription-info {
+    padding: 0 24px 20px;
+}
+
+.subscription-card {
+    background: linear-gradient(135deg, var(--medesk-primary), var(--medesk-primary-dark));
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+}
+
+.plan-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.plan-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.plan-icon i {
+    font-size: 20px;
+    color: #ffc107;
+}
+
+.plan-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.plan-usage {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.usage-progress {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: white;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.upgrade-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.upgrade-button:hover {
+    opacity: 1;
+    color: white;
+    text-decoration: none;
+}
+
+/* Footer */
+.sidebar-footer {
+    padding: 20px 24px 24px;
+    border-top: 1px solid var(--surface-border);
+}
+
+.footer-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    justify-content: center;
+}
+
+.footer-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    background: var(--surface-hover);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.footer-btn:hover {
+    background: var(--surface-active);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    color: var(--medesk-danger);
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--medesk-danger);
+    text-decoration: none;
+}
+
+.logout-icon {
+    font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .medesk-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .medesk-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+}
+
+/* Navbar Adjustment */
+.medical-navbar {
+    left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .medical-navbar {
+        left: 0;
+        width: 100%;
+    }
+}
+
+/* Main Content Adjustment */
+.main-content {
+    margin-left: var(--sidebar-width);
+    margin-top: 76px;
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
+}
+</style>
+
+<!-- Medesk-Style JavaScript -->
+<script>
+function toggleMedeskDropdown(moduleId) {
+    const dropdownItem = document.querySelector(`[data-module="${moduleId}"]`);
+    if (!dropdownItem) return;
+    
+    const trigger = dropdownItem.querySelector('.dropdown-trigger');
+    const menu = dropdownItem.querySelector('.dropdown-menu');
+    
+    // Close other dropdowns
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        if (item !== dropdownItem) {
+            item.querySelector('.dropdown-trigger').classList.remove('expanded');
+            item.querySelector('.dropdown-menu').classList.remove('open');
+        }
+    });
+    
+    // Toggle current dropdown
+    const isOpen = menu.classList.contains('open');
+    if (isOpen) {
+        trigger.classList.remove('expanded');
+        menu.classList.remove('open');
+    } else {
+        trigger.classList.add('expanded');
+        menu.classList.add('open');
+    }
+}
+
+function toggleTheme() {
+    // Theme toggle logic here
+    console.log('Theme toggle functionality');
+}
+
+function showHelp() {
+    alert('Centro de Ayuda\n\nPara soporte técnico:\n- Email: soporte@topictales.com\n- Teléfono: +1 (555) 123-4567\n- Chat en vivo: Disponible 24/7');
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Medesk-style sidebar initialized');
+});
+</script>

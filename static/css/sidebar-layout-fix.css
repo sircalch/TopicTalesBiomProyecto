@@ -1,0 +1,142 @@
+/* ============================================================
+   SIDEBAR LAYOUT FIX - TopicTales Biomédica
+   Corrección específica para evitar solapamiento de iconos
+   ============================================================ */
+
+/* RESET COMPLETO DE POSICIONAMIENTO PROBLEMÁTICO */
+.pcoded-navbar .pcoded-inner-navbar .nav-link .pcoded-micon,
+.pcoded-navbar .pcoded-inner-navbar .pcoded-micon {
+    position: static !important;
+    float: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    margin-right: 12px !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+    vertical-align: middle !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar .nav-link .pcoded-micon i,
+.pcoded-navbar .pcoded-inner-navbar .pcoded-micon i {
+    position: static !important;
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    float: none !important;
+}
+
+/* LAYOUT PRINCIPAL DEL SIDEBAR */
+.pcoded-navbar .pcoded-inner-navbar .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 12px 20px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    position: relative !important;
+    text-decoration: none !important;
+}
+
+/* TEXTO DEL MENÚ */
+.pcoded-navbar .pcoded-inner-navbar .nav-link .pcoded-mtext,
+.pcoded-navbar .pcoded-inner-navbar .pcoded-mtext {
+    flex: 1 !important;
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.4 !important;
+    vertical-align: middle !important;
+}
+
+/* BADGES Y CONTADORES */
+.pcoded-navbar .pcoded-inner-navbar .nav-link .pcoded-badge,
+.pcoded-navbar .pcoded-inner-navbar .pcoded-badge {
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
+    font-size: 11px !important;
+    padding: 2px 6px !important;
+    border-radius: 10px !important;
+    margin-right: 0 !important;
+}
+
+/* SUBMENU ITEMS */
+.pcoded-navbar .pcoded-submenu li a {
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 20px 8px 55px !important;
+    white-space: nowrap !important;
+    position: relative !important;
+}
+
+.pcoded-navbar .pcoded-submenu li a i {
+    margin-right: 8px !important;
+    font-size: 14px !important;
+    width: 14px !important;
+    flex-shrink: 0 !important;
+    position: static !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+/* OVERRIDE CUALQUIER ESTILO DE POSICIONAMIENTO ABSOLUTO */
+.pcoded-navbar .pcoded-inner-navbar * {
+    position: static !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar .nav-link {
+    position: relative !important;
+}
+
+/* ESPACIOS Y MÁRGENES LIMPIOS */
+.pcoded-navbar .pcoded-inner-navbar .nav-link > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/* ALINEACIÓN VERTICAL FORZADA */
+.pcoded-navbar .pcoded-inner-navbar .nav-link,
+.pcoded-navbar .pcoded-inner-navbar .nav-link * {
+    vertical-align: middle !important;
+}
+
+/* DEBUG - MOSTRAR ESTRUCTURA (REMOVAR EN PRODUCCIÓN) */
+.pcoded-navbar .pcoded-inner-navbar .nav-link {
+    border: 1px solid transparent !important;
+}
+
+.pcoded-navbar .pcoded-inner-navbar .nav-link:hover {
+    border-color: rgba(4, 169, 245, 0.2) !important;
+}
+
+/* FORZAR FLEXBOX EN NAVEGADORES VIEJOS */
+.pcoded-navbar .pcoded-inner-navbar .nav-link {
+    -webkit-box-orient: horizontal !important;
+    -webkit-box-direction: normal !important;
+    -ms-flex-direction: row !important;
+    flex-direction: row !important;
+    -webkit-box-align: center !important;
+    -ms-flex-align: center !important;
+    align-items: center !important;
+    -webkit-box-pack: start !important;
+    -ms-flex-pack: start !important;
+    justify-content: flex-start !important;
+}

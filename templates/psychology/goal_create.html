@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nuevo Objetivo Psicológico{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-bullseye me-2"></i>Nuevo Objetivo Psicológico</h1>
+                <a href="{% url 'psychology:goal_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Objetivos
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patient" class="form-label">Paciente</label>
+                                    <select class="form-select" id="patient" name="patient" required>
+                                        <option value="">Seleccionar paciente...</option>
+                                        <!-- Aquí irían los pacientes -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="treatment_plan" class="form-label">Plan de Tratamiento (opcional)</label>
+                                    <select class="form-select" id="treatment_plan" name="treatment_plan">
+                                        <option value="">Sin plan de tratamiento</option>
+                                        <!-- Aquí irían los planes de tratamiento del paciente -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título del Objetivo</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="Ej: Reducir nivel de ansiedad en situaciones sociales" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción Detallada</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" 
+                                      placeholder="Descripción específica del objetivo y cómo se va a lograr..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="goal_type" class="form-label">Tipo de Objetivo</label>
+                                    <select class="form-select" id="goal_type" name="goal_type" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="behavioral">Conductual</option>
+                                        <option value="cognitive">Cognitivo</option>
+                                        <option value="emotional">Emocional</option>
+                                        <option value="social">Social</option>
+                                        <option value="functional">Funcional</option>
+                                        <option value="therapeutic">Terapéutico</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="priority" class="form-label">Prioridad</label>
+                                    <select class="form-select" id="priority" name="priority">
+                                        <option value="medium">Media</option>
+                                        <option value="high">Alta</option>
+                                        <option value="low">Baja</option>
+                                        <option value="critical">Crítica</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="target_date" class="form-label">Fecha Objetivo</label>
+                                    <input type="date" class="form-control" id="target_date" name="target_date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="success_criteria" class="form-label">Criterios de Éxito</label>
+                            <textarea class="form-control" id="success_criteria" name="success_criteria" rows="3" 
+                                      placeholder="Indicadores específicos y medibles que determinarán si el objetivo se ha cumplido..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="strategies" class="form-label">Estrategias y Actividades</label>
+                            <textarea class="form-control" id="strategies" name="strategies" rows="4" 
+                                      placeholder="Estrategias específicas, técnicas y actividades para lograr este objetivo..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="baseline_measurement" class="form-label">Medición Inicial</label>
+                                    <input type="text" class="form-control" id="baseline_measurement" name="baseline_measurement" 
+                                           placeholder="Ej: Nivel de ansiedad 8/10">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="target_measurement" class="form-label">Meta Deseada</label>
+                                    <input type="text" class="form-control" id="target_measurement" name="target_measurement" 
+                                           placeholder="Ej: Nivel de ansiedad 4/10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="obstacles" class="form-label">Posibles Obstáculos</label>
+                            <textarea class="form-control" id="obstacles" name="obstacles" rows="3" 
+                                      placeholder="Identificar posibles dificultades o barreras para lograr este objetivo..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="resources" class="form-label">Recursos Necesarios</label>
+                            <textarea class="form-control" id="resources" name="resources" rows="3" 
+                                      placeholder="Recursos, herramientas o apoyo necesario para lograr el objetivo..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="review_frequency" class="form-label">Frecuencia de Revisión</label>
+                                    <select class="form-select" id="review_frequency" name="review_frequency">
+                                        <option value="weekly">Semanal</option>
+                                        <option value="biweekly">Quincenal</option>
+                                        <option value="monthly">Mensual</option>
+                                        <option value="quarterly">Trimestral</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="estimated_sessions" class="form-label">Sesiones Estimadas</label>
+                                    <input type="number" class="form-control" id="estimated_sessions" name="estimated_sessions" 
+                                           placeholder="8" min="1" max="50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notas Adicionales</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                      placeholder="Cualquier información adicional relevante para este objetivo..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Crear Objetivo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

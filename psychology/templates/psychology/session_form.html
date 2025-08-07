@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin: 20px 0 15px 0;
+    }
+    
+    .section-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .session-helper {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .helper-section {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .helper-title {
+        color: #6f42c1;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .session-type-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .session-type-option {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .session-type-option:hover,
+    .session-type-option.selected {
+        border-color: #6f42c1;
+        background: #f8f5ff;
+    }
+    
+    .session-type-option i {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: #6f42c1;
+    }
+    
+    .risk-assessment-helper {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .crisis-alert {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0" style="color: #6f42c1;">
+                        <i class="fas fa-calendar-check me-2"></i>{{ title }}
+                    </h1>
+                    <p class="text-muted mb-0">Registre los detalles de la sesión de terapia</p>
+                </div>
+                <a href="{% url 'psychology:session_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+            <div class="form-container">
+                <form method="post" id="sessionForm">
+                    {% csrf_token %}
+                    {% crispy form %}
+                </form>
+            </div>
+        </div>
+        
+        <!-- Panel de Ayuda -->
+        <div class="col-lg-4">
+            <!-- Tipos de Sesión -->
+            <div class="session-helper">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-users me-2"></i>Tipos de Sesión
+                </h5>
+                <div class="session-type-selector">
+                    <div class="session-type-option" data-type="individual">
+                        <i class="fas fa-user"></i>
+                        <div class="small fw-bold">Individual</div>
+                    </div>
+                    <div class="session-type-option" data-type="group">
+                        <i class="fas fa-users"></i>
+                        <div class="small fw-bold">Grupal</div>
+                    </div>
+                    <div class="session-type-option" data-type="family">
+                        <i class="fas fa-home"></i>
+                        <div class="small fw-bold">Familiar</div>
+                    </div>
+                    <div class="session-type-option" data-type="couple">
+                        <i class="fas fa-heart"></i>
+                        <div class="small fw-bold">Pareja</div>
+                    </div>
+                    <div class="session-type-option" data-type="play">
+                        <i class="fas fa-child"></i>
+                        <div class="small fw-bold">Juego</div>
+                    </div>
+                    <div class="session-type-option" data-type="cognitive">
+                        <i class="fas fa-brain"></i>
+                        <div class="small fw-bold">Cognitiva</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Guía de Documentación -->
+            <div class="session-helper">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-clipboard-list me-2"></i>Guía de Documentación
+                </h5>
+                
+                <div class="helper-section">
+                    <div class="helper-title">Notas de Progreso</div>
+                    <ul class="small mb-0">
+                        <li>Describa objetivamente el comportamiento</li>
+                        <li>Incluya intervenciones específicas utilizadas</li>
+                        <li>Documente la respuesta del paciente</li>
+                        <li>Registre cualquier cambio significativo</li>
+                        <li>Mantener confidencialidad en todo momento</li>
+                    </ul>
+                </div>
+                
+                <div class="helper-section">
+                    <div class="helper-title">Tareas Terapéuticas</div>
+                    <ul class="small mb-0">
+                        <li>Asigne tareas específicas y medibles</li>
+                        <li>Explique el propósito de cada tarea</li>
+                        <li>Establezca fechas límite claras</li>
+                        <li>Revise el cumplimiento en la siguiente sesión</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Evaluación de Riesgo -->
+            <div class="session-helper">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-shield-alt me-2"></i>Evaluación de Riesgo
+                </h5>
+                
+                <div class="risk-assessment-helper">
+                    <div class="helper-title">Factores de Riesgo a Evaluar</div>
+                    <ul class="small mb-0">
+                        <li><strong>Riesgo suicida:</strong> Ideación, plan, medios</li>
+                        <li><strong>Riesgo de autolesión:</strong> Comportamientos previos</li>
+                        <li><strong>Riesgo hacia otros:</strong> Agresividad, amenazas</li>
+                        <li><strong>Factores protectores:</strong> Apoyo social, motivación</li>
+                    </ul>
+                </div>
+                
+                <div class="crisis-alert">
+                    <div class="helper-title">⚠️ Protocolo de Crisis</div>
+                    <div class="small">
+                        <p><strong>Si identifica riesgo inmediato:</strong></p>
+                        <ol class="small mb-0">
+                            <li>No deje solo al paciente</li>
+                            <li>Active protocolo de emergencia</li>
+                            <li>Contacte servicios de emergencia si es necesario</li>
+                            <li>Documente todo detalladamente</li>
+                            <li>Informe al supervisor inmediatamente</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Técnicas Terapéuticas -->
+            <div class="session-helper">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-tools me-2"></i>Técnicas Terapéuticas Comunes
+                </h5>
+                
+                <div class="helper-section">
+                    <div class="helper-title">Cognitivo-Conductual</div>
+                    <div class="small">
+                        Reestructuración cognitiva, exposición gradual, técnicas de relajación, registro de pensamientos
+                    </div>
+                </div>
+                
+                <div class="helper-section">
+                    <div class="helper-title">Humanística</div>
+                    <div class="small">
+                        Escucha activa, reflejo de sentimientos, clarificación, confrontación empática
+                    </div>
+                </div>
+                
+                <div class="helper-section">
+                    <div class="helper-title">Psicodinámica</div>
+                    <div class="small">
+                        Interpretación, análisis de transferencia, exploración del insight, trabajo con sueños
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Referencias a campos del formulario
+    const sessionTypeField = document.querySelector('select[name="session_type"]');
+    const patientMoodField = document.querySelector('input[name="patient_mood"]');
+    const riskAssessmentField = document.querySelector('textarea[name="risk_assessment"]');
+    const crisisInterventionField = document.querySelector('textarea[name="crisis_intervention"]');
+    
+    // Selectores visuales de tipo de sesión
+    const sessionTypeOptions = document.querySelectorAll('.session-type-option');
+    
+    // Inicializar selector visual de tipo de sesión
+    sessionTypeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const selectedType = this.dataset.type;
+            
+            // Actualizar visual
+            sessionTypeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Actualizar campo del formulario
+            if (sessionTypeField) {
+                sessionTypeField.value = selectedType;
+            }
+        });
+    });
+    
+    // Sincronizar selector visual con campo del formulario
+    if (sessionTypeField?.value) {
+        const selectedOption = document.querySelector(`[data-type="${sessionTypeField.value}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+        }
+    }
+    
+    // Auto-expandir textareas
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    });
+    
+    // Alertas para evaluación de riesgo
+    if (riskAssessmentField) {
+        riskAssessmentField.addEventListener('input', function() {
+            const riskKeywords = ['suicidio', 'matarme', 'morir', 'lastimar', 'dañar', 'violencia'];
+            const text = this.value.toLowerCase();
+            const hasRiskIndicators = riskKeywords.some(keyword => text.includes(keyword));
+            
+            if (hasRiskIndicators && text.length > 10) {
+                this.style.borderColor = '#dc3545';
+                this.style.backgroundColor = '#fff5f5';
+                
+                // Mostrar alerta si no existe
+                if (!document.getElementById('riskAlert')) {
+                    const alert = document.createElement('div');
+                    alert.id = 'riskAlert';
+                    alert.className = 'alert alert-danger mt-2';
+                    alert.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><strong>Alerta:</strong> Se detectaron indicadores de riesgo. Considere activar protocolo de crisis.';
+                    this.parentNode.appendChild(alert);
+                }
+            } else {
+                this.style.borderColor = '';
+                this.style.backgroundColor = '';
+                const existingAlert = document.getElementById('riskAlert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+            }
+        });
+    }
+    
+    // Validación antes del envío
+    const form = document.getElementById('sessionForm');
+    form.addEventListener('submit', function(e) {
+        const requiredFields = ['patient', 'session_date', 'session_type', 'progress_notes'];
+        let hasErrors = false;
+        
+        requiredFields.forEach(fieldName => {
+            const field = document.querySelector(`[name="${fieldName}"]`);
+            if (field && !field.value.trim()) {
+                field.classList.add('is-invalid');
+                hasErrors = true;
+            } else if (field) {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (hasErrors) {
+            e.preventDefault();
+            alert('Por favor complete todos los campos requeridos.');
+            return false;
+        }
+        
+        // Verificar si hay evaluación de riesgo documentada
+        const riskText = riskAssessmentField?.value.trim();
+        if (!riskText && !confirm('No se ha documentado evaluación de riesgo. ¿Desea continuar?')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Auto-save draft (opcional)
+    let autoSaveTimer;
+    const formFields = document.querySelectorAll('input, textarea, select');
+    formFields.forEach(field => {
+        field.addEventListener('input', function() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                saveDraft();
+            }, 30000); // Auto-save cada 30 segundos
+        });
+    });
+    
+    function saveDraft() {
+        const formData = new FormData(form);
+        const draftData = {};
+        for (let [key, value] of formData.entries()) {
+            draftData[key] = value;
+        }
+        localStorage.setItem('psychology_session_draft', JSON.stringify(draftData));
+        
+        // Mostrar indicador de guardado
+        const saveIndicator = document.createElement('small');
+        saveIndicator.className = 'text-muted';
+        saveIndicator.textContent = 'Borrador guardado automáticamente';
+        saveIndicator.style.position = 'fixed';
+        saveIndicator.style.bottom = '20px';
+        saveIndicator.style.right = '20px';
+        saveIndicator.style.background = '#f8f9fa';
+        saveIndicator.style.padding = '5px 10px';
+        saveIndicator.style.borderRadius = '5px';
+        document.body.appendChild(saveIndicator);
+        
+        setTimeout(() => saveIndicator.remove(), 3000);
+    }
+});
+</script>
+{% endblock %}

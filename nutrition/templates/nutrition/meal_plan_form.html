@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin: 20px 0 15px 0;
+    }
+    
+    .section-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .meal-type-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .meal-type-option {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .meal-type-option:hover,
+    .meal-type-option.selected {
+        border-color: #fd7e14;
+        background: #fff8f0;
+    }
+    
+    .meal-type-option i {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: #fd7e14;
+    }
+    
+    .nutrition-calculator {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .macro-display {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .macro-item {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #e9ecef;
+    }
+    
+    .macro-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .calories { color: #dc3545; }
+    .protein { color: #28a745; }
+    .carbs { color: #ffc107; }
+    .fat { color: #fd7e14; }
+    
+    .ingredient-calculator {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .ingredient-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+    
+    .ingredient-row input {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-add-ingredient {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 8px 20px;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .preparation-tips {
+        background: #e7f3ff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-warning">
+                        <i class="fas fa-utensils me-2"></i>{{ title }}
+                    </h1>
+                    <p class="text-muted mb-0">Diseñe un menú nutritivo y balanceado</p>
+                    {% if diet_plan %}
+                    <small class="text-muted">Para el plan: <strong>{{ diet_plan.name }}</strong></small>
+                    {% endif %}
+                </div>
+                <a href="{% if diet_plan %}{% url 'nutrition:diet_plan_detail' diet_plan.pk %}{% else %}{% url 'nutrition:diet_plan_list' %}{% endif %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+            <div class="form-container">
+                <form method="post" id="mealPlanForm">
+                    {% csrf_token %}
+                    {% crispy form %}
+                </form>
+            </div>
+        </div>
+        
+        <!-- Panel de Herramientas -->
+        <div class="col-lg-4">
+            <!-- Selector Visual de Tipo de Comida -->
+            <div class="nutrition-calculator">
+                <h5 class="text-warning mb-3">
+                    <i class="fas fa-clock me-2"></i>Tipos de Comida
+                </h5>
+                <div class="meal-type-selector">
+                    <div class="meal-type-option" data-type="breakfast">
+                        <i class="fas fa-coffee"></i>
+                        <div class="small fw-bold">Desayuno</div>
+                    </div>
+                    <div class="meal-type-option" data-type="morning_snack">
+                        <i class="fas fa-apple-alt"></i>
+                        <div class="small fw-bold">Col. AM</div>
+                    </div>
+                    <div class="meal-type-option" data-type="lunch">
+                        <i class="fas fa-hamburger"></i>
+                        <div class="small fw-bold">Comida</div>
+                    </div>
+                    <div class="meal-type-option" data-type="afternoon_snack">
+                        <i class="fas fa-cookie"></i>
+                        <div class="small fw-bold">Col. PM</div>
+                    </div>
+                    <div class="meal-type-option" data-type="dinner">
+                        <i class="fas fa-utensils"></i>
+                        <div class="small fw-bold">Cena</div>
+                    </div>  
+                </div>
+            </div>
+            
+            <!-- Calculadora Nutricional -->
+            <div class="nutrition-calculator">
+                <h5 class="text-warning mb-3">
+                    <i class="fas fa-calculator me-2"></i>Calculadora Nutricional
+                </h5>
+                <div class="macro-display">
+                    <div class="macro-item">
+                        <div class="macro-value calories" id="totalCalories">0</div>
+                        <small class="text-muted">Calorías</small>
+                    </div>
+                    <div class="macro-item">
+                        <div class="macro-value protein" id="totalProtein">0</div>
+                        <small class="text-muted">Proteínas (g)</small>
+                    </div>
+                    <div class="macro-item">
+                        <div class="macro-value carbs" id="totalCarbs">0</div>
+                        <small class="text-muted">Carbs (g)</small>
+                    </div>
+                    <div class="macro-item">
+                        <div class="macro-value fat" id="totalFat">0</div>
+                        <small class="text-muted">Grasas (g)</small>
+                    </div>
+                </div>
+                
+                <!-- Calculadora de Ingredientes -->
+                <div class="ingredient-calculator">
+                    <h6 class="mb-3">Calculadora de Ingredientes</h6>
+                    <div id="ingredientsList">
+                        <div class="ingredient-row">
+                            <input type="text" placeholder="Nombre del ingrediente" class="ingredient-name">
+                            <input type="number" placeholder="Cantidad" class="ingredient-amount" step="0.1">
+                            <select class="ingredient-unit">
+                                <option value="g">gramos</option>
+                                <option value="ml">ml</option>
+                                <option value="piezas">piezas</option>
+                                <option value="tazas">tazas</option>
+                                <option value="cucharadas">cdas</option>
+                            </select>
+                            <input type="number" placeholder="Kcal/100g" class="ingredient-calories" step="0.1">
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-ingredient w-100 mt-2" onclick="addIngredientRow()">
+                        <i class="fas fa-plus me-1"></i>Agregar Ingrediente
+                    </button>
+                    <button type="button" class="btn btn-info w-100 mt-2" onclick="calculateNutrition()">
+                        <i class="fas fa-calculator me-1"></i>Calcular Totales
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Sugerencias de Menús -->
+            <div class="nutrition-calculator">
+                <h5 class="text-warning mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Sugerencias por Comida
+                </h5>
+                <div id="mealSuggestions">
+                    <div class="small text-muted">Seleccione un tipo de comida para ver sugerencias</div>
+                </div>
+            </div>
+            
+            <!-- Tips de Preparación -->
+            <div class="preparation-tips">
+                <h6 class="text-info mb-2">
+                    <i class="fas fa-chef-hat me-2"></i>Tips de Preparación
+                </h6>
+                <ul class="small mb-0">
+                    <li>Use métodos de cocción saludables (vapor, plancha, horno)</li>
+                    <li>Incluya verduras de diferentes colores</li>
+                    <li>Controle las porciones de grasas y aceites</li>
+                    <li>Prefiera granos integrales sobre refinados</li>
+                    <li>Incluya una fuente de proteína en cada comida</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Sugerencias de menús por tipo de comida
+const mealSuggestions = {
+    breakfast: [
+        "Avena con frutas y nueces",
+        "Huevos revueltos con vegetales", 
+        "Tostadas integrales con aguacate",
+        "Yogurt griego con granola",
+        "Smoothie de frutas con espinaca"
+    ],
+    morning_snack: [
+        "Frutas frescas con almendras",
+        "Yogurt natural con berries",
+        "Palitos de apio con mantequilla de maní",
+        "Té verde con galletas integrales"
+    ],
+    lunch: [
+        "Ensalada de pollo a la plancha",
+        "Pescado al vapor con quinoa",
+        "Lentejas con vegetales",
+        "Pechuga de pavo con arroz integral",
+        "Sopa de verduras con proteína"
+    ],
+    afternoon_snack: [
+        "Hummus con vegetales",
+        "Nueces y frutas secas",
+        "Batido de proteína",
+        "Queso bajo en grasa con crackers"
+    ],
+    dinner: [
+        "Salmón a la plancha con brócoli",
+        "Pollo al horno con vegetales",
+        "Ensalada césar con proteína",
+        "Tofu salteado con vegetales",
+        "Sopa ligera con proteína"
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Referencias a campos del formulario
+    const mealTypeField = document.querySelector('select[name="meal_type"]');
+    const caloriesField = document.querySelector('input[name="calories"]');
+    const proteinField = document.querySelector('input[name="protein"]');
+    const carbsField = document.querySelector('input[name="carbs"]');
+    const fatField = document.querySelector('input[name="fat"]');
+    
+    // Selectores visuales
+    const mealTypeOptions = document.querySelectorAll('.meal-type-option');
+    
+    // Inicializar selector visual de tipo de comida
+    mealTypeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const selectedType = this.dataset.type;
+            
+            // Actualizar visual
+            mealTypeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Actualizar campo del formulario
+            if (mealTypeField) {
+                mealTypeField.value = selectedType;
+            }
+            
+            // Mostrar sugerencias
+            showMealSuggestions(selectedType);
+        });
+    });
+    
+    // Mostrar sugerencias de menú
+    function showMealSuggestions(mealType) {
+        const suggestionsContainer = document.getElementById('mealSuggestions');
+        const suggestions = mealSuggestions[mealType] || [];
+        
+        if (suggestions.length > 0) {
+            let html = '<div class="small"><strong>Sugerencias:</strong></div>';
+            suggestions.forEach(suggestion => {
+                html += `<div class="small text-muted mb-1">• ${suggestion}</div>`;
+            });
+            suggestionsContainer.innerHTML = html;
+        } else {
+            suggestionsContainer.innerHTML = '<div class="small text-muted">No hay sugerencias disponibles</div>';
+        }
+    }
+    
+    // Actualizar totales nutricionales
+    function updateNutritionTotals() {
+        const calories = parseFloat(caloriesField?.value || 0);
+        const protein = parseFloat(proteinField?.value || 0);
+        const carbs = parseFloat(carbsField?.value || 0);
+        const fat = parseFloat(fatField?.value || 0);
+        
+        document.getElementById('totalCalories').textContent = calories.toFixed(0);
+        document.getElementById('totalProtein').textContent = protein.toFixed(1);
+        document.getElementById('totalCarbs').textContent = carbs.toFixed(1);
+        document.getElementById('totalFat').textContent = fat.toFixed(1);
+    }
+    
+    // Event listeners para campos nutricionales
+    [caloriesField, proteinField, carbsField, fatField].forEach(field => {
+        if (field) {
+            field.addEventListener('input', updateNutritionTotals);
+        }
+    });
+    
+    // Inicializar valores
+    updateNutritionTotals();
+    
+    // Sincronizar selector visual con campo del formulario
+    if (mealTypeField?.value) {
+        const selectedOption = document.querySelector(`[data-type="${mealTypeField.value}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+            showMealSuggestions(mealTypeField.value);
+        }
+    }
+});
+
+// Funciones para la calculadora de ingredientes
+function addIngredientRow() {
+    const container = document.getElementById('ingredientsList');
+    const newRow = document.createElement('div');
+    newRow.className = 'ingredient-row';
+    newRow.innerHTML = `
+        <input type="text" placeholder="Nombre del ingrediente" class="ingredient-name">
+        <input type="number" placeholder="Cantidad" class="ingredient-amount" step="0.1">
+        <select class="ingredient-unit">
+            <option value="g">gramos</option>
+            <option value="ml">ml</option>
+            <option value="piezas">piezas</option>  
+            <option value="tazas">tazas</option>
+            <option value="cucharadas">cdas</option>
+        </select>
+        <input type="number" placeholder="Kcal/100g" class="ingredient-calories" step="0.1">
+    `;
+    container.appendChild(newRow);
+}
+
+function calculateNutrition() {
+    const rows = document.querySelectorAll('.ingredient-row');
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFat = 0;
+    
+    rows.forEach(row => {
+        const amount = parseFloat(row.querySelector('.ingredient-amount').value || 0);
+        const caloriesPer100g = parseFloat(row.querySelector('.ingredient-calories').value || 0);
+        const unit = row.querySelector('.ingredient-unit').value;
+        
+        if (amount > 0 && caloriesPer100g > 0) {
+            let calories = 0;
+            
+            // Convertir según la unidad
+            switch (unit) {
+                case 'g':
+                    calories = (amount * caloriesPer100g) / 100;
+                    break;
+                case 'ml':
+                    calories = (amount * caloriesPer100g) / 100; // Asumiendo densidad similar al agua
+                    break;
+                case 'piezas':
+                    calories = amount * caloriesPer100g; // caloriesPer100g sería por pieza
+                    break;  
+                case 'tazas':
+                    calories = amount * caloriesPer100g; // caloriesPer100g sería por taza
+                    break;
+                case 'cucharadas':
+                    calories = amount * caloriesPer100g; // caloriesPer100g sería por cucharada
+                    break;
+            }
+            
+            totalCalories += calories;
+            // Estimaciones básicas de macros (esto se podría mejorar con una base de datos de alimentos)
+            totalProtein += calories * 0.04; // Asumiendo ~4% de las calorías son proteína
+            totalCarbs += calories * 0.45; // Asumiendo ~45% de las calorías son carbohidratos  
+            totalFat += calories * 0.30; // Asumiendo ~30% de las calorías son grasas
+        }
+    });
+    
+    // Actualizar campos del formulario
+    const caloriesField = document.querySelector('input[name="calories"]');
+    const proteinField = document.querySelector('input[name="protein"]');
+    const carbsField = document.querySelector('input[name="carbs"]');
+    const fatField = document.querySelector('input[name="fat"]');
+    
+    if (caloriesField) caloriesField.value = totalCalories.toFixed(0);
+    if (proteinField) proteinField.value = (totalProtein / 4).toFixed(1); // Convertir calorías a gramos
+    if (carbsField) carbsField.value = (totalCarbs / 4).toFixed(1); // Convertir calorías a gramos
+    if (fatField) fatField.value = (totalFat / 9).toFixed(1); // Convertir calorías a gramos
+    
+    // Actualizar display
+    document.getElementById('totalCalories').textContent = totalCalories.toFixed(0);
+    document.getElementById('totalProtein').textContent = (totalProtein / 4).toFixed(1);
+    document.getElementById('totalCarbs').textContent = (totalCarbs / 4).toFixed(1);
+    document.getElementById('totalFat').textContent = (totalFat / 9).toFixed(1);
+    
+    alert('Valores nutricionales calculados y aplicados al formulario');
+}
+</script>
+{% endblock %}

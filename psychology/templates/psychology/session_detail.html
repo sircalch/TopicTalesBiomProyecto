@@ -1,0 +1,465 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .session-detail-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .session-header {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .session-status {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .status-completed { background-color: #d4edda; color: #155724; }
+    .status-scheduled { background-color: #cce5ff; color: #004085; }
+    .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    .status-no_show { background-color: #fff3cd; color: #856404; }
+    
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .risk-alert {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .crisis-alert {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .previous-sessions {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .session-mini-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #6f42c1;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #6f42c1;
+    }
+    
+    .timeline-item::after {
+        content: '';
+        position: absolute;
+        left: 13px;
+        top: 16px;
+        width: 2px;
+        height: calc(100% - 8px);
+        background: #dee2e6;
+    }
+    
+    .timeline-item:last-child::after {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0" style="color: #6f42c1;">
+                        <i class="fas fa-calendar-check me-2"></i>{{ title }}
+                    </h1>
+                    <p class="text-muted mb-0">Detalles de la sesión de terapia</p>
+                </div>
+                <div class="btn-group">
+                    <a href="{% url 'psychology:session_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                    </a>
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                    <a href="#" class="btn btn-outline-info">
+                        <i class="fas fa-print me-2"></i>Imprimir
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Detalles de la Sesión -->
+        <div class="col-lg-8">
+            <!-- Header de la Sesión -->
+            <div class="session-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="mb-1">{{ session.patient.get_full_name }}</h4>
+                        <p class="mb-0 opacity-75">
+                            Sesión #{{ session.session_number }} - {{ session.get_session_type_display }}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="session-status status-{{ session.status }}">
+                            {{ session.get_status_display }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información Básica -->
+            <div class="session-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>Información de la Sesión
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-section">
+                            <div class="info-label">Fecha y Hora</div>
+                            <div>
+                                <i class="fas fa-calendar text-primary me-2"></i>
+                                {{ session.session_date|date:"d/m/Y" }}
+                                <span class="text-muted ms-2">{{ session.session_date|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-section">
+                            <div class="info-label">Duración</div>
+                            <div>
+                                <i class="fas fa-clock text-primary me-2"></i>
+                                {{ session.duration_minutes }} minutos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if session.patient_mood %}
+                <div class="info-section">
+                    <div class="info-label">Estado de Ánimo del Paciente</div>
+                    <div>{{ session.patient_mood }}</div>
+                </div>
+                {% endif %}
+                
+                {% if session.session_goals %}
+                <div class="info-section">
+                    <div class="info-label">Objetivos de la Sesión</div>
+                    <div>{{ session.session_goals }}</div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Contenido de la Sesión -->
+            <div class="session-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-clipboard-list me-2 text-primary"></i>Contenido de la Sesión
+                </h5>
+                
+                {% if session.interventions_used %}
+                <div class="info-section">
+                    <div class="info-label">Intervenciones Utilizadas</div>
+                    <div>{{ session.interventions_used }}</div>
+                </div>
+                {% endif %}
+                
+                {% if session.patient_participation %}
+                <div class="info-section">
+                    <div class="info-label">Participación del Paciente</div>
+                    <div>{{ session.patient_participation }}</div>
+                </div>
+                {% endif %}
+                
+                <div class="info-section">
+                    <div class="info-label">Notas de Progreso</div>
+                    <div>{{ session.progress_notes|linebreaks }}</div>
+                </div>
+            </div>
+            
+            <!-- Tareas y Seguimiento -->
+            {% if session.homework_assigned or session.homework_review %}
+            <div class="session-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-home me-2 text-primary"></i>Tareas y Seguimiento
+                </h5>
+                
+                {% if session.homework_review %}
+                <div class="info-section">
+                    <div class="info-label">Revisión de Tareas Previas</div>
+                    <div>{{ session.homework_review }}</div>
+                </div>
+                {% endif %}
+                
+                {% if session.homework_assigned %}
+                <div class="info-section">
+                    <div class="info-label">Tareas Asignadas</div>
+                    <div>{{ session.homework_assigned }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Evaluación de Riesgo -->
+            {% if session.risk_assessment or session.crisis_intervention or session.safety_plan %}
+            <div class="session-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-shield-alt me-2 text-warning"></i>Evaluación de Riesgo y Seguridad
+                </h5>
+                
+                {% if session.risk_assessment %}
+                <div class="risk-alert">
+                    <div class="info-label">Evaluación de Riesgo</div>
+                    <div>{{ session.risk_assessment }}</div>
+                </div>
+                {% endif %}
+                
+                {% if session.crisis_intervention %}
+                <div class="crisis-alert">
+                    <div class="info-label">Intervención en Crisis</div>
+                    <div>{{ session.crisis_intervention }}</div>
+                </div>
+                {% endif %}
+                
+                {% if session.safety_plan %}
+                <div class="info-section">
+                    <div class="info-label">Plan de Seguridad</div>
+                    <div>{{ session.safety_plan }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Próxima Sesión -->
+            {% if session.next_session_date or session.next_session_goals %}
+            <div class="session-detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-forward me-2 text-primary"></i>Próxima Sesión
+                </h5>
+                
+                {% if session.next_session_date %}
+                <div class="info-section">
+                    <div class="info-label">Fecha Programada</div>
+                    <div>
+                        <i class="fas fa-calendar text-info me-2"></i>
+                        {{ session.next_session_date|date:"d/m/Y" }}
+                        <span class="text-muted ms-2">{{ session.next_session_date|time:"H:i" }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if session.next_session_goals %}
+                <div class="info-section">
+                    <div class="info-label">Objetivos para la Próxima Sesión</div>
+                    <div>{{ session.next_session_goals }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Información del Paciente -->
+            <div class="session-detail-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-user me-2 text-primary"></i>Información del Paciente
+                </h6>
+                
+                <div class="text-center mb-3">
+                    <div class="patient-avatar bg-primary text-white rounded-circle mx-auto mb-2" 
+                         style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        {{ session.patient.first_name.0 }}{{ session.patient.last_name.0 }}
+                    </div>
+                    <h6 class="mb-1">{{ session.patient.get_full_name }}</h6>
+                    <small class="text-muted">{{ session.patient.identification_number }}</small>
+                </div>
+                
+                <div class="small">
+                    <div class="mb-2">
+                        <strong>Edad:</strong> {{ session.patient.get_age }} años
+                    </div>
+                    <div class="mb-2">
+                        <strong>Teléfono:</strong> {{ session.patient.phone_number|default:"No registrado" }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Email:</strong> {{ session.patient.email|default:"No registrado" }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del Psicólogo -->
+            <div class="session-detail-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-user-md me-2 text-primary"></i>Psicólogo
+                </h6>
+                
+                <div class="d-flex align-items-center">
+                    <div class="bg-secondary text-white rounded-circle me-3" 
+                         style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        {{ session.psychologist.first_name.0 }}{{ session.psychologist.last_name.0 }}
+                    </div>
+                    <div>
+                        <div class="fw-bold">{{ session.psychologist.get_full_name }}</div>
+                        <small class="text-muted">Psicólogo Clínico</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sesiones Anteriores -->
+            {% if previous_sessions %}
+            <div class="previous-sessions">
+                <h6 class="mb-3">
+                    <i class="fas fa-history me-2 text-primary"></i>Sesiones Anteriores
+                </h6>
+                
+                <div class="timeline">
+                    {% for prev_session in previous_sessions %}
+                    <div class="timeline-item">
+                        <div class="session-mini-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <strong class="small">Sesión #{{ prev_session.session_number }}</strong>
+                                <span class="badge bg-secondary">{{ prev_session.get_status_display }}</span>
+                            </div>
+                            <div class="small text-muted mb-2">
+                                <i class="fas fa-calendar me-1"></i>{{ prev_session.session_date|date:"d/m/Y" }}
+                                <i class="fas fa-clock ms-2 me-1"></i>{{ prev_session.duration_minutes }}min
+                            </div>
+                            <div class="small">
+                                {{ prev_session.progress_notes|truncatechars:80 }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="text-center">
+                    <a href="{% url 'psychology:session_list' %}?patient={{ session.patient.pk }}" 
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-list me-1"></i>Ver Todas las Sesiones
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Evaluación Relacionada -->
+            {% if session.evaluation %}
+            <div class="session-detail-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-clipboard-list me-2 text-primary"></i>Evaluación Relacionada
+                </h6>
+                
+                <div class="small">
+                    <div class="mb-2">
+                        <strong>Tipo:</strong> {{ session.evaluation.get_evaluation_type_display }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Fecha:</strong> {{ session.evaluation.evaluation_date|date:"d/m/Y" }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Estado:</strong> 
+                        {% if session.evaluation.is_completed %}
+                            <span class="badge bg-success">Completada</span>
+                        {% else %}
+                            <span class="badge bg-warning">En Proceso</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <a href="{% url 'psychology:evaluation_detail' session.evaluation.pk %}" 
+                   class="btn btn-outline-info btn-sm w-100">
+                    <i class="fas fa-eye me-1"></i>Ver Evaluación
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Imprimir sesión
+document.querySelector('.btn-outline-info').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.print();
+});
+
+// Auto-expandir secciones largas
+document.addEventListener('DOMContentLoaded', function() {
+    const longTexts = document.querySelectorAll('.info-section div:not(.info-label)');
+    longTexts.forEach(text => {
+        if (text.textContent.length > 200) {
+            const fullText = text.innerHTML;
+            const shortText = text.textContent.substring(0, 200) + '...';
+            
+            text.innerHTML = shortText + ' <a href="#" class="text-primary" onclick="toggleText(this)">Ver más</a>';
+            text.dataset.fullText = fullText;
+            text.dataset.shortText = shortText;
+        }
+    });
+});
+
+function toggleText(link) {
+    const parent = link.parentNode;
+    const isExpanded = link.textContent === 'Ver menos';
+    
+    if (isExpanded) {
+        parent.innerHTML = parent.dataset.shortText + ' <a href="#" class="text-primary" onclick="toggleText(this)">Ver más</a>';
+    } else {
+        parent.innerHTML = parent.dataset.fullText + ' <a href="#" class="text-primary" onclick="toggleText(this)">Ver menos</a>';
+    }
+    
+    return false;
+}
+</script>
+{% endblock %}

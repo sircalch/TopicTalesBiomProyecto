@@ -1,0 +1,306 @@
+<!-- [ Medical Header ] start -->
+<header class="navbar pcoded-header navbar-expand-lg navbar-light">
+
+  <div class="m-header">
+    <a class="mobile-menu" id="mobile-collapse1" href="#!"><span></span></a>
+    <a href="{% url 'dashboard:index' %}" class="b-brand">
+      <div class="b-bg">
+        <i class="bi bi-heart-pulse-fill"></i>
+      </div>
+      <span class="b-title">TopicTales Biomédica</span>
+    </a>
+  </div>
+  
+  <a class="mobile-menu" id="mobile-header" href="#!">
+    <i class="bi bi-three-dots"></i>
+  </a>
+  
+  <div class="collapse navbar-collapse">
+    <!-- Navbar Left -->
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a href="#!" onclick="javascript:toggleFullScreen()" data-bs-toggle="tooltip" title="Pantalla completa">
+          <i class="bi bi-fullscreen"></i>
+        </a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <i class="bi bi-plus-circle-fill me-1"></i>
+          <span>Acciones</span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% url 'patients:create' %}">
+            <i class="bi bi-person-plus me-2"></i>Nuevo Paciente
+          </a></li>
+          <li><a class="dropdown-item" href="{% url 'appointments:create' %}">
+            <i class="bi bi-calendar-plus me-2"></i>Nueva Cita
+          </a></li>
+        </ul>
+      </li>
+    </ul>
+    
+    <!-- Navbar Right -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Dark Mode Toggle -->
+      <li class="nav-item">
+        <a href="#!" onclick="toggleDarkMode()" data-bs-toggle="tooltip" title="Cambiar tema">
+          <i class="bi bi-moon-fill" id="theme-icon"></i>
+        </a>
+      </li>
+      
+      <!-- Notifications -->
+      <li class="nav-item dropdown" id="notifications-dropdown">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" id="notifications-toggle">
+          <i class="bi bi-bell-fill"></i>
+          <span class="badge bg-danger" id="notifications-count">{{ pending_notifications|default:0 }}</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end" style="width: 350px;" id="notifications-menu">
+          <div class="dropdown-header d-flex justify-content-between align-items-center">
+            <span>Notificaciones</span>
+            <button class="btn btn-link btn-sm p-0" id="mark-all-read" style="font-size: 0.75rem;">
+              Marcar todas como leídas
+            </button>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div id="notifications-list">
+            <div class="dropdown-item-text text-center text-muted">
+              <i class="bi bi-hourglass-split"></i> Cargando...
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item-text text-center">
+            <small><a href="#" class="text-decoration-none">Ver todas las notificaciones</a></small>
+          </div>
+        </div>
+      </li>
+      
+      <!-- Quick Messages -->
+      <li class="nav-item">
+        <a href="#!" data-bs-toggle="tooltip" title="Mensajes">
+          <i class="bi bi-chat-dots-fill"></i>
+          <span class="badge bg-info">{{ unread_messages|default:0 }}</span>
+        </a>
+      </li>
+      
+      <!-- User Profile -->
+      <li class="nav-item dropdown">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-person-circle fs-4"></i>
+          <span class="ms-2">{{ user.get_full_name|default:user.username }}</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end" style="width: 250px;">
+          <div class="dropdown-header">
+            <div class="d-flex align-items-center">
+              <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                <i class="bi bi-person text-white"></i>
+              </div>
+              <div>
+                <div class="fw-bold">{{ user.get_full_name|default:user.username }}</div>
+                <small class="text-muted">Médico</small><br>
+                <span class="badge bg-success">{{ user_subscription.plan|default:"Básico" }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a href="{% url 'accounts:profile' %}" class="dropdown-item">
+            <i class="bi bi-person me-2"></i> Mi Perfil
+          </a>
+          <a href="{% url 'accounts:settings' %}" class="dropdown-item">
+            <i class="bi bi-gear me-2"></i> Configuración
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="{% url 'accounts:logout' %}" class="dropdown-item">
+            <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+          </a>
+        </div>
+      </li>
+      
+      <!-- Search Box -->
+      <li class="nav-item">
+        <div class="navbar-search">
+          <div class="input-group">
+            <input type="text" id="medical-search" class="form-control form-control-sm" placeholder="Buscar...">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</header>
+<!-- [ Medical Header ] end -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Dark mode toggle
+  window.toggleDarkMode = function() {
+    const body = document.body;
+    const themeIcon = document.getElementById('theme-icon');
+    
+    if (body.classList.contains('dark-mode')) {
+      body.classList.remove('dark-mode');
+      themeIcon.className = 'bi bi-moon-fill';
+      localStorage.setItem('theme', 'light');
+    } else {
+      body.classList.add('dark-mode');
+      themeIcon.className = 'bi bi-sun-fill';
+      localStorage.setItem('theme', 'dark');
+    }
+  };
+
+  // Full screen toggle
+  window.toggleFullScreen = function() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  // Initialize tooltips
+  const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltips.forEach(tooltip => {
+    new bootstrap.Tooltip(tooltip);
+  });
+
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('theme-icon').className = 'bi bi-sun-fill';
+  }
+  
+  // Notifications functionality
+  loadNotifications();
+  
+  // Load notifications when dropdown is opened
+  document.getElementById('notifications-toggle').addEventListener('click', function() {
+    loadNotifications();
+  });
+  
+  // Mark all notifications as read
+  document.getElementById('mark-all-read').addEventListener('click', function(e) {
+    e.preventDefault();
+    markAllNotificationsRead();
+  });
+  
+  // Refresh notifications every 30 seconds
+  setInterval(loadNotifications, 30000);
+});
+
+// Notifications functions (same as before)
+function loadNotifications() {
+  fetch('/accounts/notifications/')
+    .then(response => response.json())
+    .then(data => {
+      updateNotificationsDropdown(data.notifications);
+      updateNotificationCount(data.unread_count);
+    })
+    .catch(error => {
+      console.error('Error loading notifications:', error);
+      document.getElementById('notifications-list').innerHTML = 
+        '<div class="dropdown-item-text text-center text-danger"><i class="bi bi-exclamation-triangle"></i> Error al cargar</div>';
+    });
+}
+
+function updateNotificationsDropdown(notifications) {
+  const notificationsList = document.getElementById('notifications-list');
+  
+  if (notifications.length === 0) {
+    notificationsList.innerHTML = 
+      '<div class="dropdown-item-text text-center text-muted"><i class="bi bi-check-circle"></i> No hay notificaciones</div>';
+    return;
+  }
+  
+  let html = '';
+  notifications.forEach(notification => {
+    const readClass = notification.is_read ? 'text-muted' : '';
+    const priorityClass = notification.priority_class;
+    
+    html += `
+      <div class="dropdown-item ${readClass}" data-notification-id="${notification.id}">
+        <div class="d-flex align-items-start">
+          <i class="bi ${notification.icon} me-2 ${priorityClass}" style="margin-top: 2px;"></i>
+          <div class="flex-grow-1">
+            <div class="fw-bold" style="font-size: 0.9rem;">${notification.title}</div>
+            <div style="font-size: 0.8rem;">${notification.message}</div>
+            <small class="text-muted">${notification.created_at}</small>
+          </div>
+          ${!notification.is_read ? '<div class="badge bg-primary ms-2" style="width: 8px; height: 8px; border-radius: 50%;"></div>' : ''}
+        </div>
+      </div>`;
+  });
+  
+  notificationsList.innerHTML = html;
+  
+  // Add click handlers to mark individual notifications as read
+  notificationsList.querySelectorAll('[data-notification-id]').forEach(item => {
+    item.addEventListener('click', function() {
+      const notificationId = this.dataset.notificationId;
+      markNotificationRead(notificationId);
+    });
+  });
+}
+
+function updateNotificationCount(count) {
+  const countBadge = document.getElementById('notifications-count');
+  if (count > 0) {
+    countBadge.textContent = count;
+    countBadge.style.display = 'inline';
+  } else {
+    countBadge.style.display = 'none';
+  }
+}
+
+function markNotificationRead(notificationId) {
+  fetch(`/accounts/notifications/${notificationId}/read/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      loadNotifications();
+    }
+  })
+  .catch(error => console.error('Error marking notification as read:', error));
+}
+
+function markAllNotificationsRead() {
+  fetch('/accounts/notifications/mark-all-read/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      loadNotifications();
+    }
+  })
+  .catch(error => console.error('Error marking all notifications as read:', error));
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+</script>

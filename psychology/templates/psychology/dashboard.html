@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Psicología - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+        border-left: 4px solid #6f42c1;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #6f42c1;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stat-icon {
+        font-size: 2.5rem;
+        color: #6f42c1;
+        opacity: 0.7;
+    }
+    
+    .section-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .section-header {
+        border-bottom: 2px solid #f8f9fa;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        color: #495057;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .evaluation-item {
+        border-left: 4px solid #17a2b8;
+        background: #f8f9fa;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 0 10px 10px 0;
+        transition: all 0.3s ease;
+    }
+    
+    .evaluation-item:hover {
+        background: #e3f2fd;
+        border-left-color: #2196f3;
+        transform: translateX(5px);
+    }
+    
+    .session-item {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    
+    .session-item:hover {
+        border-color: #6f42c1;
+        box-shadow: 0 2px 10px rgba(111, 66, 193, 0.1);
+    }
+    
+    .goal-item {
+        border-left: 4px solid #28a745;
+        background: #f8fff8;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    .badge-evaluation {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+    
+    .evaluation-initial { background-color: #e3f2fd; color: #1565c0; }
+    .evaluation-cognitive { background-color: #f3e5f5; color: #7b1fa2; }
+    .evaluation-personality { background-color: #fff3e0; color: #ef6c00; }
+    .evaluation-neuropsychological { background-color: #e8f5e8; color: #2e7d32; }
+    .evaluation-clinical { background-color: #fce4ec; color: #c2185b; }
+    .evaluation-educational { background-color: #f1f8e9; color: #558b2f; }
+    .evaluation-occupational { background-color: #e0f2f1; color: #00695c; }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin: 20px 0;
+    }
+    
+    .quick-action-btn {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 12px 25px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .quick-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(111, 66, 193, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .completion-badge {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0" style="color: #6f42c1;">
+                        <i class="fas fa-brain me-2"></i>Dashboard de Psicología
+                    </h1>
+                    <p class="text-muted mb-0">Gestión integral de evaluaciones y tratamientos psicológicos</p>
+                </div>
+                <div class="completion-badge">
+                    <i class="fas fa-chart-line me-1"></i>
+                    {{ completion_rate }}% Completado
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ total_evaluations }}</div>
+                        <div class="stat-label">Evaluaciones Totales</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ completed_evaluations }}</div>
+                        <div class="stat-label">Evaluaciones Completadas</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ active_treatments }}</div>
+                        <div class="stat-label">Tratamientos Activos</div> 
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ total_sessions }}</div>
+                        <div class="stat-label">Sesiones de Terapia</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="section-header">
+                    <h5 class="section-title">
+                        <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'psychology:evaluation_create' %}" class="quick-action-btn w-100 text-center">
+                            <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'psychology:session_create' %}" class="quick-action-btn w-100 text-center">
+                            <i class="fas fa-calendar-plus me-2"></i>Nueva Sesión
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'psychology:treatment_plan_create' %}" class="quick-action-btn w-100 text-center">
+                            <i class="fas fa-map me-2"></i>Nuevo Plan
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'psychology:goal_create' %}" class="quick-action-btn w-100 text-center">
+                            <i class="fas fa-bullseye me-2"></i>Nuevo Objetivo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Evaluaciones Recientes -->
+        <div class="col-lg-6 mb-4">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="section-title">
+                            <i class="fas fa-clipboard-list me-2"></i>Evaluaciones Recientes
+                        </h5>
+                        <a href="{% url 'psychology:evaluation_list' %}" class="text-primary text-decoration-none">
+                            Ver todas <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                {% if recent_evaluations %}
+                    {% for evaluation in recent_evaluations %}
+                    <div class="evaluation-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ evaluation.patient.get_full_name }}</h6>
+                                <span class="badge-evaluation evaluation-{{ evaluation.evaluation_type }}">
+                                    {{ evaluation.get_evaluation_type_display }}
+                                </span>
+                                <p class="text-muted small mb-1 mt-2">{{ evaluation.chief_complaint|truncatechars:80 }}</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{ evaluation.evaluation_date|date:"d/m/Y" }}
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                {% if evaluation.is_completed %}
+                                    <i class="fas fa-check-circle text-success" title="Completada"></i>
+                                {% else %}
+                                    <i class="fas fa-clock text-warning" title="En proceso"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                        <p>No hay evaluaciones recientes</p>
+                        <a href="{% url 'psychology:evaluation_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Crear Primera Evaluación
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Próximas Sesiones -->
+        <div class="col-lg-6 mb-4">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="section-title">
+                            <i class="fas fa-calendar-check me-2"></i>Próximas Sesiones
+                        </h5>
+                        <a href="{% url 'psychology:session_list' %}" class="text-primary text-decoration-none">
+                            Ver todas <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                {% if upcoming_sessions %}
+                    {% for session in upcoming_sessions %}
+                    <div class="session-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ session.patient.get_full_name }}</h6>
+                                <small class="text-muted">
+                                    Sesión #{{ session.session_number }} - {{ session.get_session_type_display }}
+                                </small>
+                                <div class="mt-1">
+                                    <small class="text-primary">
+                                        <i class="fas fa-clock me-1"></i>{{ session.session_date|date:"d/m/Y H:i" }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary">{{ session.duration_minutes }} min</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-calendar-check fa-3x mb-3"></i>
+                        <p>No hay sesiones programadas</p>
+                        <a href="{% url 'psychology:session_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Programar Sesión
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Objetivos Próximos a Vencer -->
+        <div class="col-lg-6 mb-4">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="section-title">
+                            <i class="fas fa-bullseye me-2"></i>Objetivos Próximos a Vencer
+                        </h5>
+                        <a href="{% url 'psychology:goal_list' %}" class="text-primary text-decoration-none">
+                            Ver todos <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                {% if upcoming_goals %}
+                    {% for goal in upcoming_goals %}
+                    <div class="goal-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ goal.title }}</h6>
+                                <small class="text-muted">
+                                    {{ goal.treatment_plan.evaluation.patient.get_full_name }}
+                                </small>
+                                <div class="mt-2">
+                                    <small class="text-danger">
+                                        <i class="fas fa-calendar-alt me-1"></i>Vence: {{ goal.target_date|date:"d/m/Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-warning">
+                                    Prioridad {{ goal.get_priority_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-bullseye fa-3x mb-3"></i>
+                        <p>No hay objetivos próximos a vencer</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Gráfico de Evaluaciones por Tipo -->
+        <div class="col-lg-6 mb-4">  
+            <div class="section-card">
+                <div class="section-header">
+                    <h5 class="section-title">
+                        <i class="fas fa-chart-pie me-2"></i>Evaluaciones por Tipo
+                    </h5>
+                </div>
+                
+                {% if evaluations_by_type %}
+                    <div class="chart-container">
+                        <canvas id="evaluationsChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                        <p>No hay datos para mostrar</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico de evaluaciones por tipo
+{% if evaluations_by_type %}
+const evaluationsData = {
+    labels: [
+        {% for item in evaluations_by_type %}
+        '{{ item.evaluation_type|title }}'{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    datasets: [{
+        data: [
+            {% for item in evaluations_by_type %}
+            {{ item.count }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        backgroundColor: [
+            '#6f42c1', '#e83e8c', '#17a2b8', '#28a745', 
+            '#ffc107', '#fd7e14', '#dc3545', '#6c757d'
+        ],
+        borderWidth: 2,
+        borderColor: '#fff'
+    }]
+};
+
+const evaluationsChart = new Chart(document.getElementById('evaluationsChart'), {
+    type: 'doughnut',
+    data: evaluationsData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    usePointStyle: true
+                }
+            }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

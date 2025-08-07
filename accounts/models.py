@@ -332,3 +332,79 @@ class AuditLog(models.Model):
         verbose_name = "Registro de Auditoría"
         verbose_name_plural = "Registros de Auditoría"
         ordering = ['-timestamp']
+
+
+class Notification(models.Model):
+    """
+    System notifications for users
+    """
+    TYPE_CHOICES = [
+        ('appointment', 'Cita Médica'),
+        ('patient', 'Paciente'),
+        ('system', 'Sistema'),
+        ('reminder', 'Recordatorio'),
+        ('alert', 'Alerta'),
+        ('message', 'Mensaje'),
+    ]
+    
+    PRIORITY_CHOICES = [
+        ('low', 'Baja'),
+        ('medium', 'Media'),
+        ('high', 'Alta'),
+        ('urgent', 'Urgente'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=200, verbose_name="Título")
+    message = models.TextField(verbose_name="Mensaje")
+    notification_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='system')
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
+    
+    # Status
+    is_read = models.BooleanField(default=False, verbose_name="Leída")
+    is_dismissed = models.BooleanField(default=False, verbose_name="Descartada")
+    
+    # Optional linking to other objects
+    related_model = models.CharField(max_length=100, blank=True, verbose_name="Modelo relacionado")
+    related_id = models.PositiveIntegerField(blank=True, null=True, verbose_name="ID relacionado")
+    action_url = models.URLField(blank=True, verbose_name="URL de acción")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"
+    
+    def mark_as_read(self):
+        """Mark notification as read"""
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save()
+    
+    def get_icon(self):
+        """Get Bootstrap icon based on notification type"""
+        icons = {
+            'appointment': 'bi-calendar-event',
+            'patient': 'bi-person',
+            'system': 'bi-gear',
+            'reminder': 'bi-bell',
+            'alert': 'bi-exclamation-triangle',
+            'message': 'bi-chat-dots',
+        }
+        return icons.get(self.notification_type, 'bi-bell')
+    
+    def get_priority_class(self):
+        """Get CSS class based on priority"""
+        classes = {
+            'low': 'text-muted',
+            'medium': 'text-info',
+            'high': 'text-warning',
+            'urgent': 'text-danger',
+        }
+        return classes.get(self.priority, 'text-info')
+    
+    class Meta:
+        verbose_name = "Notificación"
+        verbose_name_plural = "Notificaciones"
+        ordering = ['-created_at']

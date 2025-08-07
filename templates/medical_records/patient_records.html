@@ -29,7 +29,7 @@
                         <p class="text-muted mb-2">ID: {{ patient.patient_id }}</p>
                         <div class="row text-sm">
                             <div class="col-6">
-                                <strong>Edad:</strong> {{ patient.age }} años<br>
+                                <strong>Edad:</strong> {{ patient.get_age }} años<br>
                                 <strong>Género:</strong> {{ patient.get_gender_display }}<br>
                                 <strong>Teléfono:</strong> {{ patient.phone_number }}
                             </div>

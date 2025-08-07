@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Evaluaciones Nutricionales{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-weight me-2 text-primary"></i>Evaluaciones Nutricionales
+                </h1>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'nutrition:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Buscar Paciente</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ request.GET.search }}" placeholder="Nombre del paciente...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos los estados</option>
+                                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pendiente</option>
+                                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completada</option>
+                                <option value="follow_up" {% if request.GET.status == 'follow_up' %}selected{% endif %}>Seguimiento</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="assessment_type" class="form-label">Tipo de Evaluación</label>
+                            <select class="form-select" id="assessment_type" name="assessment_type">
+                                <option value="">Todos los tipos</option>
+                                <option value="initial" {% if request.GET.assessment_type == 'initial' %}selected{% endif %}>Inicial</option>
+                                <option value="anthropometric" {% if request.GET.assessment_type == 'anthropometric' %}selected{% endif %}>Antropométrica</option>
+                                <option value="dietary" {% if request.GET.assessment_type == 'dietary' %}selected{% endif %}>Dietética</option>
+                                <option value="clinical" {% if request.GET.assessment_type == 'clinical' %}selected{% endif %}>Clínica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Assessment Types -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <i class="fas fa-weight fa-2x text-primary mb-3"></i>
+                            <h6 class="card-title">Evaluación Antropométrica</h6>
+                            <p class="card-text small">Peso, talla, IMC, composición corporal</p>
+                            <button type="button" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <i class="fas fa-apple-alt fa-2x text-success mb-3"></i>
+                            <h6 class="card-title">Evaluación Dietética</h6>
+                            <p class="card-text small">Hábitos alimentarios, frecuencia de consumo</p>
+                            <button type="button" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <i class="fas fa-stethoscope fa-2x text-warning mb-3"></i>
+                            <h6 class="card-title">Evaluación Clínica</h6>
+                            <p class="card-text small">Signos clínicos, síntomas, antecedentes</p>
+                            <button type="button" class="btn btn-warning btn-sm">
+                                <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-2x text-info mb-3"></i>
+                            <h6 class="card-title">Evaluación Bioquímica</h6>
+                            <p class="card-text small">Análisis de laboratorio, biomarcadores</p>
+                            <button type="button" class="btn btn-info btn-sm">
+                                <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assessments List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Evaluaciones Nutricionales Recientes</h5>
+                    <span class="badge bg-secondary">18 evaluaciones</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tipo de Evaluación</th>
+                                    <th>Fecha</th>
+                                    <th>IMC</th>
+                                    <th>Estado Nutricional</th>
+                                    <th>Nutricionista</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-primary text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Laura Fernández</strong><br>
+                                                <small class="text-muted">PAC005</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Evaluación Antropométrica</strong><br>
+                                        <small class="text-muted">Composición corporal completa</small>
+                                    </td>
+                                    <td>
+                                        <small>29 Ene 2025<br>10:00 AM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">27.3</span><br>
+                                        <small class="text-muted">Sobrepeso</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-warning">Sobrepeso Grado I</strong><br>
+                                        <small class="text-muted">Requiere intervención nutricional</small>
+                                    </td>
+                                    <td>
+                                        <strong>Lic. Carmen López</strong><br>
+                                        <small class="text-muted">Nutricionista Clínica</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completada</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Resultados">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Generar Plan">
+                                                <i class="fas fa-utensils"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Seguimiento">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-success text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Miguel Santos</strong><br>
+                                                <small class="text-muted">PAC006</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Evaluación Dietética</strong><br>
+                                        <small class="text-muted">Análisis de hábitos alimentarios</small>
+                                    </td>
+                                    <td>
+                                        <small>27 Ene 2025<br>02:30 PM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">22.1</span><br>
+                                        <small class="text-muted">Normal</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">Estado Nutricional Normal</strong><br>
+                                        <small class="text-muted">Mantener hábitos saludables</small>
+                                    </td>
+                                    <td>
+                                        <strong>Lic. Roberto Díaz</strong><br>
+                                        <small class="text-muted">Nutricionista Deportivo</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completada</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Análisis">
+                                                <i class="fas fa-chart-pie"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Plan Deportivo">
+                                                <i class="fas fa-running"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" title="Historial">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-danger text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Elena Martínez</strong><br>
+                                                <small class="text-muted">PAC007</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Evaluación Clínica</strong><br>
+                                        <small class="text-muted">Control diabetes tipo 2</small>
+                                    </td>
+                                    <td>
+                                        <small>25 Ene 2025<br>11:15 AM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">31.8</span><br>
+                                        <small class="text-muted">Obesidad</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-danger">Obesidad Grado I</strong><br>
+                                        <small class="text-muted">Requiere intervención inmediata</small>
+                                    </td>
+                                    <td>
+                                        <strong>Lic. Carmen López</strong><br>
+                                        <small class="text-muted">Nutricionista Clínica</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">En Seguimiento</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Evaluación">
+                                                <i class="fas fa-file-medical"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" title="Plan Terapéutico">
+                                                <i class="fas fa-heartbeat"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" title="Monitoreo">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-info text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Pedro Jiménez</strong><br>
+                                                <small class="text-muted">PAC008</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>Evaluación Bioquímica</strong><br>
+                                        <small class="text-muted">Análisis de perfil lipídico</small>
+                                    </td>
+                                    <td>
+                                        <small>24 Ene 2025<br>08:30 AM</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">24.7</span><br>
+                                        <small class="text-muted">Normal</small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-warning">Dislipidemia</strong><br>
+                                        <small class="text-muted">Colesterol elevado</small>
+                                    </td>
+                                    <td>
+                                        <strong>Lic. Roberto Díaz</strong><br>
+                                        <small class="text-muted">Nutricionista Clínica</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">En Análisis</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Resultados">
+                                                <i class="fas fa-vial"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" title="Plan Dietético">
+                                                <i class="fas fa-apple-alt"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Continuar">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assessment Statistics -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">18</h3>
+                            <small class="text-muted">Evaluaciones Este Mes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">15</h3>
+                            <small class="text-muted">Completadas</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">3</h3>
+                            <small class="text-muted">En Seguimiento</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">24.8</h3>
+                            <small class="text-muted">IMC Promedio</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

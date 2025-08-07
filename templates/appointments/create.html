@@ -16,10 +16,10 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-calendar-plus me-2"></i>Programar Nueva Cita
+                        <i class="bi bi-calendar-plus me-2"></i>Programar Nueva Cita
                     </h5>
                     <a href="{% url 'appointments:calendar' %}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>Volver al Calendario
+                        <i class="bi bi-arrow-left me-1"></i>Volver al Calendario
                     </a>
                 </div>
             </div>
@@ -31,13 +31,18 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-users me-2"></i>Información de la Cita
+                                <i class="bi bi-people me-2"></i>Información de la Cita
                             </h6>
                         </div>
                         
                         <div class="col-md-6">
                             <label for="{{ form.patient.id_for_label }}" class="form-label">Paciente *</label>
-                            {{ form.patient }}
+                            <select name="patient" class="form-select" id="id_patient" required>
+                                <option value="">Seleccionar paciente...</option>
+                                {% for patient in form.patient.queryset %}
+                                    <option value="{{ patient.id }}">{{ patient.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
                             {% if form.patient.errors %}
                                 <div class="invalid-feedback d-block">{{ form.patient.errors.0 }}</div>
                             {% endif %}
@@ -46,7 +51,12 @@
                         
                         <div class="col-md-6">
                             <label for="{{ form.doctor.id_for_label }}" class="form-label">Médico *</label>
-                            {{ form.doctor }}
+                            <select name="doctor" class="form-select" id="id_doctor" required>
+                                <option value="">Seleccionar médico...</option>
+                                {% for doctor in form.doctor.queryset %}
+                                    <option value="{{ doctor.id }}">{{ doctor.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
                             {% if form.doctor.errors %}
                                 <div class="invalid-feedback d-block">{{ form.doctor.errors.0 }}</div>
                             {% endif %}
@@ -55,7 +65,12 @@
                         
                         <div class="col-md-6 mt-3">
                             <label for="{{ form.appointment_type.id_for_label }}" class="form-label">Tipo de Cita *</label>
-                            {{ form.appointment_type }}
+                            <select name="appointment_type" class="form-select" id="id_appointment_type" required>
+                                <option value="">Seleccionar tipo de cita...</option>
+                                {% for type in form.appointment_type.queryset %}
+                                    <option value="{{ type.id }}">{{ type.name }} ({{ type.duration_minutes }} min)</option>
+                                {% endfor %}
+                            </select>
                             {% if form.appointment_type.errors %}
                                 <div class="invalid-feedback d-block">{{ form.appointment_type.errors.0 }}</div>
                             {% endif %}
@@ -64,7 +79,12 @@
                         
                         <div class="col-md-6 mt-3">
                             <label for="{{ form.priority.id_for_label }}" class="form-label">Prioridad</label>
-                            {{ form.priority }}
+                            <select name="priority" class="form-select" id="id_priority">
+                                <option value="normal">Normal</option>
+                                <option value="low">Baja</option>
+                                <option value="high">Alta</option>
+                                <option value="urgent">Urgente</option>
+                            </select>
                             {% if form.priority.errors %}
                                 <div class="invalid-feedback d-block">{{ form.priority.errors.0 }}</div>
                             {% endif %}
@@ -76,13 +96,13 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-clock me-2"></i>Programación
+                                <i class="bi bi-clock me-2"></i>Programación
                             </h6>
                         </div>
                         
                         <div class="col-md-12">
                             <label for="{{ form.start_datetime.id_for_label }}" class="form-label">Fecha y Hora de Inicio *</label>
-                            {{ form.start_datetime }}
+                            <input type="datetime-local" name="start_datetime" class="form-control" id="id_start_datetime" required>
                             {% if form.start_datetime.errors %}
                                 <div class="invalid-feedback d-block">{{ form.start_datetime.errors.0 }}</div>
                             {% endif %}
@@ -91,7 +111,7 @@
                         
                         <div class="col-md-12 mt-3">
                             <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
+                                <i class="bi bi-info-circle me-2"></i>
                                 <strong>Duración estimada:</strong> <span id="duration-display">Se calculará automáticamente según el tipo de cita</span>
                             </div>
                         </div>
@@ -101,7 +121,7 @@
                     <div class="row mb-4" id="available-slots-section" style="display: none;">
                         <div class="col-12">
                             <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-calendar-check me-2"></i>Horarios Disponibles
+                                <i class="bi bi-calendar-check me-2"></i>Horarios Disponibles
                             </h6>
                             <div id="available-slots-container">
                                 <!-- Slots loaded via AJAX -->
@@ -113,13 +133,13 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-file-medical me-2"></i>Detalles de la Consulta
+                                <i class="bi bi-file-medical me-2"></i>Detalles de la Consulta
                             </h6>
                         </div>
                         
                         <div class="col-12">
                             <label for="{{ form.reason.id_for_label }}" class="form-label">Motivo de la Consulta *</label>
-                            {{ form.reason }}
+                            <textarea name="reason" class="form-control" id="id_reason" rows="3" placeholder="Motivo de la consulta médica" required></textarea>
                             {% if form.reason.errors %}
                                 <div class="invalid-feedback d-block">{{ form.reason.errors.0 }}</div>
                             {% endif %}
@@ -128,7 +148,7 @@
                         
                         <div class="col-12 mt-3">
                             <label for="{{ form.notes.id_for_label }}" class="form-label">Notas Adicionales</label>
-                            {{ form.notes }}
+                            <textarea name="notes" class="form-control" id="id_notes" rows="2" placeholder="Notas adicionales (opcional)"></textarea>
                             {% if form.notes.errors %}
                                 <div class="invalid-feedback d-block">{{ form.notes.errors.0 }}</div>
                             {% endif %}
@@ -140,13 +160,13 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <h6 class="text-primary border-bottom pb-2 mb-3">
-                                <i class="fas fa-phone me-2"></i>Información de Contacto
+                                <i class="bi bi-telephone me-2"></i>Información de Contacto
                             </h6>
                         </div>
                         
                         <div class="col-md-6">
                             <label for="{{ form.patient_phone.id_for_label }}" class="form-label">Teléfono del Paciente</label>
-                            {{ form.patient_phone }}
+                            <input type="text" name="patient_phone" class="form-control" id="id_patient_phone" placeholder="+52 55 1234-5678">
                             {% if form.patient_phone.errors %}
                                 <div class="invalid-feedback d-block">{{ form.patient_phone.errors.0 }}</div>
                             {% endif %}
@@ -155,7 +175,7 @@
                         
                         <div class="col-md-6">
                             <label for="{{ form.patient_email.id_for_label }}" class="form-label">Email del Paciente</label>
-                            {{ form.patient_email }}
+                            <input type="email" name="patient_email" class="form-control" id="id_patient_email" placeholder="correo@ejemplo.com">
                             {% if form.patient_email.errors %}
                                 <div class="invalid-feedback d-block">{{ form.patient_email.errors.0 }}</div>
                             {% endif %}
@@ -166,7 +186,7 @@
                     <!-- Form Errors -->
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <i class="bi bi-exclamation-triangle me-2"></i>
                             {{ form.non_field_errors.0 }}
                         </div>
                     {% endif %}
@@ -174,10 +194,10 @@
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{% url 'appointments:calendar' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-1"></i>Cancelar
+                            <i class="bi bi-x me-1"></i>Cancelar
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Programar Cita
+                            <i class="bi bi-save me-1"></i>Programar Cita
                         </button>
                     </div>
                 </form>
@@ -220,12 +240,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-fill patient contact info when patient is selected
     patientSelect.addEventListener('change', function() {
         if (this.value) {
-            // In a real implementation, this would make an AJAX call to get patient data
-            // For now, we'll simulate it
-            setTimeout(() => {
-                phoneInput.value = '+52 55 1234-5678'; // Placeholder
-                emailInput.value = 'paciente@ejemplo.com'; // Placeholder
-            }, 300);
+            // Get patient contact info via AJAX
+            fetch(`/patients/api/patient-info/${this.value}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        phoneInput.value = data.phone || '';
+                        emailInput.value = data.email || '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching patient info:', error);
+                    // Fallback to empty values
+                    phoneInput.value = '';
+                    emailInput.value = '';
+                });
         } else {
             phoneInput.value = '';
             emailInput.value = '';

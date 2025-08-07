@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plan Dietético - {{ diet_plan.patient.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-clipboard-list me-2"></i>Plan Dietético</h1>
+                <div>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'nutrition:diet_plan_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-info-circle me-2"></i>Información del Plan</h5>
+                        </div>
+                        <div class="card-body">
+                            <h4>{{ diet_plan.name }}</h4>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <p><strong>Paciente:</strong> {{ diet_plan.patient.get_full_name }}</p>
+                                    <p><strong>Tipo:</strong> {{ diet_plan.get_plan_type_display }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Fecha de Inicio:</strong> {{ diet_plan.start_date|date:"d/m/Y" }}</p>
+                                    <p><strong>Duración:</strong> {{ diet_plan.duration_weeks }} semanas</p>
+                                </div>
+                            </div>
+                            {% if diet_plan.description %}
+                            <div class="mt-3">
+                                <strong>Descripción:</strong>
+                                <p class="mt-2">{{ diet_plan.description|linebreaks }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-calculator me-2"></i>Información Nutricional</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="text-center mb-3">
+                                        <h3 class="text-primary mb-0">{{ diet_plan.daily_calories }}</h3>
+                                        <small class="text-muted">Calorías Diarias</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-center mb-3">
+                                        <h3 class="text-info mb-0">{{ diet_plan.meals_per_day }}</h3>
+                                        <small class="text-muted">Comidas por Día</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <div class="d-inline-block position-relative">
+                                                <svg width="60" height="60" class="text-success">
+                                                    <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4" opacity="0.2"/>
+                                                    <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4" 
+                                                            stroke-dasharray="{{ diet_plan.protein_percentage|mul:1.57 }} 157" 
+                                                            stroke-dashoffset="39.25" transform="rotate(-90 30 30)"/>
+                                                </svg>
+                                                <div class="position-absolute top-50 start-50 translate-middle">
+                                                    <small class="fw-bold">{{ diet_plan.protein_percentage }}%</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Proteínas</small>
+                                        <div><small>{{ diet_plan.daily_calories|mul:diet_plan.protein_percentage|div:400|floatformat:0 }}g</small></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <div class="d-inline-block position-relative">
+                                                <svg width="60" height="60" class="text-warning">
+                                                    <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4" opacity="0.2"/>
+                                                    <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4" 
+                                                            stroke-dasharray="{{ diet_plan.carb_percentage|mul:1.57 }} 157" 
+                                                            stroke-dashoffset="39.25" transform="rotate(-90 30 30)"/>
+                                                </svg>
+                                                <div class="position-absolute top-50 start-50 translate-middle">
+                                                    <small class="fw-bold">{{ diet_plan.carb_percentage }}%</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Carbohidratos</small>
+                                        <div><small>{{ diet_plan.daily_calories|mul:diet_plan.carb_percentage|div:400|floatformat:0 }}g</small></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <div class="d-inline-block position-relative">
+                                                <svg width="60" height="60" class="text-primary">
+                                                    <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4" opacity="0.2"/>
+                                                    <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4" 
+                                                            stroke-dasharray="{{ diet_plan.fat_percentage|mul:1.57 }} 157" 
+                                                            stroke-dashoffset="39.25" transform="rotate(-90 30 30)"/>
+                                                </svg>
+                                                <div class="position-absolute top-50 start-50 translate-middle">
+                                                    <small class="fw-bold">{{ diet_plan.fat_percentage }}%</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Grasas</small>
+                                        <div><small>{{ diet_plan.daily_calories|mul:diet_plan.fat_percentage|div:900|floatformat:0 }}g</small></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if diet_plan.goals %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-bullseye me-2"></i>Objetivos del Plan</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ diet_plan.goals|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if diet_plan.allowed_foods %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-check-circle me-2 text-success"></i>Alimentos Permitidos</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ diet_plan.allowed_foods|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if diet_plan.restricted_foods %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-times-circle me-2 text-danger"></i>Alimentos Restringidos</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ diet_plan.restricted_foods|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if diet_plan.meal_timing %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-clock me-2"></i>Horarios de Comida</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ diet_plan.meal_timing|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if diet_plan.special_instructions %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-exclamation-circle me-2"></i>Instrucciones Especiales</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ diet_plan.special_instructions|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if diet_plan.notes %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-sticky-note me-2"></i>Notas Adicionales</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ diet_plan.notes|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-info-circle me-2"></i>Estado del Plan</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">Estado</small>
+                                <div>
+                                    {% if diet_plan.status == 'active' %}
+                                        <span class="badge bg-success">Activo</span>
+                                    {% elif diet_plan.status == 'completed' %}
+                                        <span class="badge bg-primary">Completado</span>
+                                    {% elif diet_plan.status == 'paused' %}
+                                        <span class="badge bg-warning">Pausado</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactivo</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if diet_plan.water_intake_goal %}
+                            <div class="mb-3">
+                                <small class="text-muted">Meta de Agua</small>
+                                <div>{{ diet_plan.water_intake_goal|floatformat:1 }} L/día</div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <small class="text-muted">Creado</small>
+                                <div>{{ diet_plan.created_at|date:"d/m/Y H:i" }}</div>
+                            </div>
+
+                            {% if diet_plan.end_date %}
+                            <div class="mb-3">
+                                <small class="text-muted">Fecha Fin Estimada</small>
+                                <div>{{ diet_plan.end_date|date:"d/m/Y" }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6><i class="fas fa-chart-line me-2"></i>Progreso</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">Adherencia al Plan</small>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+                                </div>
+                                <small class="text-muted">75% de adherencia</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">Días Completados</small>
+                                <div>12 de {{ diet_plan.duration_weeks|mul:7 }} días</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Seguimientos Realizados</small>
+                                <div>3 consultas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6><i class="fas fa-tools me-2"></i>Acciones</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'nutrition:meal_plan_create' diet_plan.pk %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-utensils"></i> Crear Menú
+                                </a>
+                                <a href="{% url 'nutrition:consultation_create' %}?patient={{ diet_plan.patient.pk }}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-calendar-plus"></i> Nueva Consulta
+                                </a>
+                                <a href="#" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-chart-bar"></i> Ver Progreso
+                                </a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-print"></i> Imprimir Plan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

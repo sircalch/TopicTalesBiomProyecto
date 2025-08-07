@@ -1,0 +1,464 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consulta Nutricional - {{ consultation.patient.get_full_name }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .consultation-header {
+        background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+    
+    .detail-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .metric-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        height: 100%;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #17a2b8;
+    }
+    
+    .progress-circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin: 0 auto;
+    }
+    
+    .progress-circle::before {
+        content: '';
+        width: 85px;
+        height: 85px;
+        border-radius: 50%;
+        background: white;
+        position: absolute;
+    }
+    
+    .progress-value {
+        position: relative;
+        z-index: 1;
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #495057;
+    }
+    
+    .consultation-type-badge {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    
+    .initial { background-color: #d4edda; color: #155724; }
+    .followup { background-color: #cce5ff; color: #004085; }
+    .adjustment { background-color: #fff3cd; color: #856404; }
+    .emergency { background-color: #f8d7da; color: #721c24; }
+    
+    .weight-change {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    
+    .weight-loss { background-color: #d4edda; color: #155724; }
+    .weight-gain { background-color: #fff3cd; color: #856404; }
+    .weight-stable { background-color: #e2e3e5; color: #495057; }
+    
+    .section-header {
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .info-row {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+    
+    .satisfaction-stars {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        font-size: 1.5rem;
+    }
+    
+    .energy-batteries {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header de la Consulta -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="consultation-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 mb-2">
+                            <i class="fas fa-stethoscope me-2"></i>Consulta Nutricional
+                        </h1>
+                        <p class="mb-2 opacity-75">
+                            <i class="fas fa-user me-2"></i>{{ consultation.patient.get_full_name }} |
+                            <i class="fas fa-id-card me-2"></i>{{ consultation.patient.identification_number }} |
+                            <i class="fas fa-calendar me-2"></i>{{ consultation.consultation_date|date:"d/m/Y H:i" }}
+                        </p>
+                        <div>
+                            <span class="consultation-type-badge {% if consultation.consultation_type == 'initial' %}initial{% elif consultation.consultation_type == 'followup' %}followup{% elif consultation.consultation_type == 'adjustment' %}adjustment{% else %}emergency{% endif %}">
+                                {{ consultation.get_consultation_type_display }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <a href="{% url 'nutrition:consultation_list' %}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas Principales -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <i class="fas fa-weight fa-2x text-primary mb-2"></i>
+                <div class="metric-value">{{ consultation.current_weight }}</div>
+                <small class="text-muted">Peso Actual (kg)</small>
+                {% if consultation.weight_change %}
+                <div class="mt-2">
+                    {% if consultation.weight_change > 0 %}
+                        <span class="weight-change weight-gain">+{{ consultation.weight_change }}kg</span>
+                    {% elif consultation.weight_change < 0 %}
+                        <span class="weight-change weight-loss">{{ consultation.weight_change }}kg</span>
+                    {% else %}
+                        <span class="weight-change weight-stable">Sin cambio</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <div class="progress-circle" style="background: conic-gradient(#28a745 0deg, #28a745 {{ consultation.diet_adherence }}%, #e9ecef {{ consultation.diet_adherence }}%, #e9ecef 360deg);">
+                    <span class="progress-value">{{ consultation.diet_adherence }}%</span>
+                </div>
+                <small class="text-muted mt-2 d-block">Adherencia a la Dieta</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <div class="progress-circle" style="background: conic-gradient(#17a2b8 0deg, #17a2b8 {{ consultation.exercise_adherence }}%, #e9ecef {{ consultation.exercise_adherence }}%, #e9ecef 360deg);">
+                    <span class="progress-value">{{ consultation.exercise_adherence }}%</span>
+                </div>
+                <small class="text-muted mt-2 d-block">Adherencia al Ejercicio</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card">
+                <div class="text-center mb-2">
+                    <div class="satisfaction-stars justify-content-center">
+                        {% for i in "12345"|make_list %}
+                            {% if consultation.patient_satisfaction >= i|add:0 %}
+                                <i class="fas fa-star text-warning"></i>
+                            {% else %}
+                                <i class="far fa-star text-muted"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <small class="text-muted">Satisfacción del Paciente</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información Principal -->
+        <div class="col-lg-8">
+            <!-- Progreso del Paciente -->
+            <div class="detail-card">
+                <div class="section-header">
+                    <h5 class="text-info mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Progreso del Paciente
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <strong>Peso Actual:</strong> {{ consultation.current_weight }} kg
+                            {% if consultation.weight_change %}
+                            <div class="mt-1">
+                                <small class="text-muted">Cambio desde última consulta: </small>
+                                {% if consultation.weight_change > 0 %}
+                                    <span class="text-success">+{{ consultation.weight_change }}kg ↗</span>
+                                {% elif consultation.weight_change < 0 %}
+                                    <span class="text-danger">{{ consultation.weight_change }}kg ↘</span>
+                                {% else %}
+                                    <span class="text-muted">Sin cambio →</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="info-row">
+                            <strong>Adherencia a la Dieta:</strong> {{ consultation.diet_adherence }}%
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar 
+                                    {% if consultation.diet_adherence >= 90 %}bg-success
+                                    {% elif consultation.diet_adherence >= 70 %}bg-info
+                                    {% elif consultation.diet_adherence >= 50 %}bg-warning
+                                    {% else %}bg-danger{% endif %}" 
+                                    style="width: {{ consultation.diet_adherence }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <strong>Adherencia al Ejercicio:</strong> {{ consultation.exercise_adherence }}%
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar 
+                                    {% if consultation.exercise_adherence >= 80 %}bg-success
+                                    {% elif consultation.exercise_adherence >= 60 %}bg-info
+                                    {% elif consultation.exercise_adherence >= 40 %}bg-warning
+                                    {% else %}bg-danger{% endif %}" 
+                                    style="width: {{ consultation.exercise_adherence }}%"></div>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <strong>Nivel de Energía:</strong>
+                            <div class="energy-batteries mt-1">
+                                {% for i in "12345"|make_list %}
+                                    {% if consultation.energy_level >= i|add:0 %}
+                                        <i class="fas fa-battery-full text-success"></i>
+                                    {% else %}
+                                        <i class="fas fa-battery-empty text-muted"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 small text-muted">{{ consultation.get_energy_level_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluación Subjetiva -->
+            <div class="detail-card">
+                <div class="section-header">
+                    <h5 class="text-info mb-0">
+                        <i class="fas fa-smile me-2"></i>Evaluación Subjetiva
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <strong>Satisfacción del Paciente:</strong>
+                            <div class="satisfaction-stars mt-2">
+                                {% for i in "12345"|make_list %}
+                                    {% if consultation.patient_satisfaction >= i|add:0 %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-muted"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 small text-muted">{{ consultation.get_patient_satisfaction_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row">
+                            <strong>Nivel de Energía:</strong>
+                            <div class="energy-batteries mt-2">
+                                {% for i in "12345"|make_list %}
+                                    {% if consultation.energy_level >= i|add:0 %}
+                                        <i class="fas fa-battery-full text-success"></i>
+                                    {% else %}
+                                        <i class="fas fa-battery-empty text-muted"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 small text-muted">{{ consultation.get_energy_level_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observaciones -->
+            <div class="detail-card">
+                <div class="section-header">
+                    <h5 class="text-info mb-0">
+                        <i class="fas fa-notes-medical me-2"></i>Observaciones y Notas
+                    </h5>
+                </div>
+                {% if consultation.patient_concerns %}
+                <div class="info-row">
+                    <strong>Preocupaciones del Paciente:</strong>
+                    <p class="mb-0 mt-2">{{ consultation.patient_concerns|linebreaks }}</p>
+                </div>
+                {% endif %}
+                <div class="info-row">
+                    <strong>Notas de Progreso:</strong>
+                    <p class="mb-0 mt-2">{{ consultation.progress_notes|linebreaks }}</p>
+                </div>
+                {% if consultation.next_goals %}
+                <div class="info-row">
+                    <strong>Objetivos para Próxima Consulta:</strong>
+                    <p class="mb-0 mt-2">{{ consultation.next_goals|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="col-lg-4">
+            <!-- Próxima Cita -->
+            {% if consultation.next_appointment %}
+            <div class="detail-card">
+                <h5 class="text-info mb-3">
+                    <i class="fas fa-calendar-alt me-2"></i>Próxima Cita
+                </h5>
+                <div class="alert alert-info text-center">
+                    <div class="h4 mb-2">{{ consultation.next_appointment|date:"d" }}</div>
+                    <div class="small">{{ consultation.next_appointment|date:"F Y" }}</div>
+                    <div class="mt-2">
+                        <strong>{{ consultation.next_appointment|date:"H:i" }}</strong>
+                    </div>
+                    <div class="mt-2">
+                        <span class="badge bg-info">
+                            {% now "Y-m-d H:i" as current_time %}
+                            {% if consultation.next_appointment|date:"Y-m-d H:i" > current_time %}
+                                Programada
+                            {% else %}
+                                Vencida
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Información de la Evaluación Base -->
+            {% if consultation.assessment %}
+            <div class="detail-card">
+                <h5 class="text-info mb-3">
+                    <i class="fas fa-clipboard-list me-2"></i>Evaluación Base
+                </h5>
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>IMC:</span>
+                        <strong>{{ consultation.assessment.bmi }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Peso Base:</span>
+                        <strong>{{ consultation.assessment.weight }} kg</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Objetivo:</span>
+                        <strong>{{ consultation.assessment.get_objective_display }}</strong>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'nutrition:assessment_detail' consultation.assessment.pk %}" class="btn btn-outline-info btn-sm">
+                            Ver Evaluación Completa
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Resumen de Adherencia -->
+            <div class="detail-card">
+                <h5 class="text-info mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Resumen de Adherencia
+                </h5>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="progress-circle mb-2" style="width: 60px; height: 60px; background: conic-gradient(#28a745 0deg, #28a745 {{ consultation.diet_adherence }}%, #e9ecef {{ consultation.diet_adherence }}%, #e9ecef 360deg);">
+                            <span class="progress-value" style="font-size: 0.9rem;">{{ consultation.diet_adherence }}%</span>
+                        </div>
+                        <small class="text-muted">Dieta</small>
+                    </div>
+                    <div class="col-6">
+                        <div class="progress-circle mb-2" style="width: 60px; height: 60px; background: conic-gradient(#17a2b8 0deg, #17a2b8 {{ consultation.exercise_adherence }}%, #e9ecef {{ consultation.exercise_adherence }}%, #e9ecef 360deg);">
+                            <span class="progress-value" style="font-size: 0.9rem;">{{ consultation.exercise_adherence }}%</span>
+                        </div>
+                        <small class="text-muted">Ejercicio</small>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    {% if consultation.diet_adherence >= 80 and consultation.exercise_adherence >= 70 %}
+                        <div class="alert alert-success py-2 small">
+                            <i class="fas fa-check-circle me-1"></i>
+                            Excelente adherencia al tratamiento
+                        </div>
+                    {% elif consultation.diet_adherence >= 60 or consultation.exercise_adherence >= 50 %}
+                        <div class="alert alert-warning py-2 small">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            Adherencia moderada, seguir motivando
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger py-2 small">
+                            <i class="fas fa-times-circle me-1"></i>
+                            Baja adherencia, requiere apoyo adicional
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="detail-card">
+                <h5 class="text-info mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Información de la Consulta
+                </h5>
+                <div class="small text-muted">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Nutricionista:</span>
+                        <span>{{ consultation.nutritionist.get_full_name }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Fecha:</span>
+                        <span>{{ consultation.consultation_date|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Hora:</span>
+                        <span>{{ consultation.consultation_date|date:"H:i" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Actualizado:</span>
+                        <span>{{ consultation.updated_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

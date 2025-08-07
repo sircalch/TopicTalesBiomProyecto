@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consulta Nutricional - {{ consultation.patient.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-user-md me-2"></i>Consulta Nutricional</h1>
+                <div>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'nutrition:consultation_list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-info-circle me-2"></i>Información de la Consulta</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Paciente:</strong> {{ consultation.patient.get_full_name }}</p>
+                                    <p><strong>Tipo:</strong> {{ consultation.get_consultation_type_display }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Fecha:</strong> {{ consultation.consultation_date|date:"d/m/Y" }}</p>
+                                    <p><strong>Duración:</strong> {{ consultation.duration }} minutos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if consultation.chief_complaint %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-question-circle me-2"></i>Motivo de Consulta</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.chief_complaint|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-weight me-2"></i>Mediciones Antropométricas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="text-primary mb-0">{{ consultation.current_weight|floatformat:1 }}</h4>
+                                        <small class="text-muted">Peso Actual (kg)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="{% if consultation.weight_change >= 0 %}text-success{% else %}text-danger{% endif %} mb-0">
+                                            {% if consultation.weight_change > 0 %}+{% endif %}{{ consultation.weight_change|floatformat:1 }}
+                                        </h4>
+                                        <small class="text-muted">Cambio (kg)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="text-info mb-0">{{ consultation.body_fat_percentage|floatformat:1|default:"N/A" }}</h4>
+                                        <small class="text-muted">% Grasa</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="text-warning mb-0">{{ consultation.muscle_mass|floatformat:1|default:"N/A" }}</h4>
+                                        <small class="text-muted">Masa Muscular (kg)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if consultation.dietary_adherence %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-pie me-2"></i>Adherencia a la Dieta</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        {% if consultation.dietary_adherence == 'excellent' %}
+                                            <span class="badge bg-success fs-6">Excelente</span>
+                                            <div class="mt-2">90-100%</div>
+                                        {% elif consultation.dietary_adherence == 'good' %}
+                                            <span class="badge bg-primary fs-6">Buena</span>
+                                            <div class="mt-2">70-89%</div>
+                                        {% elif consultation.dietary_adherence == 'fair' %}
+                                            <span class="badge bg-warning fs-6">Regular</span>
+                                            <div class="mt-2">50-69%</div>
+                                        {% else %}
+                                            <span class="badge bg-danger fs-6">Pobre</span>
+                                            <div class="mt-2">&lt;50%</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    {% if consultation.adherence_notes %}
+                                        <p class="mb-0">{{ consultation.adherence_notes }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.current_symptoms %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-thermometer me-2"></i>Síntomas Actuales</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.current_symptoms|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.dietary_intake_analysis %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-utensils me-2"></i>Análisis de Ingesta Dietética</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.dietary_intake_analysis|linebreaks }}
+                            {% if consultation.energy_intake %}
+                            <div class="mt-3">
+                                <strong>Ingesta Energética Estimada:</strong> {{ consultation.energy_intake }} kcal/día
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.physical_examination %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-stethoscope me-2"></i>Examen Físico</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.physical_examination|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.assessment %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-clipboard-check me-2"></i>Evaluación Nutricional</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.assessment|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.plan_modifications %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-edit me-2"></i>Modificaciones al Plan</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.plan_modifications|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.recommendations %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-lightbulb me-2"></i>Recomendaciones</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.recommendations|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.laboratory_orders %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-vial me-2"></i>Órdenes de Laboratorio</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.laboratory_orders|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if consultation.notes %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-sticky-note me-2"></i>Notas Adicionales</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ consultation.notes|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6><i class="fas fa-info-circle me-2"></i>Resumen</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if consultation.water_intake %}
+                            <div class="mb-3">
+                                <small class="text-muted">Consumo de Agua</small>
+                                <div>{{ consultation.water_intake|floatformat:1 }} L/día</div>
+                            </div>
+                            {% endif %}
+
+                            {% if consultation.follow_up_frequency %}
+                            <div class="mb-3">
+                                <small class="text-muted">Frecuencia de Seguimiento</small>
+                                <div>{{ consultation.get_follow_up_frequency_display }}</div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <small class="text-muted">Fecha de Consulta</small>
+                                <div>{{ consultation.consultation_date|date:"d/m/Y" }}</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Registrada</small>
+                                <div>{{ consultation.created_at|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if consultation.next_appointment %}
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6><i class="fas fa-calendar me-2"></i>Próxima Cita</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h5 class="text-primary">{{ consultation.next_appointment|date:"d/m/Y" }}</h5>
+                                <small class="text-muted">
+                                    {% if consultation.next_appointment|timeuntil %}
+                                        En {{ consultation.next_appointment|timeuntil }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6><i class="fas fa-chart-line me-2"></i>Evolución</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">Progreso General</small>
+                                <div class="progress">
+                                    {% if consultation.dietary_adherence == 'excellent' %}
+                                        <div class="progress-bar bg-success" style="width: 90%"></div>
+                                    {% elif consultation.dietary_adherence == 'good' %}
+                                        <div class="progress-bar bg-primary" style="width: 75%"></div>
+                                    {% elif consultation.dietary_adherence == 'fair' %}
+                                        <div class="progress-bar bg-warning" style="width: 60%"></div>
+                                    {% else %}
+                                        <div class="progress-bar bg-danger" style="width: 40%"></div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">Consultas Realizadas</small>
+                                <div>5 consultas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6><i class="fas fa-tools me-2"></i>Acciones</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'nutrition:consultation_create' %}?patient={{ consultation.patient.pk }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Nueva Consulta
+                                </a>
+                                <a href="#" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-chart-bar"></i> Ver Evolución
+                                </a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-print"></i> Imprimir Consulta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Evaluaciones Psicológicas{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-clipboard-list me-2 text-primary"></i>Evaluaciones Psicológicas
+                </h1>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'psychology:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                    </a>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Nueva Evaluación
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Buscar Paciente</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ request.GET.search }}" placeholder="Nombre del paciente...">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Todos los estados</option>
+                                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pendiente</option>
+                                <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>En Progreso</option>
+                                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="type" class="form-label">Tipo de Evaluación</label>
+                            <select class="form-select" id="type" name="type">
+                                <option value="">Todos los tipos</option>
+                                <option value="initial" {% if request.GET.type == 'initial' %}selected{% endif %}>Inicial</option>
+                                <option value="follow_up" {% if request.GET.type == 'follow_up' %}selected{% endif %}>Seguimiento</option>
+                                <option value="comprehensive" {% if request.GET.type == 'comprehensive' %}selected{% endif %}>Integral</option>
+                                <option value="neuropsychological" {% if request.GET.type == 'neuropsychological' %}selected{% endif %}>Neuropsicológica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Evaluations List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Lista de Evaluaciones</h5>
+                    <span class="badge bg-secondary">{{ evaluations.count|default:0 }} evaluaciones</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if evaluations %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tipo de Evaluación</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Psicólogo</th>
+                                    <th>Progreso</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Sample data since we don't have real evaluations yet -->
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-primary text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>María González</strong><br>
+                                                <small class="text-muted">PAC001</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Evaluación Inicial</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">15/01/2025</small><br>
+                                        <small>09:30</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">En Progreso</span>
+                                    </td>
+                                    <td>
+                                        <strong>Dr. Juan Pérez</strong><br>
+                                        <small class="text-muted">Psicólogo Clínico</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-warning" style="width: 60%"></div>
+                                        </div>
+                                        <small class="text-muted">60% completado</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Continuar">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-success text-white rounded-circle me-2">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div>
+                                                <strong>Carlos Rodríguez</strong><br>
+                                                <small class="text-muted">PAC002</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Seguimiento</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">12/01/2025</small><br>
+                                        <small>14:00</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Completada</span>
+                                    </td>
+                                    <td>
+                                        <strong>Dr. Ana Martín</strong><br>
+                                        <small class="text-muted">Psicóloga Clínica</small>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                                        </div>
+                                        <small class="text-success">Completado</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" title="Ver Detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" title="Generar Reporte">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success" title="Nueva Evaluación">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No hay evaluaciones registradas</h5>
+                        <p class="text-muted">
+                            {% if request.GET.search or request.GET.status or request.GET.type %}
+                                No se encontraron evaluaciones con los filtros aplicados.
+                            {% else %}
+                                Comienza creando tu primera evaluación psicológica.
+                            {% endif %}
+                        </p>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Crear Primera Evaluación
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

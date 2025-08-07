@@ -6,6 +6,10 @@ app_name = 'medical_records'
 urlpatterns = [
     path('', views.index, name='index'),
     path('search/', views.search_records, name='search'),
+    path('consultations/', views.all_consultations, name='all_consultations'),
+    path('create/', views.create_medical_record, name='create_record'),
+    path('templates/', views.record_templates, name='templates'),
+    path('clinical-history/', views.clinical_history, name='clinical_history'),
     
     # Patient Medical Records
     path('patient/<int:patient_id>/', views.patient_records, name='patient_records'),
@@ -25,4 +29,12 @@ urlpatterns = [
     # Documents and Alerts
     path('patient/<int:patient_id>/document/upload/', views.upload_document, name='upload_document'),
     path('patient/<int:patient_id>/alert/create/', views.create_alert, name='create_alert'),
+    
+    # Template Management
+    path('templates/create/', views.create_template, name='create_template'),
+    path('templates/<int:template_id>/', views.template_detail, name='template_detail'),
+    path('templates/<int:template_id>/edit/', views.edit_template, name='edit_template'),
+    path('templates/<int:template_id>/duplicate/', views.duplicate_template, name='duplicate_template'),
+    path('templates/<int:template_id>/delete/', views.delete_template, name='delete_template'),
+    path('templates/<int:template_id>/use/', views.use_template, name='use_template'),
 ]

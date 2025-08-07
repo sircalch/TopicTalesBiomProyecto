@@ -1,0 +1,839 @@
+{% load static %}
+
+<!-- TopicTales Biomédica - Sidebar Profesional -->
+<aside class="medical-sidebar" id="medical-sidebar">
+    <!-- Header -->
+    <div class="sidebar-brand">
+        <div class="brand-logo">
+            <div class="logo-circle">
+                <i class="bi bi-heart-pulse"></i>
+            </div>
+            <div class="brand-info">
+                <h1 class="brand-title">TopicTales</h1>
+                <span class="brand-subtitle">Biomédica</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="user-section">
+        <div class="user-card">
+            <div class="user-avatar">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.get_full_name }}">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                    </div>
+                {% endif %}
+                <span class="status-indicator"></span>
+            </div>
+            <div class="user-details">
+                <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                <div class="user-role">{{ user.profile.role|default:"Médico" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-navigation">
+        <!-- Dashboard -->
+        <a href="{% url 'dashboard:index' %}" class="nav-link {% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}">
+            <i class="nav-icon bi bi-house-door"></i>
+            <span class="nav-text">Panel Principal</span>
+        </a>
+
+        <!-- Dynamic Modules -->
+        {% for category, modules in sidebar_modules.items %}
+            {% if modules %}
+                <div class="nav-group">
+                    <div class="group-header">
+                        {% if category == 'core' %}
+                            <i class="bi bi-grid-3x3-gap"></i>
+                            <span>Módulos Básicos</span>
+                        {% elif category == 'medical' %}
+                            <i class="bi bi-hospital"></i>
+                            <span>Especialidades Médicas</span>
+                        {% elif category == 'admin' %}
+                            <i class="bi bi-gear"></i>
+                            <span>Administración</span>
+                        {% elif category == 'reports' %}
+                            <i class="bi bi-graph-up"></i>
+                            <span>Reportes</span>
+                        {% else %}
+                            <i class="bi bi-folder"></i>
+                            <span>{{ category|title }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% for module_data in modules %}
+                        {% with module=module_data.module submodules=module_data.submodules %}
+                            {% if submodules %}
+                                <!-- Module with Submenu -->
+                                <div class="nav-dropdown" data-module="{{ module.name|slugify }}">
+                                    <button class="dropdown-toggle" onclick="toggleSidebarDropdown('{{ module.name|slugify }}')">
+                                        <i class="nav-icon bi {{ module.icon|default:'bi-folder' }}"></i>
+                                        <span class="nav-text">{{ module.display_name }}</span>
+                                        {% if user_subscription.plan == 'BASIC' and module.min_plan_required != 'BASIC' %}
+                                            <span class="pro-badge">Pro</span>
+                                        {% endif %}
+                                        <i class="dropdown-arrow bi bi-chevron-down"></i>
+                                    </button>
+                                    <div class="dropdown-content" id="dropdown-{{ module.name|slugify }}">
+                                        {% for submodule in submodules %}
+                                            <a href="{% if submodule.url_name %}{% url submodule.url_name %}{% else %}#{% endif %}" class="dropdown-link">
+                                                <i class="bi {{ submodule.icon|default:'bi-circle' }}"></i>
+                                                <span>{{ submodule.display_name }}</span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <!-- Simple Module -->
+                                <a href="{% if module.url_name %}{% url module.url_name %}{% else %}#{% endif %}" class="nav-link">
+                                    <i class="nav-icon bi {{ module.icon|default:'bi-folder' }}"></i>
+                                    <span class="nav-text">{{ module.display_name }}</span>
+                                    {% if user_subscription.plan == 'BASIC' and module.min_plan_required != 'BASIC' %}
+                                        <span class="pro-badge">Pro</span>
+                                    {% endif %}
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Fallback Menu if no dynamic modules -->
+        {% if not sidebar_modules %}
+            <div class="nav-group">
+                <div class="group-header">
+                    <i class="bi bi-hospital"></i>
+                    <span>Gestión Médica</span>
+                </div>
+
+                <div class="nav-dropdown" data-module="patients">
+                    <button class="dropdown-toggle" onclick="toggleSidebarDropdown('patients')">
+                        <i class="nav-icon bi bi-people"></i>
+                        <span class="nav-text">Pacientes</span>
+                        <span class="item-count">{{ subscription_features.current_patients|default:0 }}</span>
+                        <i class="dropdown-arrow bi bi-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content" id="dropdown-patients">
+                        <a href="{% url 'patients:list' %}" class="dropdown-link">
+                            <i class="bi bi-list-ul"></i>
+                            <span>Lista de Pacientes</span>
+                        </a>
+                        <a href="{% url 'patients:create' %}" class="dropdown-link">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Nuevo Paciente</span>
+                        </a>
+                        <a href="{% url 'patients:search' %}" class="dropdown-link">
+                            <i class="bi bi-search"></i>
+                            <span>Búsqueda Avanzada</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-dropdown" data-module="appointments">
+                    <button class="dropdown-toggle" onclick="toggleSidebarDropdown('appointments')">
+                        <i class="nav-icon bi bi-calendar-event"></i>
+                        <span class="nav-text">Citas</span>
+                        <span class="item-count urgent">8</span>
+                        <i class="dropdown-arrow bi bi-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content" id="dropdown-appointments">
+                        <a href="{% url 'appointments:calendar' %}" class="dropdown-link">
+                            <i class="bi bi-calendar3"></i>
+                            <span>Calendario</span>
+                        </a>
+                        <a href="{% url 'appointments:list' %}" class="dropdown-link">
+                            <i class="bi bi-list-check"></i>
+                            <span>Lista de Citas</span>
+                        </a>
+                        <a href="{% url 'appointments:create' %}" class="dropdown-link">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Nueva Cita</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{% url 'medical_records:index' %}" class="nav-link">
+                    <i class="nav-icon bi bi-file-medical"></i>
+                    <span class="nav-text">Expedientes</span>
+                </a>
+
+                <a href="{% url 'reports:index' %}" class="nav-link">
+                    <i class="nav-icon bi bi-graph-up"></i>
+                    <span class="nav-text">Reportes</span>
+                </a>
+            </div>
+        {% endif %}
+    </nav>
+
+    <!-- Subscription Info -->
+    <div class="subscription-card">
+        <div class="plan-info">
+            <div class="plan-name">{{ user_subscription.plan|default:"Plan Básico" }}</div>
+            <div class="plan-usage">
+                <div class="usage-text">
+                    {{ subscription_features.current_patients|default:0 }}{% if subscription_features.max_patients != -1 %}/{{ subscription_features.max_patients }}{% endif %} pacientes
+                </div>
+                <div class="usage-bar">
+                    {% with usage_percent=subscription_features.current_patients|default:0|floatformat:0 %}
+                        {% if subscription_features.max_patients > 0 %}
+                            {% widthratio subscription_features.current_patients subscription_features.max_patients 100 as percentage %}
+                            <div class="usage-fill" style="width: {{ percentage }}%"></div>
+                        {% else %}
+                            <div class="usage-fill" style="width: 25%"></div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            {% if user_subscription.plan == 'BASIC' %}
+                <a href="{% url 'accounts:subscription' %}" class="upgrade-link">Actualizar Plan</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="sidebar-footer">
+        <div class="footer-actions">
+            <button class="action-btn" onclick="toggleTheme()" title="Cambiar tema">
+                <i class="bi bi-moon"></i>
+            </button>
+            <a href="{% url 'accounts:profile' %}" class="action-btn" title="Perfil">
+                <i class="bi bi-person"></i>
+            </a>
+            <button class="action-btn" onclick="showHelp()" title="Ayuda">
+                <i class="bi bi-question-circle"></i>
+            </button>
+        </div>
+        <a href="{% url 'accounts:logout' %}" class="logout-link">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Professional Medical Sidebar Styles -->
+<style>
+/* Medical Sidebar Variables */
+:root {
+    --medical-primary: #2563eb;
+    --medical-primary-dark: #1d4ed8;
+    --medical-success: #059669;
+    --medical-warning: #d97706;
+    --medical-danger: #dc2626;
+    --medical-info: #0891b2;
+    --medical-purple: #7c3aed;
+    
+    --sidebar-bg: #ffffff;
+    --sidebar-border: #e5e7eb;
+    --sidebar-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    
+    --surface-50: #f9fafb;
+    --surface-100: #f3f4f6;
+    --surface-200: #e5e7eb;
+    --surface-300: #d1d5db;
+    
+    --sidebar-width: 290px;
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-quick: all 0.15s ease-out;
+}
+
+/* Reset and Base */
+.medical-sidebar * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main Sidebar Container */
+.medical-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    box-shadow: var(--sidebar-shadow);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* Brand Section */
+.sidebar-brand {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--surface-200);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-circle {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--medical-primary), var(--medical-primary-dark));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.logo-circle i {
+    color: white;
+    font-size: 20px;
+}
+
+.brand-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* User Section */
+.user-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--surface-200);
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--surface-50);
+    border-radius: 12px;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.user-card:hover {
+    background: var(--surface-100);
+    transform: translateY(-1px);
+}
+
+.user-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--medical-success), var(--medical-info));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background: var(--medical-success);
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Navigation */
+.sidebar-navigation {
+    flex: 1;
+    padding: 16px 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-300) transparent;
+}
+
+.sidebar-navigation::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-navigation::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-navigation::-webkit-scrollbar-thumb {
+    background: var(--surface-300);
+    border-radius: 3px;
+}
+
+.sidebar-navigation::-webkit-scrollbar-thumb:hover {
+    background: var(--surface-400);
+}
+
+/* Navigation Links */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition-quick);
+    position: relative;
+    border: none;
+    background: none;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background: var(--surface-50);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.nav-link.active {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%);
+    color: var(--medical-primary);
+    border-right: 3px solid var(--medical-primary);
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Navigation Groups */
+.nav-group {
+    margin-bottom: 24px;
+}
+
+.group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.group-header i {
+    font-size: 14px;
+}
+
+/* Dropdowns */
+.nav-dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-quick);
+}
+
+.dropdown-toggle:hover {
+    background: var(--surface-50);
+    color: var(--text-primary);
+}
+
+.dropdown-toggle.expanded {
+    background: var(--surface-100);
+    color: var(--text-primary);
+}
+
+.dropdown-arrow {
+    margin-left: auto;
+    font-size: 14px;
+    transition: transform 0.2s ease;
+}
+
+.dropdown-toggle.expanded .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-content {
+    max-height: 0;
+    overflow: hidden;
+    background: var(--surface-50);
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.dropdown-content.open {
+    max-height: 400px;
+    padding: 8px 0;
+}
+
+.dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px 10px 52px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: var(--transition-quick);
+}
+
+.dropdown-link:hover {
+    background: var(--surface-100);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.dropdown-link i {
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* Badges and Counters */
+.pro-badge {
+    background: linear-gradient(135deg, var(--medical-warning), #ea580c);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+.item-count {
+    background: var(--surface-200);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    min-width: 24px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+.item-count.urgent {
+    background: var(--medical-danger);
+    color: white;
+}
+
+/* Subscription Card */
+.subscription-card {
+    margin: 16px 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--medical-primary), var(--medical-primary-dark));
+    border-radius: 12px;
+    color: white;
+}
+
+.plan-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.usage-text {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.usage-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.usage-fill {
+    height: 100%;
+    background: white;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.upgrade-link {
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: underline;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.upgrade-link:hover {
+    opacity: 1;
+    color: white;
+    text-decoration: underline;
+}
+
+/* Footer */
+.sidebar-footer {
+    padding: 16px 20px 20px;
+    border-top: 1px solid var(--surface-200);
+}
+
+.footer-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    justify-content: center;
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: var(--surface-100);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-quick);
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.action-btn:hover {
+    background: var(--surface-200);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.logout-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    color: var(--medical-danger);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: var(--transition-quick);
+}
+
+.logout-link:hover {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--medical-danger);
+    text-decoration: none;
+}
+
+.logout-link i {
+    font-size: 18px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .medical-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .medical-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* Navbar Adjustment for Sidebar */
+.medical-navbar {
+    left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .medical-navbar {
+        left: 0;
+        width: 100%;
+    }
+}
+
+/* Main Content Adjustment */
+.main-content {
+    margin-left: var(--sidebar-width);
+    margin-top: 76px; /* Height of navbar + some spacing */
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        margin-top: 76px;
+    }
+}
+</style>
+
+<!-- Sidebar JavaScript -->
+<script>
+function toggleSidebarDropdown(moduleId) {
+    const dropdown = document.querySelector(`[data-module="${moduleId}"]`);
+    if (!dropdown) return;
+    
+    const toggle = dropdown.querySelector('.dropdown-toggle');
+    const content = dropdown.querySelector('.dropdown-content');
+    
+    // Close other dropdowns
+    document.querySelectorAll('.nav-dropdown').forEach(item => {
+        if (item !== dropdown) {
+            item.querySelector('.dropdown-toggle').classList.remove('expanded');
+            item.querySelector('.dropdown-content').classList.remove('open');
+        }
+    });
+    
+    // Toggle current dropdown
+    const isOpen = content.classList.contains('open');
+    if (isOpen) {
+        toggle.classList.remove('expanded');
+        content.classList.remove('open');
+    } else {
+        toggle.classList.add('expanded');
+        content.classList.add('open');
+    }
+}
+
+function toggleTheme() {
+    const body = document.body;
+    const isDark = body.classList.contains('dark-theme');
+    
+    if (isDark) {
+        body.classList.remove('dark-theme');
+        localStorage.setItem('theme', 'light');
+    } else {
+        body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+
+function showHelp() {
+    alert('Centro de Ayuda\n\nPara soporte técnico:\n- Email: soporte@topictales.com\n- Teléfono: +1 (555) 123-4567\n- Chat en vivo: Disponible 24/7');
+}
+
+// Mobile sidebar toggle
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('medical-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+}
+
+// Close mobile sidebar when clicking overlay
+document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', toggleMobileSidebar);
+    }
+    
+    // Load theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+});
+</script>

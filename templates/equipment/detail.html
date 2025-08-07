@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ title }}</h1>
+                <div>
+                    <a href="{% url 'equipment:list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <a href="{% url 'equipment:edit' equipment.pk %}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs"></i> Acciones
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'equipment:maintenance_record' equipment.pk %}">Registrar Mantenimiento</a></li>
+                            <li><a class="dropdown-item" href="{% url 'equipment:usage_log' equipment.pk %}">Registro de Uso</a></li>
+                            <li><a class="dropdown-item" href="{% url 'equipment:calibration' equipment.pk %}">Calibración</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'equipment:qr_code' equipment.pk %}">Generar Código QR</a></li>
+                            <li><a class="dropdown-item" href="{% url 'equipment:duplicate' equipment.pk %}">Duplicar Equipo</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Información Básica -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Información General</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Código de Activo</label>
+                                        <div><code class="fs-5">{{ equipment.asset_tag }}</code></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Nombre</label>
+                                        <div class="fw-bold">{{ equipment.name }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Categoría</label>
+                                        <div><span class="badge bg-secondary">{{ equipment.category.name }}</span></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Marca</label>
+                                        <div>{{ equipment.brand|default:"-" }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Modelo</label>
+                                        <div>{{ equipment.model|default:"-" }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Estado</label>
+                                        <div>
+                                            <span class="badge bg-{% if equipment.status == 'operational' %}success{% elif equipment.status == 'maintenance' %}warning{% elif equipment.status == 'out_of_service' %}danger{% else %}secondary{% endif %} fs-6">
+                                                {{ equipment.get_status_display }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Número de Serie</label>
+                                        <div>{{ equipment.serial_number|default:"-" }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Ubicación</label>
+                                        <div>
+                                            {% if equipment.location %}
+                                                {{ equipment.location.name }} - {{ equipment.location.room_number }}
+                                            {% else %}
+                                                <span class="text-muted">Sin asignar</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Fecha de Compra</label>
+                                        <div>{{ equipment.purchase_date|date:"d/m/Y"|default:"-" }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Valor de Compra</label>
+                                        <div>
+                                            {% if equipment.purchase_price %}
+                                                ${{ equipment.purchase_price|floatformat:2 }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if equipment.description %}
+                            <div class="mt-3">
+                                <label class="form-label text-muted">Descripción</label>
+                                <div>{{ equipment.description|linebreaks }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información de Proveedor -->
+                    {% if equipment.supplier %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Información del Proveedor</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Proveedor</label>
+                                        <div class="fw-bold">{{ equipment.supplier.name }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Persona de Contacto</label>
+                                        <div>{{ equipment.supplier.contact_person|default:"-" }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Teléfono</label>
+                                        <div>{{ equipment.supplier.phone|default:"-" }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted">Email</label>
+                                        <div>{{ equipment.supplier.email|default:"-" }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Especificaciones Técnicas -->
+                    {% if equipment.specifications %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Especificaciones Técnicas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for key, value in equipment.specifications.items %}
+                                <div class="col-md-6 mb-2">
+                                    <strong>{{ key }}:</strong> {{ value }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Historial de Mantenimiento -->
+                    <div class="card mt-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Historial de Mantenimiento</h5>
+                            <a href="{% url 'equipment:maintenance_record' equipment.pk %}" class="btn btn-outline-primary btn-sm">
+                                Nuevo Mantenimiento
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            {% if maintenance_records %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Tipo</th>
+                                                <th>Descripción</th>
+                                                <th>Técnico</th>
+                                                <th>Costo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for record in maintenance_records %}
+                                            <tr>
+                                                <td>{{ record.maintenance_date|date:"d/m/Y" }}</td>
+                                                <td>
+                                                    <span class="badge bg-{% if record.maintenance_type == 'preventive' %}info{% elif record.maintenance_type == 'corrective' %}warning{% else %}secondary{% endif %}">
+                                                        {{ record.get_maintenance_type_display }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ record.description|truncatechars:50 }}</td>
+                                                <td>{{ record.technician|default:"-" }}</td>
+                                                <td>
+                                                    {% if record.cost %}
+                                                        ${{ record.cost|floatformat:2 }}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center">No hay registros de mantenimiento</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Estado Actual -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Estado Actual</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <i class="fas fa-laptop-medical fa-3x mb-3 text-{% if equipment.status == 'operational' %}success{% elif equipment.status == 'maintenance' %}warning{% elif equipment.status == 'out_of_service' %}danger{% else %}secondary{% endif %}"></i>
+                            <h4 class="text-{% if equipment.status == 'operational' %}success{% elif equipment.status == 'maintenance' %}warning{% elif equipment.status == 'out_of_service' %}danger{% else %}secondary{% endif %}">
+                                {{ equipment.get_status_display }}
+                            </h4>
+                            {% if equipment.status_notes %}
+                                <p class="text-muted">{{ equipment.status_notes }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Próximo Mantenimiento -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Mantenimiento</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if equipment.next_maintenance_date %}
+                                <div class="text-center mb-3">
+                                    <i class="fas fa-calendar-alt fa-2x mb-2 text-{% if equipment.is_maintenance_overdue %}danger{% elif equipment.days_until_maintenance <= 7 %}warning{% else %}info{% endif %}"></i>
+                                    <div class="fw-bold">{{ equipment.next_maintenance_date|date:"d/m/Y" }}</div>
+                                    {% if equipment.is_maintenance_overdue %}
+                                        <small class="text-danger">Vencido hace {{ equipment.days_overdue }} días</small>
+                                    {% elif equipment.days_until_maintenance <= 7 %}
+                                        <small class="text-warning">En {{ equipment.days_until_maintenance }} días</small>
+                                    {% else %}
+                                        <small class="text-muted">En {{ equipment.days_until_maintenance }} días</small>
+                                    {% endif %}
+                                </div>
+                                {% if equipment.is_maintenance_overdue or equipment.days_until_maintenance <= 7 %}
+                                    <a href="{% url 'equipment:maintenance_record' equipment.pk %}" class="btn btn-warning w-100">
+                                        <i class="fas fa-tools"></i> Realizar Mantenimiento
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-center">
+                                    <i class="fas fa-calendar-times fa-2x mb-2 text-muted"></i>
+                                    <p class="text-muted">No hay mantenimiento programado</p>
+                                    <a href="{% url 'equipment:schedule_maintenance' equipment.pk %}" class="btn btn-outline-primary btn-sm">
+                                        Programar Mantenimiento
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Uso Reciente -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Uso Reciente</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_usage %}
+                                {% for usage in recent_usage %}
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                    <div>
+                                        <div class="fw-bold">{{ usage.user.get_full_name }}</div>
+                                        <small class="text-muted">{{ usage.start_time|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    <div>
+                                        {% if usage.duration %}
+                                            <span class="badge bg-info">{{ usage.duration }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'equipment:usage_log' equipment.pk %}" class="btn btn-outline-primary btn-sm">
+                                        Ver Historial Completo
+                                    </a>
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center">No hay registros de uso reciente</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Información Adicional -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5>Información Adicional</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Agregado:</div>
+                                <div class="col-6">{{ equipment.created_at|date:"d/m/Y" }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Actualizado:</div>
+                                <div class="col-6">{{ equipment.updated_at|date:"d/m/Y" }}</div>
+                            </div>
+                            {% if equipment.warranty_expiry %}
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Garantía:</div>
+                                <div class="col-6">
+                                    {{ equipment.warranty_expiry|date:"d/m/Y" }}
+                                    {% if equipment.is_warranty_expired %}
+                                        <br><small class="text-danger">Expirada</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="row mb-2">
+                                <div class="col-6 text-muted">Depreciación:</div>
+                                <div class="col-6">
+                                    {% if equipment.current_value %}
+                                        ${{ equipment.current_value|floatformat:2 }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alertas Activas -->
+                    {% if active_alerts %}
+                    <div class="card mt-4 border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Alertas</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for alert in active_alerts %}
+                            <div class="alert alert-{{ alert.get_severity_color }} alert-sm">
+                                <strong>{{ alert.get_alert_type_display }}</strong><br>
+                                {{ alert.message }}
+                                <br><small>{{ alert.created_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

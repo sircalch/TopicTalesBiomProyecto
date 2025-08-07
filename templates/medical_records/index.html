@@ -210,7 +210,13 @@
                                     </td>
                                     <td>
                                         <div>{{ consultation.doctor.get_full_name }}</div>
-                                        <small class="text-muted">{{ consultation.doctor.profile.specialty|default:"Medicina General" }}</small>
+                                        <small class="text-muted">
+                                            {% if consultation.doctor.profile.specialty %}
+                                                {{ consultation.doctor.profile.specialty }}
+                                            {% else %}
+                                                Medicina General
+                                            {% endif %}
+                                        </small>
                                     </td>
                                     <td>
                                         <div>{{ consultation.consultation_date|date:"d/m/Y" }}</div>

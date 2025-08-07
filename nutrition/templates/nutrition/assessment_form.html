@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - TopicTalesBiom{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin: 20px 0 15px 0;
+    }
+    
+    .section-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .calculator-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .btn-calculate {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .result-display {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        border: 2px solid #e9ecef;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>{{ title }}
+                    </h1>
+                    <p class="text-muted mb-0">Complete la información nutricional del paciente</p>
+                </div>
+                <a href="{% url 'nutrition:assessment_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <form method="post" id="assessmentForm">
+                    {% csrf_token %}
+                    {% crispy form %}
+                </form>
+            </div>
+        </div>
+        
+        <!-- Panel de Calculadoras -->
+        <div class="col-lg-4">
+            <!-- Calculadora de IMC -->
+            <div class="calculator-box">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-calculator me-2"></i>Calculadora de IMC
+                </h5>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="calc_weight" class="form-label">Peso (kg)</label>
+                        <input type="number" class="form-control" id="calc_weight" step="0.1" min="0">
+                    </div>
+                    <div class="col-6">
+                        <label for="calc_height" class="form-label">Altura (cm)</label>
+                        <input type="number" class="form-control" id="calc_height" step="0.1" min="0">
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-calculate" onclick="calculateBMI()">
+                        <i class="fas fa-calculator me-1"></i>Calcular IMC
+                    </button>
+                </div>
+                <div id="bmiResult" class="result-display" style="display: none;">
+                    <div class="text-center">
+                        <h4 class="text-primary mb-1">IMC: <span id="bmiValue"></span></h4>
+                        <p class="mb-0">Categoría: <span id="bmiCategory" class="fw-bold"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculadora de Calorías -->
+            <div class="calculator-box">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-fire me-2"></i>Calculadora de Calorías
+                </h5>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="calc_weight_cal" class="form-label">Peso (kg)</label>
+                        <input type="number" class="form-control" id="calc_weight_cal" step="0.1" min="0">
+                    </div>
+                    <div class="col-6">
+                        <label for="calc_height_cal" class="form-label">Altura (cm)</label>
+                        <input type="number" class="form-control" id="calc_height_cal" step="0.1" min="0">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6">
+                        <label for="calc_age" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="calc_age" min="0" max="120">
+                    </div>
+                    <div class="col-6">
+                        <label for="calc_gender" class="form-label">Sexo</label>
+                        <select class="form-control" id="calc_gender">
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <label for="calc_activity" class="form-label">Nivel de Actividad</label>
+                    <select class="form-control" id="calc_activity">
+                        <option value="sedentary">Sedentario</option>
+                        <option value="light">Actividad Ligera</option>
+                        <option value="moderate">Actividad Moderada</option>
+                        <option value="active">Actividad Intensa</option>
+                        <option value="very_active">Muy Activo</option>
+                    </select>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-calculate" onclick="calculateCalories()">
+                        <i class="fas fa-fire me-1"></i>Calcular Calorías
+                    </button>
+                </div>
+                <div id="calorieResult" class="result-display" style="display: none;">
+                    <div class="text-center">
+                        <h5 class="text-success mb-1">BMR: <span id="bmrValue"></span> kcal</h5>
+                        <h4 class="text-primary mb-1">Calorías Diarias: <span id="calorieValue"></span> kcal</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guía de Referencia -->
+            <div class="calculator-box">
+                <h5 class="text-primary mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Guía de Referencia IMC
+                </h5>
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Bajo peso:</span>
+                        <span class="fw-bold text-info">&lt; 18.5</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Peso normal:</span>
+                        <span class="fw-bold text-success">18.5 - 24.9</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Sobrepeso:</span>
+                        <span class="fw-bold text-warning">25.0 - 29.9</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Obesidad I:</span>
+                        <span class="fw-bold text-danger">30.0 - 34.9</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Obesidad II:</span>
+                        <span class="fw-bold text-danger">35.0 - 39.9</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Obesidad III:</span>
+                        <span class="fw-bold text-danger">&geq; 40.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-completar campos de calculadora desde el formulario
+document.addEventListener('DOMContentLoaded', function() {
+    // Sincronizar peso y altura
+    const weightField = document.querySelector('input[name="weight"]');
+    const heightField = document.querySelector('input[name="height"]');
+    const patientField = document.querySelector('select[name="patient"]');
+    
+    if (weightField) {
+        weightField.addEventListener('input', function() {
+            document.getElementById('calc_weight').value = this.value;
+            document.getElementById('calc_weight_cal').value = this.value;
+        });
+    }
+    
+    if (heightField) {
+        heightField.addEventListener('input', function() {
+            document.getElementById('calc_height').value = this.value;
+            document.getElementById('calc_height_cal').value = this.value;
+        });
+    }
+    
+    // Auto-calcular edad del paciente seleccionado
+    if (patientField) {
+        patientField.addEventListener('change', function() {
+            // Aquí podrías hacer una llamada AJAX para obtener la edad del paciente
+            // Por ahora, dejamos que el usuario ingrese la edad manualmente
+        });
+    }
+});
+
+function calculateBMI() {
+    const weight = parseFloat(document.getElementById('calc_weight').value);
+    const height = parseFloat(document.getElementById('calc_height').value);
+    
+    if (!weight || !height || weight <= 0 || height <= 0) {
+        alert('Por favor ingrese peso y altura válidos');
+        return;
+    }
+    
+    // Calcular IMC
+    const heightM = height / 100;
+    const bmi = (weight / (heightM * heightM)).toFixed(2);
+    
+    // Determinar categoría
+    let category = '';
+    let categoryClass = '';
+    
+    if (bmi < 18.5) {
+        category = 'Bajo peso';
+        categoryClass = 'text-info';
+    } else if (bmi >= 18.5 && bmi < 25) {
+        category = 'Peso normal';
+        categoryClass = 'text-success';
+    } else if (bmi >= 25 && bmi < 30) {
+        category = 'Sobrepeso';
+        categoryClass = 'text-warning';
+    } else if (bmi >= 30 && bmi < 35) {
+        category = 'Obesidad grado I';
+        categoryClass = 'text-danger';
+    } else if (bmi >= 35 && bmi < 40) {
+        category = 'Obesidad grado II';
+        categoryClass = 'text-danger';
+    } else {
+        category = 'Obesidad grado III';
+        categoryClass = 'text-danger';
+    }
+    
+    // Mostrar resultado
+    document.getElementById('bmiValue').textContent = bmi;
+    document.getElementById('bmiCategory').textContent = category;
+    document.getElementById('bmiCategory').className = 'fw-bold ' + categoryClass;
+    document.getElementById('bmiResult').style.display = 'block';
+}
+
+function calculateCalories() {
+    const weight = parseFloat(document.getElementById('calc_weight_cal').value);
+    const height = parseFloat(document.getElementById('calc_height_cal').value);
+    const age = parseInt(document.getElementById('calc_age').value);
+    const gender = document.getElementById('calc_gender').value;
+    const activity = document.getElementById('calc_activity').value;
+    
+    if (!weight || !height || !age || weight <= 0 || height <= 0 || age <= 0) {
+        alert('Por favor complete todos los campos con valores válidos');
+        return;
+    }
+    
+    // Calcular BMR usando fórmula de Harris-Benedict
+    let bmr;
+    if (gender === 'M') {
+        bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+        bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
+    
+    // Multiplicadores de actividad
+    const activityMultipliers = {
+        'sedentary': 1.2,
+        'light': 1.375,
+        'moderate': 1.55,
+        'active': 1.725,
+        'very_active': 1.9
+    };
+    
+    const dailyCalories = Math.round(bmr * activityMultipliers[activity]);
+    
+    // Mostrar resultado
+    document.getElementById('bmrValue').textContent = Math.round(bmr);
+    document.getElementById('calorieValue').textContent = dailyCalories;
+    document.getElementById('calorieResult').style.display = 'block';
+}
+</script>
+{% endblock %}

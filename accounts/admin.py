@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Organization, Subscription, UserProfile, SystemModule, ModulePermission, AuditLog
+from django.utils import timezone
+from .models import User, Organization, Subscription, UserProfile, SystemModule, ModulePermission, AuditLog, Notification
 
 
 @admin.register(User)
@@ -161,6 +162,46 @@ class AuditLogAdmin(admin.ModelAdmin):
     
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    """Notification Admin"""
+    list_display = ('title', 'user', 'notification_type', 'priority', 'is_read', 'created_at')
+    list_filter = ('notification_type', 'priority', 'is_read', 'created_at')
+    search_fields = ('title', 'message', 'user__username', 'user__first_name', 'user__last_name')
+    readonly_fields = ('created_at', 'read_at')
+    list_editable = ('is_read',)
+    
+    fieldsets = (
+        ('Notificación', {
+            'fields': ('user', 'title', 'message', 'notification_type', 'priority')
+        }),
+        ('Estado', {
+            'fields': ('is_read', 'is_dismissed', 'read_at')
+        }),
+        ('Vinculación', {
+            'fields': ('related_model', 'related_id', 'action_url'),
+            'classes': ('collapse',)
+        }),
+        ('Fechas', {
+            'fields': ('created_at',)
+        }),
+    )
+    
+    actions = ['mark_as_read', 'mark_as_unread']
+    
+    def mark_as_read(self, request, queryset):
+        """Mark selected notifications as read"""
+        count = queryset.update(is_read=True, read_at=timezone.now())
+        self.message_user(request, f'{count} notificaciones marcadas como leídas.')
+    mark_as_read.short_description = "Marcar como leídas"
+    
+    def mark_as_unread(self, request, queryset):
+        """Mark selected notifications as unread"""
+        count = queryset.update(is_read=False, read_at=None)
+        self.message_user(request, f'{count} notificaciones marcadas como no leídas.')
+    mark_as_unread.short_description = "Marcar como no leídas"
 
 
 # Customize admin site
